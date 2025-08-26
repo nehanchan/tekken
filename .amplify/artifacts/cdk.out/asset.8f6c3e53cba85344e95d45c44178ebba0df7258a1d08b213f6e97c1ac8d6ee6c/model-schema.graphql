@@ -1,0 +1,50 @@
+type Character @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  name: String!
+  fightingStyle: String
+  country: String
+  height: Int
+  weight: Int
+  description: String
+  imageUrl: String
+}
+
+type Move @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  name: String!
+  command: String!
+  damage: Int
+  startupFrame: Int
+  blockFrame: String
+  hitFrame: String
+  moveType: MoveMoveType
+  element: MoveElement
+  description: String
+  iconId: String
+}
+
+type Post @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: owner, operations: [create, read, update, delete], ownerField: "owner"}])
+{
+  title: String!
+  content: String!
+  author: String!
+  characterId: ID
+  likes: Int @default(value: "0")
+}
+
+enum MoveMoveType {
+  HIGH
+  MID
+  LOW
+  THROW
+  SPECIAL
+}
+
+enum MoveElement {
+  NORMAL
+  SPECIAL
+  ULTIMATE
+}

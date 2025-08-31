@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build", 
-    "start": "next start",
+    "build": "next build",
+    "start": "next start", 
     "lint": "next lint",
+    "seed": "node scripts/seed-master-data.js",
+    "seed-moves": "node scripts/seed-extended-moves.js",
     "amplify:sandbox": "ampx sandbox",
     "amplify:deploy": "npx ampx pipeline-deploy --branch main"
+    
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.16.1",
@@ -30,5 +33,5 @@
     "eslint-config-next": "15.5.0",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  } 
 }

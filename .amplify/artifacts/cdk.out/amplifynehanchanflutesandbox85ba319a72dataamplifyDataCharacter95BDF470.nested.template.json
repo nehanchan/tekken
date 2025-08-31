@@ -613,7 +613,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "QuerygetCharacterauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62baca1d1fe8e93eb394d958513556ffc536c35fde7d8fba84f4af8dd76705da.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1a7a0c446c640accd551a7cb9562cc6c7ed9619cc3ef609582cbd21f0c8ca68b.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -793,7 +793,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "QuerylistCharactersauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62baca1d1fe8e93eb394d958513556ffc536c35fde7d8fba84f4af8dd76705da.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1a7a0c446c640accd551a7cb9562cc6c7ed9619cc3ef609582cbd21f0c8ca68b.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -995,7 +995,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "MutationcreateCharacterauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/163f1e92c10dcaf85e4690f19146fc5a18d1291ad6a6ad84db40c0c36d101fe9.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13358b36bef4868cbdc0a39d73a7bd8e921b77cc06a5fea6dad940706fc98ced.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -1209,7 +1209,7 @@
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
     },
     "ResponseMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58a246af4be16a1ddccdbae460faba9ba768ae2655833a75797307311c63ad0f.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7fc6438a7dc3ba253976da4e682a79a9d2aff30ce5e553d228901ed70d9e7b0.vtl"
     }
    },
    "DependsOn": [
@@ -1403,7 +1403,7 @@
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
     },
     "ResponseMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d9026b39b763f6e1ba5a06488ea2fbfe6eb653fb4c7ebeb3d0aafabe2928d34b.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2eb662c96443f037258baf77a6b5a1d6ef4ade2ef9edb4619d4a697bc49b265a.vtl"
     }
    },
    "DependsOn": [
@@ -1585,7 +1585,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "SubscriptiononCreateCharacterauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/616d9084d37a5192e6c798ff5243c52f88c11adb3c7a2424c4a4948cbfa78618.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc91b01b338410f19245ef5ac694cdd67e74fe0055ac67a1cf93315bfa951200.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -1732,7 +1732,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "SubscriptiononUpdateCharacterauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/616d9084d37a5192e6c798ff5243c52f88c11adb3c7a2424c4a4948cbfa78618.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc91b01b338410f19245ef5ac694cdd67e74fe0055ac67a1cf93315bfa951200.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -1879,7 +1879,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "SubscriptiononDeleteCharacterauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/616d9084d37a5192e6c798ff5243c52f88c11adb3c7a2424c4a4948cbfa78618.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc91b01b338410f19245ef5ac694cdd67e74fe0055ac67a1cf93315bfa951200.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -2074,6 +2074,22 @@
       ]
      ]
     }
+   }
+  },
+  "amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterDataSource3C6714F2Name": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CharacterDataSource",
+     "Name"
+    ]
+   }
+  },
+  "amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterTableD4A55EB0TableArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CharacterTable",
+     "TableArn"
+    ]
    }
   }
  }

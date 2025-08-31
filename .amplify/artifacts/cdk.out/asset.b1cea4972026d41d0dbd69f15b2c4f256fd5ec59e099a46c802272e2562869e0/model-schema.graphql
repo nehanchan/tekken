@@ -1,0 +1,58 @@
+type Character @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  characterId: String!
+  name: String!
+  nameKana: String
+  title: String
+  height: Int
+  weight: Int
+  nationality: String
+  description: String
+  moves: [Move] @hasMany(references: ["characterId"])
+}
+
+type MoveCategory @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  categoryId: ID
+  categoryName: String!
+  moves: [Move] @hasMany(references: ["categoryId"])
+}
+
+type Effect @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  effectId: ID
+  imagePath: String!
+}
+
+type Move @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  moveId: String!
+  characterMoveId: Int
+  characterId: String!
+  categoryId: ID
+  name: String!
+  nameKana: String
+  startupFrame: Int
+  activeFrame: String
+  hitFrame: String
+  blockFrame: String
+  attribute: String
+  effects: [String]
+  notes: [String]
+  character: Character @belongsTo(references: ["characterId"])
+  category: MoveCategory @belongsTo(references: ["categoryId"])
+}
+
+type Post @model @auth(rules: [{allow: public, provider: iam, operations: [read]},
+  {allow: owner, operations: [create, read, update, delete], ownerField: "owner"}])
+{
+  title: String!
+  content: String!
+  author: String!
+  characterId: String
+  likes: Int @default(value: "0")
+}

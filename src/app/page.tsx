@@ -15,28 +15,18 @@ export default function Home() {
 
   const fetchCharacters = async () => {
     try {
-      const { data } = await client.models.Character.list();
-      setCharacters(data);
+      const { data } = await client.models.Character.list({ 
+        authMode: 'apiKey' 
+      });
+      console.log('取得したキャラクターデータ:', data);
+      
+      // nullを除外してフィルタリング
+      const validCharacters = (data || []).filter(character => character !== null);
+      setCharacters(validCharacters);
     } catch (error) {
       console.error('Error fetching characters:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const createTestCharacter = async () => {
-    try {
-      await client.models.Character.create({
-        name: '風間仁',
-        fightingStyle: '空手・風間流喧嘩術',
-        country: '日本',
-        height: 180,
-        weight: 75,
-        description: '風間財閥の跡取り息子。悪魔の血を宿す。',
-      });
-      fetchCharacters(); // リスト更新
-    } catch (error) {
-      console.error('Error creating character:', error);
     }
   };
 
@@ -45,39 +35,46 @@ export default function Home() {
       <div className="container mx-auto p-6">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
-            キャラクター一覧
+            鉄拳キャラクターデータベース
           </h2>
-          <button
-            onClick={createTestCharacter}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-          >
-            テストキャラクター作成
-          </button>
+          <div className="space-x-4">
+            <a 
+              href="/character/create"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              キャラクターページ作成
+            </a>
+          </div>
         </div>
 
-        {loading ? (
-          <p className="text-center">読み込み中...</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {characters.map((character) => (
-              <div key={character.id} className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-semibold mb-2">{character.name}</h3>
-                <p className="text-gray-600 mb-1">格闘スタイル: {character.fightingStyle}</p>
-                <p className="text-gray-600 mb-1">出身地: {character.country}</p>
-                <p className="text-gray-600 mb-3">
-                  {character.height}cm / {character.weight}kg
-                </p>
-                <p className="text-sm text-gray-500">{character.description}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {characters.length === 0 && !loading && (
-          <p className="text-center text-gray-500">
-            キャラクターがありません。テストキャラクターを作成してみてください。
-          </p>
-        )}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">登録済みキャラクター一覧</h3>
+          {loading ? (
+            <p className="text-center">読み込み中...</p>
+          ) : characters.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {characters.map((character) => (
+                <a 
+                  key={character.id} 
+                  href={`/character/${character.characterId}`}
+                  className="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <h4 className="text-xl font-semibold mb-2">{character.name}</h4>
+                  <p className="text-gray-600 mb-1">称号: {character.title || '未設定'}</p>
+                  <p className="text-gray-600 mb-1">出身: {character.nationality || '未設定'}</p>
+                  <p className="text-gray-600 mb-3">
+                    {character.height ? `${character.height}cm` : '未設定'} / {character.weight ? `${character.weight}kg` : '未設定'}
+                  </p>
+                  <p className="text-sm text-gray-500">{character.description}</p>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">キャラクターデータがありません</p>
+            </div>
+          )}
+        </div>
       </div>
     </AuthWrapper>
   );

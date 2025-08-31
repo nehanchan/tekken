@@ -47,6 +47,13 @@
               "isRequired": true,
               "attributes": []
             },
+            "characterId": {
+              "name": "characterId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
             "name": {
               "name": "name",
               "isArray": false,
@@ -54,15 +61,15 @@
               "isRequired": true,
               "attributes": []
             },
-            "fightingStyle": {
-              "name": "fightingStyle",
+            "nameKana": {
+              "name": "nameKana",
               "isArray": false,
               "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "country": {
-              "name": "country",
+            "title": {
+              "name": "title",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -82,6 +89,13 @@
               "isRequired": false,
               "attributes": []
             },
+            "nationality": {
+              "name": "nationality",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
             "description": {
               "name": "description",
               "isArray": false,
@@ -89,12 +103,21 @@
               "isRequired": false,
               "attributes": []
             },
-            "imageUrl": {
-              "name": "imageUrl",
-              "isArray": false,
-              "type": "String",
+            "moves": {
+              "name": "moves",
+              "isArray": true,
+              "type": {
+                "model": "Move"
+              },
               "isRequired": false,
-              "attributes": []
+              "attributes": [],
+              "isArrayNullable": true,
+              "association": {
+                "connectionType": "HAS_MANY",
+                "associatedWith": [
+                  "characterId"
+                ]
+              }
             },
             "createdAt": {
               "name": "createdAt",
@@ -124,6 +147,208 @@
               "type": "auth",
               "properties": {
                 "rules": [
+                  {
+                    "allow": "public",
+                    "provider": "apiKey",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  },
+                  {
+                    "allow": "public",
+                    "provider": "iam",
+                    "operations": [
+                      "read"
+                    ]
+                  },
+                  {
+                    "allow": "private",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "MoveCategory": {
+          "name": "MoveCategory",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "categoryId": {
+              "name": "categoryId",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": false,
+              "attributes": []
+            },
+            "categoryName": {
+              "name": "categoryName",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "moves": {
+              "name": "moves",
+              "isArray": true,
+              "type": {
+                "model": "Move"
+              },
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true,
+              "association": {
+                "connectionType": "HAS_MANY",
+                "associatedWith": [
+                  "categoryId"
+                ]
+              }
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "MoveCategories",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "allow": "public",
+                    "provider": "apiKey",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  },
+                  {
+                    "allow": "public",
+                    "provider": "iam",
+                    "operations": [
+                      "read"
+                    ]
+                  },
+                  {
+                    "allow": "private",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "Effect": {
+          "name": "Effect",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "effectId": {
+              "name": "effectId",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": false,
+              "attributes": []
+            },
+            "imagePath": {
+              "name": "imagePath",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "Effects",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "allow": "public",
+                    "provider": "apiKey",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  },
                   {
                     "allow": "public",
                     "provider": "iam",
@@ -160,6 +385,34 @@
               "isRequired": true,
               "attributes": []
             },
+            "moveId": {
+              "name": "moveId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "characterMoveId": {
+              "name": "characterMoveId",
+              "isArray": false,
+              "type": "Int",
+              "isRequired": false,
+              "attributes": []
+            },
+            "characterId": {
+              "name": "characterId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "categoryId": {
+              "name": "categoryId",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": false,
+              "attributes": []
+            },
             "name": {
               "name": "name",
               "isArray": false,
@@ -167,11 +420,18 @@
               "isRequired": true,
               "attributes": []
             },
+            "nameKana": {
+              "name": "nameKana",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
             "command": {
               "name": "command",
               "isArray": false,
               "type": "String",
-              "isRequired": true,
+              "isRequired": false,
               "attributes": []
             },
             "damage": {
@@ -188,8 +448,8 @@
               "isRequired": false,
               "attributes": []
             },
-            "blockFrame": {
-              "name": "blockFrame",
+            "activeFrame": {
+              "name": "activeFrame",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -202,37 +462,72 @@
               "isRequired": false,
               "attributes": []
             },
-            "moveType": {
-              "name": "moveType",
-              "isArray": false,
-              "type": {
-                "enum": "MoveMoveType"
-              },
-              "isRequired": false,
-              "attributes": []
-            },
-            "element": {
-              "name": "element",
-              "isArray": false,
-              "type": {
-                "enum": "MoveElement"
-              },
-              "isRequired": false,
-              "attributes": []
-            },
-            "description": {
-              "name": "description",
+            "blockFrame": {
+              "name": "blockFrame",
               "isArray": false,
               "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "iconId": {
-              "name": "iconId",
+            "attribute": {
+              "name": "attribute",
               "isArray": false,
               "type": "String",
               "isRequired": false,
               "attributes": []
+            },
+            "judgment": {
+              "name": "judgment",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "effects": {
+              "name": "effects",
+              "isArray": true,
+              "type": "String",
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true
+            },
+            "notes": {
+              "name": "notes",
+              "isArray": true,
+              "type": "String",
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true
+            },
+            "character": {
+              "name": "character",
+              "isArray": false,
+              "type": {
+                "model": "Character"
+              },
+              "isRequired": false,
+              "attributes": [],
+              "association": {
+                "connectionType": "BELONGS_TO",
+                "targetNames": [
+                  "characterId"
+                ]
+              }
+            },
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": {
+                "model": "MoveCategory"
+              },
+              "isRequired": false,
+              "attributes": [],
+              "association": {
+                "connectionType": "BELONGS_TO",
+                "targetNames": [
+                  "categoryId"
+                ]
+              }
             },
             "createdAt": {
               "name": "createdAt",
@@ -262,6 +557,16 @@
               "type": "auth",
               "properties": {
                 "rules": [
+                  {
+                    "allow": "public",
+                    "provider": "apiKey",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  },
                   {
                     "allow": "public",
                     "provider": "iam",
@@ -322,7 +627,7 @@
             "characterId": {
               "name": "characterId",
               "isArray": false,
-              "type": "ID",
+              "type": "String",
               "isRequired": false,
               "attributes": []
             },
@@ -363,6 +668,16 @@
                 "rules": [
                   {
                     "allow": "public",
+                    "provider": "apiKey",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ]
+                  },
+                  {
+                    "allow": "public",
                     "provider": "iam",
                     "operations": [
                       "read"
@@ -391,26 +706,7 @@
           }
         }
       },
-      "enums": {
-        "MoveMoveType": {
-          "name": "MoveMoveType",
-          "values": [
-            "HIGH",
-            "MID",
-            "LOW",
-            "THROW",
-            "SPECIAL"
-          ]
-        },
-        "MoveElement": {
-          "name": "MoveElement",
-          "values": [
-            "NORMAL",
-            "SPECIAL",
-            "ULTIMATE"
-          ]
-        }
-      },
+      "enums": {},
       "nonModels": {}
     }
   },

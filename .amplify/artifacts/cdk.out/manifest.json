@@ -22,7 +22,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9666f8e33c5016eb7833b7d098deb854b958c41928a5a43ccf5d00234dd96999.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/32be5d81b93048c58397a3624d1c8b9820785a1da2b3ed8fc54ce73a5ac18680.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -883,10 +883,1050 @@
             "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref"
           }
         ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Character/amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterDataSource3C6714F2Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterDataSource3C6714F2Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Character/amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterTableD4A55EB0TableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterTableD4A55EB0TableArn"
+          }
+        ],
         "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Character.NestedStack/Character.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "amplifyDataCharacterNestedStackCharacterNestedStackResource2CA90B19"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/DynamoDBModelTableReadIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableReadIOPS"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/DynamoDBModelTableWriteIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableWriteIOPS"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/DynamoDBBillingMode": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBBillingMode"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/DynamoDBEnablePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnablePointInTimeRecovery"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/DynamoDBEnableServerSideEncryption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnableServerSideEncryption"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/HasEnvironmentParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HasEnvironmentParameter"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/ShouldUsePayPerRequestBilling": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePayPerRequestBilling"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/ShouldUsePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePointInTimeRecovery"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MoveCategoryTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MoveCategoryTable/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategoryTable"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/CustomTableMoveCategoryTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/GetAttMoveCategoryTableStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttMoveCategoryTableStreamArn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/GetAttMoveCategoryTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttMoveCategoryTableName"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MoveCategoryIAMRole": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategoryIAMRole"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MoveCategoryIAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategoryIAMRole544A6E48"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategoryIAMRole"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MoveCategoryDataSource": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategoryTable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MoveCategoryDataSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategoryDataSource"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategoryTable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/QuerygetMoveCategoryauth0Function/QuerygetMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetMoveCategoryauth0FunctionQuerygetMoveCategoryauth0FunctionAppSyncFunction7AA71E75"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/QuerygetMoveCategorypostAuth0Function/QuerygetMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetMoveCategorypostAuth0FunctionQuerygetMoveCategorypostAuth0FunctionAppSyncFunction1A9E5F24"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/QueryGetMoveCategoryDataResolverFn/QueryGetMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryGetMoveCategoryDataResolverFnQueryGetMoveCategoryDataResolverFnAppSyncFunction00BD2111"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryGetMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/queryGetMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.getMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/QuerylistMoveCategoriesauth0Function/QuerylistMoveCategoriesauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistMoveCategoriesauth0FunctionQuerylistMoveCategoriesauth0FunctionAppSyncFunctionB3CFB91C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistMoveCategoriesauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/QuerylistMoveCategoriespostAuth0Function/QuerylistMoveCategoriespostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistMoveCategoriespostAuth0FunctionQuerylistMoveCategoriespostAuth0FunctionAppSyncFunction2D882C9E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistMoveCategoriespostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/QueryListMoveCategoriesDataResolverFn/QueryListMoveCategoriesDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryListMoveCategoriesDataResolverFnQueryListMoveCategoriesDataResolverFnAppSyncFunction4442D520"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryListMoveCategoriesDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/queryListMoveCategoriesResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.listMoveCategories"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationcreateMoveCategoryinit0Function/MutationcreateMoveCategoryinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateMoveCategoryinit0FunctionMutationcreateMoveCategoryinit0FunctionAppSyncFunction312C13C5"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateMoveCategoryinit0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationcreateMoveCategoryauth0Function/MutationcreateMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateMoveCategoryauth0FunctionMutationcreateMoveCategoryauth0FunctionAppSyncFunction31DD7AFD"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationcreateMoveCategorypostAuth0Function/MutationcreateMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateMoveCategorypostAuth0FunctionMutationcreateMoveCategorypostAuth0FunctionAppSyncFunction80F9AC89"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationCreateMoveCategoryDataResolverFn/MutationCreateMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationCreateMoveCategoryDataResolverFnMutationCreateMoveCategoryDataResolverFnAppSyncFunction2311B4AF"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationCreateMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/mutationCreateMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreateMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.createMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationupdateMoveCategoryinit0Function/MutationupdateMoveCategoryinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateMoveCategoryinit0FunctionMutationupdateMoveCategoryinit0FunctionAppSyncFunctionD2C0FB3F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateMoveCategoryinit0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationupdateMoveCategoryauth0Function/MutationupdateMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateMoveCategoryauth0FunctionMutationupdateMoveCategoryauth0FunctionAppSyncFunction3A36B41A"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationupdateMoveCategorypostAuth0Function/MutationupdateMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateMoveCategorypostAuth0FunctionMutationupdateMoveCategorypostAuth0FunctionAppSyncFunction74FE6F0A"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationUpdateMoveCategoryDataResolverFn/MutationUpdateMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationUpdateMoveCategoryDataResolverFnMutationUpdateMoveCategoryDataResolverFnAppSyncFunctionCA286DBB"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationUpdateMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/mutationUpdateMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UpdateMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.updateMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationdeleteMoveCategoryauth0Function/MutationdeleteMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteMoveCategoryauth0FunctionMutationdeleteMoveCategoryauth0FunctionAppSyncFunction62845646"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationdeleteMoveCategorypostAuth0Function/MutationdeleteMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteMoveCategorypostAuth0FunctionMutationdeleteMoveCategorypostAuth0FunctionAppSyncFunction243CA882"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/MutationDeleteMoveCategoryDataResolverFn/MutationDeleteMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationDeleteMoveCategoryDataResolverFnMutationDeleteMoveCategoryDataResolverFnAppSyncFunction04DA9AEE"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationDeleteMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/mutationDeleteMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeleteMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.deleteMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptiononCreateMoveCategoryauth0Function/SubscriptiononCreateMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateMoveCategoryauth0FunctionSubscriptiononCreateMoveCategoryauth0FunctionAppSyncFunction6768D019"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptiononCreateMoveCategorypostAuth0Function/SubscriptiononCreateMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateMoveCategorypostAuth0FunctionSubscriptiononCreateMoveCategorypostAuth0FunctionAppSyncFunction1239E06F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptionOnCreateMoveCategoryDataResolverFn/SubscriptionOnCreateMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnCreateMoveCategoryDataResolverFnSubscriptionOnCreateMoveCategoryDataResolverFnAppSyncFunctionC06D0B8C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnCreateMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/subscriptionOnCreateMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onCreateMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptiononUpdateMoveCategoryauth0Function/SubscriptiononUpdateMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateMoveCategoryauth0FunctionSubscriptiononUpdateMoveCategoryauth0FunctionAppSyncFunction10CDF789"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptiononUpdateMoveCategorypostAuth0Function/SubscriptiononUpdateMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateMoveCategorypostAuth0FunctionSubscriptiononUpdateMoveCategorypostAuth0FunctionAppSyncFunction6AA53981"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptionOnUpdateMoveCategoryDataResolverFn/SubscriptionOnUpdateMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnUpdateMoveCategoryDataResolverFnSubscriptionOnUpdateMoveCategoryDataResolverFnAppSyncFunctionFA0E4DEC"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnUpdateMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/subscriptionOnUpdateMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onUpdateMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptiononDeleteMoveCategoryauth0Function/SubscriptiononDeleteMoveCategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteMoveCategoryauth0FunctionSubscriptiononDeleteMoveCategoryauth0FunctionAppSyncFunctionA22B7465"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteMoveCategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptiononDeleteMoveCategorypostAuth0Function/SubscriptiononDeleteMoveCategorypostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteMoveCategorypostAuth0FunctionSubscriptiononDeleteMoveCategorypostAuth0FunctionAppSyncFunction0990485B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteMoveCategorypostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/SubscriptionOnDeleteMoveCategoryDataResolverFn/SubscriptionOnDeleteMoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnDeleteMoveCategoryDataResolverFnSubscriptionOnDeleteMoveCategoryDataResolverFnAppSyncFunctionF0ACF26E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnDeleteMoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/subscriptionOnDeleteMoveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteMoveCategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onDeleteMoveCategory"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceCFE1F0D3Outputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventEAD6B42EArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceCFE1F0D3Outputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerTableManagerCustomPro9EC4530E"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPI4AF51BEBApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPI4AF51BEBApiId"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPINONEDS0B6420F8Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPINONEDS0B6420F8Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthauthenticatedUserRoleE4BDBD6BRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthauthenticatedUserRoleE4BDBD6BRef"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthunauthenticatedUserRoleEACE3A58Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthunauthenticatedUserRoleEACE3A58Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryDataSource565580A1Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryDataSource565580A1Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory/amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryTableA46940ECTableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryTableA46940ECTableArn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/MoveCategory.NestedStack/MoveCategory.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataMoveCategoryNestedStackMoveCategoryNestedStackResource0B8750AF"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/DynamoDBModelTableReadIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableReadIOPS"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/DynamoDBModelTableWriteIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableWriteIOPS"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/DynamoDBBillingMode": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBBillingMode"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/DynamoDBEnablePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnablePointInTimeRecovery"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/DynamoDBEnableServerSideEncryption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnableServerSideEncryption"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/HasEnvironmentParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HasEnvironmentParameter"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/ShouldUsePayPerRequestBilling": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePayPerRequestBilling"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/ShouldUsePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePointInTimeRecovery"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/EffectTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Effect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/EffectTable/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EffectTable"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Effect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/CustomTableEffectTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Effect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/GetAttEffectTableStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttEffectTableStreamArn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/GetAttEffectTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttEffectTableName"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/EffectIAMRole": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "EffectIAMRole"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/EffectIAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EffectIAMRole59F51FEC"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "EffectIAMRole"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/EffectDataSource": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "EffectTable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/EffectDataSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EffectDataSource"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "EffectTable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/QuerygetEffectauth0Function/QuerygetEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetEffectauth0FunctionQuerygetEffectauth0FunctionAppSyncFunctionAA92A2A4"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/QuerygetEffectpostAuth0Function/QuerygetEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetEffectpostAuth0FunctionQuerygetEffectpostAuth0FunctionAppSyncFunctionE5C13E31"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/QueryGetEffectDataResolverFn/QueryGetEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryGetEffectDataResolverFnQueryGetEffectDataResolverFnAppSyncFunctionEDA6B6B3"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryGetEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/queryGetEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.getEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/QuerylistEffectsauth0Function/QuerylistEffectsauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistEffectsauth0FunctionQuerylistEffectsauth0FunctionAppSyncFunction98C1C177"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistEffectsauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/QuerylistEffectspostAuth0Function/QuerylistEffectspostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistEffectspostAuth0FunctionQuerylistEffectspostAuth0FunctionAppSyncFunction4CD1A632"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistEffectspostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/QueryListEffectsDataResolverFn/QueryListEffectsDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryListEffectsDataResolverFnQueryListEffectsDataResolverFnAppSyncFunction8F769235"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryListEffectsDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/queryListEffectsResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.listEffects"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationcreateEffectinit0Function/MutationcreateEffectinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateEffectinit0FunctionMutationcreateEffectinit0FunctionAppSyncFunctionA4E4C52F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateEffectinit0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationcreateEffectauth0Function/MutationcreateEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateEffectauth0FunctionMutationcreateEffectauth0FunctionAppSyncFunctionF263AF1C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationcreateEffectpostAuth0Function/MutationcreateEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateEffectpostAuth0FunctionMutationcreateEffectpostAuth0FunctionAppSyncFunctionF67AE272"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationCreateEffectDataResolverFn/MutationCreateEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationCreateEffectDataResolverFnMutationCreateEffectDataResolverFnAppSyncFunction7DF006A5"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationCreateEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/mutationCreateEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreateEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.createEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationupdateEffectinit0Function/MutationupdateEffectinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateEffectinit0FunctionMutationupdateEffectinit0FunctionAppSyncFunction28719A59"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateEffectinit0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationupdateEffectauth0Function/MutationupdateEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateEffectauth0FunctionMutationupdateEffectauth0FunctionAppSyncFunction16C3E935"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationupdateEffectpostAuth0Function/MutationupdateEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateEffectpostAuth0FunctionMutationupdateEffectpostAuth0FunctionAppSyncFunction344D1E69"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationUpdateEffectDataResolverFn/MutationUpdateEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationUpdateEffectDataResolverFnMutationUpdateEffectDataResolverFnAppSyncFunctionEA77992C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationUpdateEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/mutationUpdateEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UpdateEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.updateEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationdeleteEffectauth0Function/MutationdeleteEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteEffectauth0FunctionMutationdeleteEffectauth0FunctionAppSyncFunctionD6C4CB77"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationdeleteEffectpostAuth0Function/MutationdeleteEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteEffectpostAuth0FunctionMutationdeleteEffectpostAuth0FunctionAppSyncFunction5ECC47EB"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/MutationDeleteEffectDataResolverFn/MutationDeleteEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationDeleteEffectDataResolverFnMutationDeleteEffectDataResolverFnAppSyncFunction63DD039C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationDeleteEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/mutationDeleteEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeleteEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.deleteEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptiononCreateEffectauth0Function/SubscriptiononCreateEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateEffectauth0FunctionSubscriptiononCreateEffectauth0FunctionAppSyncFunctionED02A701"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptiononCreateEffectpostAuth0Function/SubscriptiononCreateEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateEffectpostAuth0FunctionSubscriptiononCreateEffectpostAuth0FunctionAppSyncFunctionA50CAEEA"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptionOnCreateEffectDataResolverFn/SubscriptionOnCreateEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnCreateEffectDataResolverFnSubscriptionOnCreateEffectDataResolverFnAppSyncFunction356F3708"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnCreateEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/subscriptionOnCreateEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onCreateEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptiononUpdateEffectauth0Function/SubscriptiononUpdateEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateEffectauth0FunctionSubscriptiononUpdateEffectauth0FunctionAppSyncFunction65F7D99E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptiononUpdateEffectpostAuth0Function/SubscriptiononUpdateEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateEffectpostAuth0FunctionSubscriptiononUpdateEffectpostAuth0FunctionAppSyncFunctionF6D4748D"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptionOnUpdateEffectDataResolverFn/SubscriptionOnUpdateEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnUpdateEffectDataResolverFnSubscriptionOnUpdateEffectDataResolverFnAppSyncFunction4B1174BD"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnUpdateEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/subscriptionOnUpdateEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onUpdateEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptiononDeleteEffectauth0Function/SubscriptiononDeleteEffectauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteEffectauth0FunctionSubscriptiononDeleteEffectauth0FunctionAppSyncFunction98608273"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteEffectauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptiononDeleteEffectpostAuth0Function/SubscriptiononDeleteEffectpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteEffectpostAuth0FunctionSubscriptiononDeleteEffectpostAuth0FunctionAppSyncFunctionF359D1D1"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteEffectpostAuth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/SubscriptionOnDeleteEffectDataResolverFn/SubscriptionOnDeleteEffectDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnDeleteEffectDataResolverFnSubscriptionOnDeleteEffectDataResolverFnAppSyncFunction1B4B1845"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnDeleteEffectDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/subscriptionOnDeleteEffectResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteEffectResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onDeleteEffect"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceCFE1F0D3Outputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventEAD6B42EArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceCFE1F0D3Outputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataAmplifyTableManagerTableManagerCustomPro9EC4530E"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPI4AF51BEBApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPI4AF51BEBApiId"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPINONEDS0B6420F8Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPINONEDS0B6420F8Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthauthenticatedUserRoleE4BDBD6BRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthauthenticatedUserRoleE4BDBD6BRef"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthunauthenticatedUserRoleEACE3A58Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthunauthenticatedUserRoleEACE3A58Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Effect.NestedStack/Effect.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataEffectNestedStackEffectNestedStackResource5C44F842"
           }
         ],
         "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Move/DynamoDBModelTableReadIOPS": [
@@ -1389,6 +2429,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Move/amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveDataSource457FEB46Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveDataSource457FEB46Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Move/amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveTable2E19A654TableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveTable2E19A654TableArn"
           }
         ],
         "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/Move.NestedStack/Move.NestedStackResource": [
@@ -1933,6 +2985,210 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "amplifyDataPostNestedStackPostNestedStackResourceB65AFCD3"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/Charactermovesauth0Function/Charactermovesauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Charactermovesauth0FunctionCharactermovesauth0FunctionAppSyncFunction024840DD"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Charactermovesauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/CharacterMovesDataResolverFn/CharacterMovesDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CharacterMovesDataResolverFnCharacterMovesDataResolverFnAppSyncFunction14FA892E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "CharacterMovesDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/characterMovesResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CharactermovesResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Character.moves"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/MoveCategorymovesauth0Function/MoveCategorymovesauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategorymovesauth0FunctionMoveCategorymovesauth0FunctionAppSyncFunction7F2A3E5B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategorymovesauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/MoveCategoryMovesDataResolverFn/MoveCategoryMovesDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategoryMovesDataResolverFnMoveCategoryMovesDataResolverFnAppSyncFunction11A334A9"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategoryMovesDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/moveCategoryMovesResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategorymovesResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategory.moves"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/Movecharacterauth0Function/Movecharacterauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Movecharacterauth0FunctionMovecharacterauth0FunctionAppSyncFunction6FCA509E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Movecharacterauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/MoveCharacterDataResolverFn/MoveCharacterDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCharacterDataResolverFnMoveCharacterDataResolverFnAppSyncFunctionCC35C5E1"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCharacterDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/moveCharacterResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MovecharacterResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Move.character"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/Movecategoryauth0Function/Movecategoryauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Movecategoryauth0FunctionMovecategoryauth0FunctionAppSyncFunction89A0ECC7"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Movecategoryauth0Function"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/MoveCategoryDataResolverFn/MoveCategoryDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MoveCategoryDataResolverFnMoveCategoryDataResolverFnAppSyncFunction8CCAA358"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MoveCategoryDataResolverFn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/moveCategoryResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MovecategoryResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Move.category"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPI4AF51BEBApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPI4AF51BEBApiId"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPINONEDS0B6420F8Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataGraphQLAPINONEDS0B6420F8Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveNestedStackMoveNestedStackResource9504EFDBOutputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveDataSource457FEB46Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveNestedStackMoveNestedStackResource9504EFDBOutputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveDataSource457FEB46Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveNestedStackMoveNestedStackResource9504EFDBOutputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveTable2E19A654TableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveNestedStackMoveNestedStackResource9504EFDBOutputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveMoveTable2E19A654TableArn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthauthenticatedUserRoleE4BDBD6BRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthauthenticatedUserRoleE4BDBD6BRef"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthunauthenticatedUserRoleEACE3A58Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthunauthenticatedUserRoleEACE3A58Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputs.amplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72authNestedStackauthNestedStackResource3B07A35EOutputsamplifynehanchanflutesandbox85ba319a72authamplifyAuthIdentityPoolEF8EA1C8Ref"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterNestedStackCharacterNestedStackResource2CEA2BFDOutputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterDataSource3C6714F2Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterNestedStackCharacterNestedStackResource2CEA2BFDOutputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterDataSource3C6714F2Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterNestedStackCharacterNestedStackResource2CEA2BFDOutputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterTableD4A55EB0TableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterNestedStackCharacterNestedStackResource2CEA2BFDOutputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataCharacterCharacterTableD4A55EB0TableArn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryNestedStackMoveCategoryNestedStackResource49728799Outputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryDataSource565580A1Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryNestedStackMoveCategoryNestedStackResource49728799Outputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryDataSource565580A1Name"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack/reference-to-amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryNestedStackMoveCategoryNestedStackResource49728799Outputs.amplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryTableA46940ECTableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryNestedStackMoveCategoryNestedStackResource49728799Outputsamplifynehanchanflutesandbox85ba319a72dataamplifyDataMoveCategoryMoveCategoryTableA46940ECTableArn"
+          }
+        ],
+        "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/ConnectionStack.NestedStack/ConnectionStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataConnectionStackNestedStackConnectionStackNestedStackResourceAB0F312B"
           }
         ],
         "/amplify-nehanchan-flute-sandbox-85ba319a72/data/amplifyData/AuthRolePolicy01/Resource": [

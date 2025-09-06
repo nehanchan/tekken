@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { client } from '@/lib/client';
 import CommandDisplay from '@/components/CommandDisplay';
-import FrameAdvantage from '@/components/FrameAdvantage';
 import type { Character, MoveCategory, Move } from '@/types';
 
 export default function CharacterDetailPage() {
@@ -225,6 +224,13 @@ export default function CharacterDetailPage() {
                             </td>
                             <td className="border border-gray-600 px-3 py-3 text-center text-sm">
                               {move.attribute || '-'}
+                            </td>
+                            <td className="border border-gray-600 px-4 py-3 text-center text-sm">
+                              <EffectDisplay 
+                                effectIds={move.effects} 
+                                size="sm"
+                                showTooltip={true}
+                              />
                             </td>
                             <td className="border border-gray-600 px-6 py-3 text-sm">
                               {move.notes && move.notes.length > 0 ? (

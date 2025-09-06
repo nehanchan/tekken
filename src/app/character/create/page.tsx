@@ -25,14 +25,31 @@ export default function CreateCharacterPage() {
       ]);
       
       // null要素をフィルタリング
-      const validCharacters = (charactersResult.data || []).filter(c => c !== null);
-      const validCategories = (categoriesResult.data || []).filter(c => c !== null);
+      const allCharacters = (charactersResult.data || []).filter(c => c !== null);
+      const allCategories = (categoriesResult.data || []).filter(c => c !== null);
       
-      console.log('キャラクター:', validCharacters);
-      console.log('技分類:', validCategories);
+      // 重複除去（Mapを使用したより安全な方法）
+      const characterMap = new Map<string, Character>();
+      allCharacters.forEach(char => {
+        if (char.characterId && !characterMap.has(char.characterId)) {
+          characterMap.set(char.characterId, char);
+        }
+      });
+      const uniqueCharacters = Array.from(characterMap.values());
       
-      setCharacters(validCharacters);
-      setCategories(validCategories);
+      const categoryMap = new Map<string, MoveCategory>();
+      allCategories.forEach(cat => {
+        if (cat.categoryName && !categoryMap.has(cat.categoryName)) {
+          categoryMap.set(cat.categoryName, cat);
+        }
+      });
+      const uniqueCategories = Array.from(categoryMap.values());
+      
+      console.log('キャラクター（重複除去後）:', uniqueCharacters);
+      console.log('技分類（重複除去後）:', uniqueCategories);
+      
+      setCharacters(uniqueCharacters);
+      setCategories(uniqueCategories);
     } catch (error) {
       console.error('データ取得エラー:', error);
     } finally {
@@ -50,6 +67,8 @@ export default function CreateCharacterPage() {
   const handleCategoryToggle = async (categoryId: string) => {
     if (!selectedCharacter) return;
     
+    console.log('技分類トグル:', categoryId, selectedCharacter.characterId);
+    
     const isSelected = selectedCategories.includes(categoryId);
     
     if (isSelected) {
@@ -63,6 +82,11 @@ export default function CreateCharacterPage() {
       setSelectedCategories(prev => [...prev, categoryId]);
       
       try {
+        console.log('技データ検索条件:', {
+          characterId: selectedCharacter.characterId,
+          categoryId: categoryId
+        });
+        
         const { data: moves } = await client.models.Move.list({
           filter: {
             and: [
@@ -73,13 +97,24 @@ export default function CreateCharacterPage() {
           authMode: 'apiKey'
         });
         
+        console.log('取得した技データ:', moves);
+        
         // null要素をフィルタリング
         const validMoves = (moves || []).filter(m => m !== null);
+        console.log('有効な技データ:', validMoves.length, '件');
         
         setCategoryMoves(prev => ({
           ...prev,
           [categoryId]: validMoves
         }));
+        
+        // デバッグ：全技データも確認
+        const { data: allMoves } = await client.models.Move.list({
+          filter: { characterId: { eq: selectedCharacter.characterId } },
+          authMode: 'apiKey'
+        });
+        console.log('キャラクターの全技:', allMoves?.filter(m => m !== null).length, '件');
+        
       } catch (error) {
         console.error('技データ取得エラー:', error);
       }
@@ -109,8 +144,8 @@ export default function CreateCharacterPage() {
           defaultValue=""
         >
           <option value="">キャラクターを選択してください</option>
-          {characters.map(character => character && character.characterId && (
-            <option key={character.characterId} value={character.characterId}>
+          {characters.map((character, index) => character && character.characterId && (
+            <option key={`char-${character.id || index}`} value={character.characterId}>
               {character.characterId} - {character.name}
             </option>
           ))}
@@ -143,8 +178,8 @@ export default function CreateCharacterPage() {
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">2. 技分類選択（複数選択可）</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map(category => category && (
-              <label key={category.id} className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            {categories.map((category, index) => category && (
+              <label key={`category-${category.id || index}`} className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
                 <input
                   type="checkbox"
                   checked={selectedCategories.includes(category.id)}
@@ -161,12 +196,12 @@ export default function CreateCharacterPage() {
       {/* 選択された技分類の技一覧 */}
       {selectedCategories.length > 0 && (
         <div className="mb-8 space-y-6">
-          {selectedCategories.map(categoryId => {
+          {selectedCategories.map((categoryId, categoryIndex) => {
             const category = categories.find(c => c && c.id === categoryId);
             const moves = categoryMoves[categoryId] || [];
             
             return (
-              <div key={categoryId} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+              <div key={`selected-category-${categoryId || categoryIndex}`} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
                   <h3 className="text-lg font-semibold text-white">
                     {category?.categoryName} ({moves.length}件)
@@ -176,8 +211,8 @@ export default function CreateCharacterPage() {
                 <div className="p-4 bg-white">
                   {moves.length > 0 ? (
                     <div className="space-y-4">
-                      {moves.map(move => move && (
-                        <div key={move.id} className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
+                      {moves.map((move, moveIndex) => move && (
+                        <div key={`move-${move.id || `${categoryId}-${moveIndex}`}`} className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
                               <p className="font-semibold text-lg text-gray-900">{move.name}</p>
@@ -200,8 +235,8 @@ export default function CreateCharacterPage() {
                             <div className="mt-4 pt-4 border-t border-gray-100">
                               <p className="text-sm font-medium text-gray-700 mb-2">備考:</p>
                               <div className="space-y-1">
-                                {move.notes.map((note, index) => (
-                                  <div key={index} className="flex items-start">
+                                {move.notes.map((note, noteIndex) => (
+                                  <div key={`note-${move.id || moveIndex}-${noteIndex}`} className="flex items-start">
                                     <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                                     <span className="text-sm text-gray-600">{note}</span>
                                   </div>

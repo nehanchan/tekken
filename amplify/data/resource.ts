@@ -1,19 +1,20 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  // キャラクターマスタ
+  // キャラクターマスタ（更新版）
   Character: a
     .model({
-      characterId: a.string().required(),  // "001", "002" 形式
-      name: a.string().required(),         // キャラクター名 (64文字)
-      nameKana: a.string(),               // キャラクター名カナ (64文字)
-      title: a.string(),                  // キャラクター称号名 (64文字)
-      height: a.integer(),                // 身長 (5桁数値)
-      weight: a.integer(),                // 体重 (5桁数値)
-      nationality: a.string(),            // 国籍 (32文字)
-      description: a.string(),            // 紹介文 (1024文字)
+      character_id: a.string().required(),       // "001", "002" 形式
+      character_name_en: a.string().required(),  // 英語キャラクター名 (64文字)
+      character_name_jp: a.string(),             // 日本語キャラクター名 (64文字)
+      nickname: a.string(),                      // ニックネーム・称号 (64文字)
+      height: a.integer(),                       // 身長 (5桁数値)
+      weight: a.integer(),                       // 体重 (5桁数値)
+      nationality: a.string(),                   // 国籍 (32文字)
+      martial_arts: a.string(),                  // 格闘技・流派 (32文字)
+      character_description: a.string(),         // キャラクター説明 (1024文字)
       
-      moves: a.hasMany('Move', 'characterId'),
+      moves: a.hasMany('Move', 'character_id'),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
@@ -52,7 +53,7 @@ const schema = a.schema({
   .model({
     moveId: a.string().required(),       // No
     characterMoveId: a.integer(),        
-    characterId: a.string().required(),  
+    character_id: a.string().required(),  // characterId → character_id に変更
     categoryId: a.id(),                  
     name: a.string().required(),         // 技名
     nameKana: a.string(),               
@@ -68,7 +69,7 @@ const schema = a.schema({
     effects: a.string().array(),         
     notes: a.string().array(),           // 備考
     
-    character: a.belongsTo('Character', 'characterId'),
+    character: a.belongsTo('Character', 'character_id'),
     category: a.belongsTo('MoveCategory', 'categoryId'),
   })
     .authorization((allow) => [
@@ -83,7 +84,7 @@ const schema = a.schema({
       title: a.string().required(),
       content: a.string().required(),
       author: a.string().required(),
-      characterId: a.string(),
+      character_id: a.string(),  // characterId → character_id に変更
       likes: a.integer().default(0),
     })
     .authorization((allow) => [

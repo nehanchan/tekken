@@ -47,29 +47,29 @@
               "isRequired": true,
               "attributes": []
             },
-            "characterId": {
-              "name": "characterId",
+            "character_id": {
+              "name": "character_id",
               "isArray": false,
               "type": "String",
               "isRequired": true,
               "attributes": []
             },
-            "name": {
-              "name": "name",
+            "character_name_en": {
+              "name": "character_name_en",
               "isArray": false,
               "type": "String",
               "isRequired": true,
               "attributes": []
             },
-            "nameKana": {
-              "name": "nameKana",
+            "character_name_jp": {
+              "name": "character_name_jp",
               "isArray": false,
               "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "title": {
-              "name": "title",
+            "nickname": {
+              "name": "nickname",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -96,8 +96,15 @@
               "isRequired": false,
               "attributes": []
             },
-            "description": {
-              "name": "description",
+            "martial_arts": {
+              "name": "martial_arts",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "character_description": {
+              "name": "character_description",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -115,7 +122,7 @@
               "association": {
                 "connectionType": "HAS_MANY",
                 "associatedWith": [
-                  "characterId"
+                  "character_id"
                 ]
               }
             },
@@ -399,8 +406,8 @@
               "isRequired": false,
               "attributes": []
             },
-            "characterId": {
-              "name": "characterId",
+            "character_id": {
+              "name": "character_id",
               "isArray": false,
               "type": "String",
               "isRequired": true,
@@ -510,7 +517,7 @@
               "association": {
                 "connectionType": "BELONGS_TO",
                 "targetNames": [
-                  "characterId"
+                  "character_id"
                 ]
               }
             },
@@ -624,8 +631,8 @@
               "isRequired": true,
               "attributes": []
             },
-            "characterId": {
-              "name": "characterId",
+            "character_id": {
+              "name": "character_id",
               "isArray": false,
               "type": "String",
               "isRequired": false,

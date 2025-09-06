@@ -1017,7 +1017,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "MutationcreatePostauth0Function",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ff55599bc86d598ed596df969c6e41448db51f1e425c864f2447539506469fb.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b38dd89ccfeb4f9aeec15afcc41f7b198808391300027d9241c311db5613424.vtl"
     },
     "ResponseMappingTemplate": "$util.toJson({})"
    },
@@ -1237,7 +1237,7 @@
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
     },
     "ResponseMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4dbd60b2c8e1a79df7bce3cf0df48109f482f3009576b0213fba26b3195e3bc1.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8341f1236a1d0bd2babf8eb677887595cf95c6f678c2caab5b6c71de526d608.vtl"
     }
    },
    "DependsOn": [

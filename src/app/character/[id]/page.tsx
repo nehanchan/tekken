@@ -6,15 +6,60 @@ import { useParams } from 'next/navigation';
 import { client } from '@/lib/client';
 import CommandDisplay from '@/components/CommandDisplay';
 import FrameAdvantage from '@/components/FrameAdvantage';
-import type { Character, MoveCategory, Move } from '@/types';
+import EffectDisplay from '@/components/EffectDisplay';
+
+// 明示的な型定義
+interface CharacterData {
+  id: string;
+  character_id: string;
+  character_name_en: string;
+  character_name_jp?: string | null;
+  nickname?: string | null;
+  nationality?: string | null;
+  height?: string | null;
+  weight?: string | null;
+  martial_arts?: string | null;
+  character_description?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface MoveCategoryData {
+  id: string;
+  move_category_id: string;
+  move_category: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface MoveData {
+  id: string;
+  moveId: string;
+  character_id: string;
+  move_category_id?: string | null;
+  name: string;
+  nameKana?: string | null;
+  command?: string | null;
+  damage?: number | null;
+  startupFrame?: number | null;
+  activeFrame?: string | null;
+  hitFrame?: string | null;
+  blockFrame?: string | null;
+  attribute?: string | null;
+  judgment?: string | null;
+  effects?: (string | null)[] | null;
+  notes?: (string | null)[] | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export default function CharacterDetailPage() {
   const params = useParams();
   const characterId = params.id as string;
   
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [categories, setCategories] = useState<MoveCategory[]>([]);
-  const [movesByCategory, setMovesByCategory] = useState<{[key: string]: Move[]}>({});
+  const [character, setCharacter] = useState<CharacterData | null>(null);
+  const [categories, setCategories] = useState<MoveCategoryData[]>([]);
+  const [movesByCategory, setMovesByCategory] = useState<{[key: string]: MoveData[]}>({});
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
@@ -27,45 +72,45 @@ export default function CharacterDetailPage() {
     try {
       // キャラクター情報取得
       const { data: characters } = await client.models.Character.list({
-        filter: { characterId: { eq: characterId } },
+        filter: { character_id: { eq: characterId } },
         authMode: 'apiKey'
       });
       
-      const validCharacters = (characters || []).filter(c => c !== null);
+      const validCharacters = (characters || []).filter(c => c !== null) as CharacterData[];
       
       if (validCharacters[0]) {
         setCharacter(validCharacters[0]);
         
         // キャラクターの全技取得
         const { data: moves } = await client.models.Move.list({
-          filter: { characterId: { eq: characterId } },
+          filter: { character_id: { eq: characterId } },
           authMode: 'apiKey'
         });
         
-        const validMoves = (moves || []).filter(m => m !== null);
+        const validMoves = (moves || []).filter(m => m !== null) as MoveData[];
         
         // 技分類取得
         const { data: allCategories } = await client.models.MoveCategory.list({
           authMode: 'apiKey'
         });
         
-        const validCategories = (allCategories || []).filter(c => c !== null);
+        const validCategories = (allCategories || []).filter(c => c !== null) as MoveCategoryData[];
         
         // 技分類別にグループ化
-        const grouped: {[key: string]: Move[]} = {};
-        const usedCategories: MoveCategory[] = [];
+        const grouped: {[key: string]: MoveData[]} = {};
+        const usedCategories: MoveCategoryData[] = [];
         
         for (const move of validMoves) {
-          const categoryId = move.categoryId;
-          if (categoryId) {
-            if (!grouped[categoryId]) {
-              grouped[categoryId] = [];
-              const category = validCategories.find(c => c.id === categoryId);
+          const move_category_id = move.move_category_id;
+          if (move_category_id) {
+            if (!grouped[move_category_id]) {
+              grouped[move_category_id] = [];
+              const category = validCategories.find(c => c.id === move_category_id);
               if (category && !usedCategories.find(uc => uc.id === category.id)) {
                 usedCategories.push(category);
               }
             }
-            grouped[categoryId].push(move);
+            grouped[move_category_id].push(move);
           }
         }
         
@@ -113,31 +158,50 @@ export default function CharacterDetailPage() {
           <span className="mx-2">›</span>
           <a href="/character/create" className="hover:text-blue-600">キャラクター作成</a>
           <span className="mx-2">›</span>
-          <span>{character.name}</span>
+          <span>{character.character_name_jp || character.character_name_en}</span>
         </nav>
       </div>
 
       {/* キャラクター情報表示 */}
       <div className="mb-8 bg-gradient-to-r from-blue-50 to-blue-100 p-8 rounded-lg shadow-lg">
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-blue-900 mb-2">{character.name}</h1>
-          <p className="text-lg text-blue-700">{character.nameKana}</p>
-          <p className="text-xl text-blue-800 font-semibold">{character.title}</p>
+          <h1 className="text-4xl font-bold text-blue-900 mb-2">
+            {character.character_name_jp || character.character_name_en}
+          </h1>
+          <p className="text-lg text-blue-700">
+            {character.character_name_en}
+          </p>
+          {character.nickname && (
+            <p className="text-xl text-blue-800 font-semibold">
+              {character.nickname}
+            </p>
+          )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="font-semibold text-gray-700 mb-2">基本情報</h3>
-            <p className="text-sm text-gray-600">身長: {character.height}cm</p>
-            <p className="text-sm text-gray-600">体重: {character.weight}kg</p>
-            <p className="text-sm text-gray-600">国籍: {character.nationality}</p>
+            <p className="text-sm text-gray-600">
+              身長: {character.height || '未設定'}
+            </p>
+            <p className="text-sm text-gray-600">
+              体重: {character.weight || '未設定'}
+            </p>
+            <p className="text-sm text-gray-600">
+              国籍: {character.nationality || '未設定'}
+            </p>
+            {character.martial_arts && (
+              <p className="text-sm text-gray-600">
+                格闘技: {character.martial_arts}
+              </p>
+            )}
           </div>
         </div>
         
-        {character.description && (
+        {character.character_description && (
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="font-semibold text-gray-700 mb-3">キャラクター紹介</h3>
-            <p className="text-gray-600 leading-relaxed">{character.description}</p>
+            <p className="text-gray-600 leading-relaxed">{character.character_description}</p>
           </div>
         )}
       </div>
@@ -158,7 +222,7 @@ export default function CharacterDetailPage() {
                   className="w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors"
                 >
                   <span className="font-semibold text-gray-800">
-                    {category.categoryName} ({moves.length}個の技)
+                    {category.move_category} ({moves.length}個の技)
                   </span>
                   <span className={`transform transition-transform ${isSelected ? 'rotate-180' : ''}`}>
                     ▼
@@ -180,11 +244,12 @@ export default function CharacterDetailPage() {
                           <th className="border border-gray-300 px-3 py-3 text-sm font-medium">ヒット時硬直差</th>
                           <th className="border border-gray-300 px-3 py-3 text-sm font-medium">ガード時硬直差</th>
                           <th className="border border-gray-300 px-3 py-3 text-sm font-medium">属性</th>
+                          <th className="border border-gray-300 px-6 py-3 text-sm font-medium">エフェクト</th>
                           <th className="border border-gray-300 px-6 py-3 text-sm font-medium">備考</th>
                         </tr>
                       </thead>
                       <tbody className="bg-black text-white">
-                        {moves.map((move, index) => move && (
+                        {moves.map((move, index) => (
                           <tr key={move.id} className="hover:bg-red-900 hover:bg-opacity-20">
                             <td className="border border-gray-600 px-2 py-3 text-center text-sm">
                               {index + 1}
@@ -226,12 +291,22 @@ export default function CharacterDetailPage() {
                             <td className="border border-gray-600 px-3 py-3 text-center text-sm">
                               {move.attribute || '-'}
                             </td>
+                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
+                              <EffectDisplay 
+                                effectIds={move.effects || []} 
+                                size="sm"
+                                showTooltip={true}
+                              />
+                            </td>
                             <td className="border border-gray-600 px-6 py-3 text-sm">
                               {move.notes && move.notes.length > 0 ? (
                                 <div className="space-y-1">
-                                  {move.notes.map((note, noteIndex) => (
-                                    <div key={noteIndex} className="text-xs">{note}</div>
-                                  ))}
+                                  {move.notes
+                                    .filter((note): note is string => note !== null && note !== undefined)
+                                    .map((note, noteIndex) => (
+                                      <div key={noteIndex} className="text-xs">{note}</div>
+                                    ))
+                                  }
                                 </div>
                               ) : '-'}
                             </td>

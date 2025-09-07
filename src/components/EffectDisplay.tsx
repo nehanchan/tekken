@@ -4,7 +4,7 @@
 import React from 'react';
 
 interface EffectDisplayProps {
-  effectIds?: (string | number)[];
+  effectIds?: (string | number | null | undefined)[] | null | undefined;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   showTooltip?: boolean;
@@ -95,19 +95,23 @@ function getEffectDescription(effectId: string): string {
 }
 
 export default function EffectDisplay({ 
-  effectIds = [], 
+  effectIds, 
   size = 'md', 
   className = '',
   showTooltip = true 
 }: EffectDisplayProps) {
   // 空またはnullの場合
-  if (!effectIds || effectIds.length === 0) {
+  if (!effectIds || !Array.isArray(effectIds) || effectIds.length === 0) {
     return <span className={`text-gray-400 text-sm ${className}`}>-</span>;
   }
 
   // 有効なエフェクトIDのみをフィルタリング
   const validEffectIds = effectIds
-    .filter(id => id !== null && id !== undefined && String(id).trim() !== '')
+    .filter((id): id is string | number => 
+      id !== null && 
+      id !== undefined && 
+      String(id).trim() !== ''
+    )
     .map(id => String(id).trim());
 
   if (validEffectIds.length === 0) {
@@ -146,20 +150,31 @@ export default function EffectDisplay({
 }
 
 // より詳細な表示用コンポーネント
-interface EffectDisplayDetailedProps extends EffectDisplayProps {
+interface EffectDisplayDetailedProps {
+  effectIds?: (string | number | null | undefined)[] | null | undefined;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
   showNames?: boolean;
   layout?: 'horizontal' | 'vertical';
 }
 
 export function EffectDisplayDetailed({ 
-  effectIds = [], 
+  effectIds, 
   size = 'md',
   className = '',
   showNames = false,
   layout = 'horizontal'
 }: EffectDisplayDetailedProps) {
+  if (!effectIds || !Array.isArray(effectIds) || effectIds.length === 0) {
+    return <span className="text-gray-400 text-sm">エフェクトなし</span>;
+  }
+
   const validEffectIds = effectIds
-    .filter(id => id !== null && id !== undefined && String(id).trim() !== '')
+    .filter((id): id is string | number => 
+      id !== null && 
+      id !== undefined && 
+      String(id).trim() !== ''
+    )
     .map(id => String(id).trim());
 
   if (validEffectIds.length === 0) {

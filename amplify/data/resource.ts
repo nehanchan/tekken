@@ -1,18 +1,19 @@
+// amplify/data/resource.ts
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  // キャラクターマスタ（更新版）
+  // キャラクターマスタ（height/weight文字列対応版）
   Character: a
     .model({
-      character_id: a.string().required(),       // "001", "002" 形式
-      character_name_en: a.string().required(),  // 英語キャラクター名 (64文字)
-      character_name_jp: a.string(),             // 日本語キャラクター名 (64文字)
-      nickname: a.string(),                      // ニックネーム・称号 (64文字)
-      height: a.integer(),                       // 身長 (5桁数値)
-      weight: a.integer(),                       // 体重 (5桁数値)
-      nationality: a.string(),                   // 国籍 (32文字)
-      martial_arts: a.string(),                  // 格闘技・流派 (32文字)
-      character_description: a.string(),         // キャラクター説明 (1024文字)
+      character_id: a.string().required(),        // "001", "002" 形式
+      character_name_en: a.string().required(),   // 英語キャラクター名 (64文字)
+      character_name_jp: a.string(),              // 日本語キャラクター名 (64文字)
+      nickname: a.string(),                       // ニックネーム・称号 (64文字)
+      height: a.string(),                         // 身長（文字列）例: "180cm", "不明"
+      weight: a.string(),                         // 体重（文字列）例: "75kg", "不明"
+      nationality: a.string(),                    // 国籍 (32文字)
+      martial_arts: a.string(),                   // 格闘技・流派 (32文字)
+      character_description: a.string(),          // キャラクター説明 (1024文字)
       
       moves: a.hasMany('Move', 'character_id'),
     })
@@ -22,11 +23,11 @@ const schema = a.schema({
       allow.authenticated().to(['create', 'read', 'update', 'delete']),
     ]),
 
-  // 技分類マスタ
+  // 技分類マスタ（更新版）
   MoveCategory: a
     .model({
-      categoryId: a.id(),                  // ユニークキー
-      categoryName: a.string().required(), // 技分類（32文字）
+      move_category_id: a.id().required(),    // カテゴリID（必須）
+      move_category: a.string().required(),   // 技分類名（必須）
       
       moves: a.hasMany('Move', 'categoryId'),
     })
@@ -70,7 +71,7 @@ const schema = a.schema({
     notes: a.string().array(),           // 備考
     
     character: a.belongsTo('Character', 'character_id'),
-    category: a.belongsTo('MoveCategory', 'categoryId'),
+    category: a.belongsTo('MoveCategory', 'move_category_id'),
   })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),

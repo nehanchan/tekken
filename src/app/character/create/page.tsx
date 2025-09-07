@@ -1,15 +1,60 @@
+// src/app/character/create/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { client } from '@/lib/client';
-import type { Character, MoveCategory, Move } from '@/types';
+
+// 明示的な型定義
+interface CharacterData {
+  id: string;
+  character_id: string;
+  character_name_en: string;
+  character_name_jp?: string | null;
+  nickname?: string | null;
+  nationality?: string | null;
+  height?: string | null;
+  weight?: string | null;
+  martial_arts?: string | null;
+  character_description?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface MoveCategoryData {
+  id: string;
+  move_category_id: string;
+  move_category: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface MoveData {
+  id: string;
+  moveId: string;
+  character_id: string;
+  move_category_id?: string | null;
+  name: string;
+  nameKana?: string | null;
+  command?: string | null;
+  damage?: number | null;
+  startupFrame?: number | null;
+  activeFrame?: string | null;
+  hitFrame?: string | null;
+  blockFrame?: string | null;
+  attribute?: string | null;
+  judgment?: string | null;
+  effects?: (string | null)[] | null;
+  notes?: (string | null)[] | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export default function CreateCharacterPage() {
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [categories, setCategories] = useState<MoveCategory[]>([]);
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [characters, setCharacters] = useState<CharacterData[]>([]);
+  const [categories, setCategories] = useState<MoveCategoryData[]>([]);
+  const [selectedCharacter, setSelectedCharacter] = useState<CharacterData | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [categoryMoves, setCategoryMoves] = useState<{[key: string]: Move[]}>({});
+  const [categoryMoves, setCategoryMoves] = useState<{[key: string]: MoveData[]}>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,22 +70,22 @@ export default function CreateCharacterPage() {
       ]);
       
       // null要素をフィルタリング
-      const allCharacters = (charactersResult.data || []).filter(c => c !== null);
-      const allCategories = (categoriesResult.data || []).filter(c => c !== null);
+      const allCharacters = (charactersResult.data || []).filter(c => c !== null) as CharacterData[];
+      const allCategories = (categoriesResult.data || []).filter(c => c !== null) as MoveCategoryData[];
       
       // 重複除去（Mapを使用したより安全な方法）
-      const characterMap = new Map<string, Character>();
+      const characterMap = new Map<string, CharacterData>();
       allCharacters.forEach(char => {
-        if (char.characterId && !characterMap.has(char.characterId)) {
-          characterMap.set(char.characterId, char);
+        if (char.character_id && !characterMap.has(char.character_id)) {
+          characterMap.set(char.character_id, char);
         }
       });
       const uniqueCharacters = Array.from(characterMap.values());
       
-      const categoryMap = new Map<string, MoveCategory>();
+      const categoryMap = new Map<string, MoveCategoryData>();
       allCategories.forEach(cat => {
-        if (cat.categoryName && !categoryMap.has(cat.categoryName)) {
-          categoryMap.set(cat.categoryName, cat);
+        if (cat.move_category && !categoryMap.has(cat.move_category)) {
+          categoryMap.set(cat.move_category, cat);
         }
       });
       const uniqueCategories = Array.from(categoryMap.values());
@@ -58,40 +103,40 @@ export default function CreateCharacterPage() {
   };
 
   const handleCharacterSelect = async (characterId: string) => {
-    const character = characters.find(c => c && c.characterId === characterId);
+    const character = characters.find(c => c && c.character_id === characterId);
     setSelectedCharacter(character || null);
     setSelectedCategories([]);
     setCategoryMoves({});
   };
 
-  const handleCategoryToggle = async (categoryId: string) => {
+  const handleCategoryToggle = async (move_category_id: string) => {
     if (!selectedCharacter) return;
     
-    console.log('技分類トグル:', categoryId, selectedCharacter.characterId);
+    console.log('技分類トグル:', move_category_id, selectedCharacter.character_id);
     
-    const isSelected = selectedCategories.includes(categoryId);
+    const isSelected = selectedCategories.includes(move_category_id);
     
     if (isSelected) {
-      setSelectedCategories(prev => prev.filter(id => id !== categoryId));
+      setSelectedCategories(prev => prev.filter(id => id !== move_category_id));
       setCategoryMoves(prev => {
         const updated = { ...prev };
-        delete updated[categoryId];
+        delete updated[move_category_id];
         return updated;
       });
     } else {
-      setSelectedCategories(prev => [...prev, categoryId]);
+      setSelectedCategories(prev => [...prev, move_category_id]);
       
       try {
         console.log('技データ検索条件:', {
-          characterId: selectedCharacter.characterId,
-          categoryId: categoryId
+          character_id: selectedCharacter.character_id,
+          move_category_id: move_category_id
         });
         
         const { data: moves } = await client.models.Move.list({
           filter: {
             and: [
-              { characterId: { eq: selectedCharacter.characterId } },
-              { categoryId: { eq: categoryId } }
+              { character_id: { eq: selectedCharacter.character_id } },
+              { move_category_id: { eq: move_category_id } }
             ]
           },
           authMode: 'apiKey'
@@ -100,17 +145,17 @@ export default function CreateCharacterPage() {
         console.log('取得した技データ:', moves);
         
         // null要素をフィルタリング
-        const validMoves = (moves || []).filter(m => m !== null);
+        const validMoves = (moves || []).filter(m => m !== null) as MoveData[];
         console.log('有効な技データ:', validMoves.length, '件');
         
         setCategoryMoves(prev => ({
           ...prev,
-          [categoryId]: validMoves
+          [move_category_id]: validMoves
         }));
         
         // デバッグ：全技データも確認
         const { data: allMoves } = await client.models.Move.list({
-          filter: { characterId: { eq: selectedCharacter.characterId } },
+          filter: { character_id: { eq: selectedCharacter.character_id } },
           authMode: 'apiKey'
         });
         console.log('キャラクターの全技:', allMoves?.filter(m => m !== null).length, '件');
@@ -123,7 +168,7 @@ export default function CreateCharacterPage() {
 
   const handleCreatePage = () => {
     if (selectedCharacter) {
-      window.location.href = `/character/${selectedCharacter.characterId}`;
+      window.location.href = `/character/${selectedCharacter.character_id}`;
     }
   };
 
@@ -144,9 +189,9 @@ export default function CreateCharacterPage() {
           defaultValue=""
         >
           <option value="">キャラクターを選択してください</option>
-          {characters.map((character, index) => character && character.characterId && (
-            <option key={`char-${character.id || index}`} value={character.characterId}>
-              {character.characterId} - {character.name}
+          {characters.map((character, index) => character && character.character_id && (
+            <option key={`char-${character.id || index}`} value={character.character_id}>
+              {character.character_id} - {character.character_name_jp || character.character_name_en}
             </option>
           ))}
         </select>
@@ -157,17 +202,18 @@ export default function CreateCharacterPage() {
         <div className="mb-8 p-6 border border-gray-200 rounded-lg bg-blue-50">
           <h3 className="text-lg font-semibold mb-4 text-blue-900">キャラクター情報</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <p><span className="font-medium text-gray-700">名前:</span> <span className="text-gray-900">{selectedCharacter.name}</span></p>
-            <p><span className="font-medium text-gray-700">カナ:</span> <span className="text-gray-900">{selectedCharacter.nameKana || '未設定'}</span></p>
-            <p><span className="font-medium text-gray-700">称号:</span> <span className="text-gray-900">{selectedCharacter.title || '未設定'}</span></p>
-            <p><span className="font-medium text-gray-700">身長:</span> <span className="text-gray-900">{selectedCharacter.height ? `${selectedCharacter.height}cm` : '未設定'}</span></p>
-            <p><span className="font-medium text-gray-700">体重:</span> <span className="text-gray-900">{selectedCharacter.weight ? `${selectedCharacter.weight}kg` : '未設定'}</span></p>
+            <p><span className="font-medium text-gray-700">日本語名:</span> <span className="text-gray-900">{selectedCharacter.character_name_jp || '未設定'}</span></p>
+            <p><span className="font-medium text-gray-700">英語名:</span> <span className="text-gray-900">{selectedCharacter.character_name_en || '未設定'}</span></p>
+            <p><span className="font-medium text-gray-700">ニックネーム:</span> <span className="text-gray-900">{selectedCharacter.nickname || '未設定'}</span></p>
+            <p><span className="font-medium text-gray-700">身長:</span> <span className="text-gray-900">{selectedCharacter.height || '未設定'}</span></p>
+            <p><span className="font-medium text-gray-700">体重:</span> <span className="text-gray-900">{selectedCharacter.weight || '未設定'}</span></p>
             <p><span className="font-medium text-gray-700">国籍:</span> <span className="text-gray-900">{selectedCharacter.nationality || '未設定'}</span></p>
+            <p><span className="font-medium text-gray-700">格闘技:</span> <span className="text-gray-900">{selectedCharacter.martial_arts || '未設定'}</span></p>
           </div>
-          {selectedCharacter.description && (
+          {selectedCharacter.character_description && (
             <div className="mt-4">
               <p className="font-medium text-gray-700 mb-1">紹介文:</p>
-              <p className="text-gray-900 leading-relaxed">{selectedCharacter.description}</p>
+              <p className="text-gray-900 leading-relaxed">{selectedCharacter.character_description}</p>
             </div>
           )}
         </div>
@@ -186,7 +232,7 @@ export default function CreateCharacterPage() {
                   onChange={() => handleCategoryToggle(category.id)}
                   className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <span className="text-sm font-medium text-gray-900">{category.categoryName}</span>
+                <span className="text-sm font-medium text-gray-900">{category.move_category}</span>
               </label>
             ))}
           </div>
@@ -196,15 +242,15 @@ export default function CreateCharacterPage() {
       {/* 選択された技分類の技一覧 */}
       {selectedCategories.length > 0 && (
         <div className="mb-8 space-y-6">
-          {selectedCategories.map((categoryId, categoryIndex) => {
-            const category = categories.find(c => c && c.id === categoryId);
-            const moves = categoryMoves[categoryId] || [];
+          {selectedCategories.map((move_category_id, categoryIndex) => {
+            const category = categories.find(c => c && c.id === move_category_id);
+            const moves = categoryMoves[move_category_id] || [];
             
             return (
-              <div key={`selected-category-${categoryId || categoryIndex}`} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+              <div key={`selected-category-${move_category_id || categoryIndex}`} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
                   <h3 className="text-lg font-semibold text-white">
-                    {category?.categoryName} ({moves.length}件)
+                    {category?.move_category} ({moves.length}件)
                   </h3>
                 </div>
                 
@@ -212,7 +258,7 @@ export default function CreateCharacterPage() {
                   {moves.length > 0 ? (
                     <div className="space-y-4">
                       {moves.map((move, moveIndex) => move && (
-                        <div key={`move-${move.id || `${categoryId}-${moveIndex}`}`} className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
+                        <div key={`move-${move.id || `${move_category_id}-${moveIndex}`}`} className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
                               <p className="font-semibold text-lg text-gray-900">{move.name}</p>
@@ -235,47 +281,15 @@ export default function CreateCharacterPage() {
                             <div className="mt-4 pt-4 border-t border-gray-100">
                               <p className="text-sm font-medium text-gray-700 mb-2">備考:</p>
                               <div className="space-y-1">
-                                {move.notes.map((note, noteIndex) => (
-                                  <div key={`note-${move.id || moveIndex}-${noteIndex}`} className="flex items-start">
-                                    <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                    <span className="text-sm text-gray-600">{note}</span>
-                                  </div>
-                                ))}
+                                {move.notes
+                                  .filter((note): note is string => note !== null && note !== undefined)
+                                  .map((note, noteIndex) => (
+                                    <div key={`note-${move.id || moveIndex}-${noteIndex}`} className="flex items-start">
+                                      <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                      <span className="text-sm text-gray-600">{note}</span>
+                                    </div>
+                                  ))
+                                }
                               </div>
                             </div>
                           )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 text-center py-12">該当する技がありません</p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* 作成ボタン */}
-      {selectedCharacter && selectedCategories.length > 0 && (
-        <div className="flex justify-center pt-8 border-t border-gray-200">
-          <button 
-            onClick={handleCreatePage}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors shadow-lg hover:shadow-xl"
-          >
-            キャラクターページ作成
-          </button>
-        </div>
-      )}
-
-      {/* データなしの場合 */}
-      {characters.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">キャラクターデータがありません</p>
-          <p className="text-gray-400 text-sm">マスタデータが正常に投入されているか確認してください</p>
-        </div>
-      )}
-    </div>
-  );
-}

@@ -1,0 +1,67 @@
+type Character @model @auth(rules: [{allow: public, provider: apiKey, operations: [create, read, update, delete]},
+  {allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  character_id: String!
+  character_name_en: String!
+  character_name_jp: String
+  nickname: String
+  height: String
+  weight: String
+  nationality: String
+  martial_arts: String
+  character_description: String
+  moves: [Move] @hasMany(references: ["character_id"])
+}
+
+type MoveCategory @model @auth(rules: [{allow: public, provider: apiKey, operations: [create, read, update, delete]},
+  {allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  categoryId: ID
+  categoryName: String!
+  moves: [Move] @hasMany(references: ["categoryId"])
+}
+
+type Effect @model @auth(rules: [{allow: public, provider: apiKey, operations: [create, read, update, delete]},
+  {allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  effectId: ID
+  imagePath: String!
+}
+
+type Move @model @auth(rules: [{allow: public, provider: apiKey, operations: [create, read, update, delete]},
+  {allow: public, provider: iam, operations: [read]},
+  {allow: private, operations: [create, read, update, delete]}])
+{
+  moveId: String!
+  characterMoveId: Int
+  character_id: String!
+  categoryId: ID
+  name: String!
+  nameKana: String
+  command: String
+  damage: Int
+  startupFrame: Int
+  activeFrame: String
+  hitFrame: String
+  blockFrame: String
+  attribute: String
+  judgment: String
+  effects: [String]
+  notes: [String]
+  character: Character @belongsTo(references: ["character_id"])
+  category: MoveCategory @belongsTo(references: ["categoryId"])
+}
+
+type Post @model @auth(rules: [{allow: public, provider: apiKey, operations: [create, read, update, delete]},
+  {allow: public, provider: iam, operations: [read]},
+  {allow: owner, operations: [create, read, update, delete], ownerField: "owner"}])
+{
+  title: String!
+  content: String!
+  author: String!
+  character_id: String
+  likes: Int @default(value: "0")
+}

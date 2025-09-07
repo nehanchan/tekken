@@ -78,14 +78,14 @@
             "height": {
               "name": "height",
               "isArray": false,
-              "type": "Int",
+              "type": "String",
               "isRequired": false,
               "attributes": []
             },
             "weight": {
               "name": "weight",
               "isArray": false,
-              "type": "Int",
+              "type": "String",
               "isRequired": false,
               "attributes": []
             },
@@ -200,15 +200,15 @@
               "isRequired": true,
               "attributes": []
             },
-            "categoryId": {
-              "name": "categoryId",
+            "move_category_id": {
+              "name": "move_category_id",
               "isArray": false,
               "type": "ID",
-              "isRequired": false,
+              "isRequired": true,
               "attributes": []
             },
-            "categoryName": {
-              "name": "categoryName",
+            "move_category": {
+              "name": "move_category",
               "isArray": false,
               "type": "String",
               "isRequired": true,

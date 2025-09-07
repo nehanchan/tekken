@@ -26,10 +26,10 @@ const schema = a.schema({
   // 技分類マスタ（更新版）
   MoveCategory: a
     .model({
-      move_category_id: a.id().required(),    // カテゴリID（必須）
-      move_category: a.string().required(),   // 技分類名（必須）
+      move_category_id: a.string().required(),    // カテゴリID（必須）
+      move_category: a.string().required(),       // 技分類名（必須）
       
-      moves: a.hasMany('Move', 'categoryId'),
+      moves: a.hasMany('Move', 'move_category_id'),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
@@ -40,8 +40,9 @@ const schema = a.schema({
   // 効果マスタ
   Effect: a
     .model({
-      effectId: a.id(),
-      imagePath: a.string().required(),   // 画像パス (256文字)
+      effect_id: a.id(),
+      image_path: a.string().required(),   // 画像パス (256文字)
+      effect_description: a.string().required(), // 効果説明 (1024文字)
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
@@ -51,28 +52,28 @@ const schema = a.schema({
 
   // 技マスタ
   Move: a
-  .model({
-    moveId: a.string().required(),       // No
-    characterMoveId: a.integer(),        
-    character_id: a.string().required(),  // characterId → character_id に変更
-    categoryId: a.id(),                  
-    name: a.string().required(),         // 技名
-    nameKana: a.string(),               
-    command: a.string(),                 // コマンド（追加）
-    damage: a.integer(),                 // ダメージ（追加）
-    startupFrame: a.integer(),           // 発生F
-    activeFrame: a.string(),             // 持続F 
-    hitFrame: a.string(),                // ヒット時硬直差
-    blockFrame: a.string(),              // ガード時硬直差
-    attribute: a.string(),               // 属性
-    judgment: a.string(),                // 判定（追加）
-    
-    effects: a.string().array(),         
-    notes: a.string().array(),           // 備考
-    
-    character: a.belongsTo('Character', 'character_id'),
-    category: a.belongsTo('MoveCategory', 'move_category_id'),
-  })
+    .model({
+      move_id: a.string().required(),              // No
+      move_num: a.integer(),        
+      character_id: a.string().required(),        // characterId → character_id に変更
+      move_category_id: a.string(),               // categoryId → move_category_id に変更
+      move_name: a.string().required(),                // 技名
+      move_name_kana: a.string(),               
+      command: a.string(),                        // コマンド（追加）
+      // damage: a.integer(),                        // ダメージ（追加）
+      startup_frame: a.integer(),                  // 発生F
+      active_frame: a.string(),                    // 持続F 
+      hit_frame: a.string(),                       // ヒット時硬直差
+      block_frame: a.string(),                     // ガード時硬直差
+      attribute: a.string(),                      // 属性
+      // judgment: a.string(),                       // 判定（追加）
+      
+      effects: a.string().array(),         
+      remarks: a.string().array(),                  // 備考
+      
+      character: a.belongsTo('Character', 'character_id'),
+      category: a.belongsTo('MoveCategory', 'move_category_id'),
+    })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
       allow.guest().to(['read']),

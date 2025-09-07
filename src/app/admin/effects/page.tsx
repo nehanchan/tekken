@@ -70,7 +70,7 @@ export default function EffectAdminPage() {
                   {effects.map((effect, index) => (
                     <div key={effect.id} className="flex items-center gap-3 p-3 border border-gray-100 rounded-lg">
                       <img
-                        src={effect.imagePath || ''}
+                        src={effect.image_path || ''}
                         alt={`エフェクト${index + 1}`}
                         className="h-8 w-8 object-contain"
                         onError={(e) => {
@@ -80,7 +80,7 @@ export default function EffectAdminPage() {
                       />
                       <div>
                         <div className="font-medium text-sm">エフェクト {index + 1}</div>
-                        <div className="text-xs text-gray-500">{effect.imagePath}</div>
+                        <div className="text-xs text-gray-500">{effect.image_path}</div>
                         <div className="text-xs text-gray-400">ID: {effect.id}</div>
                       </div>
                     </div>

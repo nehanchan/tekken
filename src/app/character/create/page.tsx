@@ -84,8 +84,8 @@ export default function CreateCharacterPage() {
       
       const categoryMap = new Map<string, MoveCategoryData>();
       allCategories.forEach(cat => {
-        if (cat.move_category && !categoryMap.has(cat.move_category)) {
-          categoryMap.set(cat.move_category, cat);
+        if (cat.move_category_id && !categoryMap.has(cat.move_category_id)) {
+          categoryMap.set(cat.move_category_id, cat);
         }
       });
       const uniqueCategories = Array.from(categoryMap.values());
@@ -293,3 +293,32 @@ export default function CreateCharacterPage() {
                               </div>
                             </div>
                           )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">
+                      この技分類には技が登録されていません
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ページ作成ボタン */}
+      {selectedCharacter && (
+        <div className="fixed bottom-6 right-6">
+          <button
+            onClick={handleCreatePage}
+            className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg transition-colors"
+          >
+            📋 ページを作成する
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

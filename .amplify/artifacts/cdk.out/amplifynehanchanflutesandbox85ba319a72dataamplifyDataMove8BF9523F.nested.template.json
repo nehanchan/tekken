@@ -377,7 +377,7 @@
       "attributeType": "S"
      },
      {
-      "attributeName": "categoryId",
+      "attributeName": "move_category_id",
       "attributeType": "S"
      }
     ],
@@ -420,7 +420,7 @@
       "indexName": "gsi-MoveCategory.moves",
       "keySchema": [
        {
-        "attributeName": "categoryId",
+        "attributeName": "move_category_id",
         "keyType": "HASH"
        }
       ],

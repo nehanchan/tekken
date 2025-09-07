@@ -203,7 +203,7 @@
             "move_category_id": {
               "name": "move_category_id",
               "isArray": false,
-              "type": "ID",
+              "type": "String",
               "isRequired": true,
               "attributes": []
             },
@@ -226,7 +226,7 @@
               "association": {
                 "connectionType": "HAS_MANY",
                 "associatedWith": [
-                  "categoryId"
+                  "move_category_id"
                 ]
               }
             },
@@ -304,15 +304,22 @@
               "isRequired": true,
               "attributes": []
             },
-            "effectId": {
-              "name": "effectId",
+            "effect_id": {
+              "name": "effect_id",
               "isArray": false,
               "type": "ID",
               "isRequired": false,
               "attributes": []
             },
-            "imagePath": {
-              "name": "imagePath",
+            "image_path": {
+              "name": "image_path",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "effect_description": {
+              "name": "effect_description",
               "isArray": false,
               "type": "String",
               "isRequired": true,
@@ -392,15 +399,15 @@
               "isRequired": true,
               "attributes": []
             },
-            "moveId": {
-              "name": "moveId",
+            "move_id": {
+              "name": "move_id",
               "isArray": false,
               "type": "String",
               "isRequired": true,
               "attributes": []
             },
-            "characterMoveId": {
-              "name": "characterMoveId",
+            "move_num": {
+              "name": "move_num",
               "isArray": false,
               "type": "Int",
               "isRequired": false,
@@ -413,22 +420,22 @@
               "isRequired": true,
               "attributes": []
             },
-            "categoryId": {
-              "name": "categoryId",
+            "move_category_id": {
+              "name": "move_category_id",
               "isArray": false,
-              "type": "ID",
+              "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "name": {
-              "name": "name",
+            "move_name": {
+              "name": "move_name",
               "isArray": false,
               "type": "String",
               "isRequired": true,
               "attributes": []
             },
-            "nameKana": {
-              "name": "nameKana",
+            "move_name_kana": {
+              "name": "move_name_kana",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -441,36 +448,29 @@
               "isRequired": false,
               "attributes": []
             },
-            "damage": {
-              "name": "damage",
+            "startup_frame": {
+              "name": "startup_frame",
               "isArray": false,
               "type": "Int",
               "isRequired": false,
               "attributes": []
             },
-            "startupFrame": {
-              "name": "startupFrame",
-              "isArray": false,
-              "type": "Int",
-              "isRequired": false,
-              "attributes": []
-            },
-            "activeFrame": {
-              "name": "activeFrame",
+            "active_frame": {
+              "name": "active_frame",
               "isArray": false,
               "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "hitFrame": {
-              "name": "hitFrame",
+            "hit_frame": {
+              "name": "hit_frame",
               "isArray": false,
               "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "blockFrame": {
-              "name": "blockFrame",
+            "block_frame": {
+              "name": "block_frame",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -478,13 +478,6 @@
             },
             "attribute": {
               "name": "attribute",
-              "isArray": false,
-              "type": "String",
-              "isRequired": false,
-              "attributes": []
-            },
-            "judgment": {
-              "name": "judgment",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -498,8 +491,8 @@
               "attributes": [],
               "isArrayNullable": true
             },
-            "notes": {
-              "name": "notes",
+            "remarks": {
+              "name": "remarks",
               "isArray": true,
               "type": "String",
               "isRequired": false,
@@ -532,7 +525,7 @@
               "association": {
                 "connectionType": "BELONGS_TO",
                 "targetNames": [
-                  "categoryId"
+                  "move_category_id"
                 ]
               }
             },

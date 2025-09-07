@@ -20,6 +20,7 @@
     "safe-import-characters": "node scripts/safe-import-character-csv.js",
     "move-category-csv": "node scripts/import-move-category-csv.js",
     "validate-character-csv": "node scripts/validate-character-csv.js",
+    "effect-csv": "node scripts/import-effect-csv.js",
     "delete-characters": "node scripts/delete-all-characters.js",
     "migrate-character": "node scripts/migrate-character-master.js",
     "validate-csv": "node scripts/validate-csv.js",

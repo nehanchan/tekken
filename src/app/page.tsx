@@ -56,16 +56,26 @@ export default function Home() {
               {characters.map((character) => (
                 <a 
                   key={character.id} 
-                  href={`/character/${character.characterId}`}
+                  href={`/character/${character.character_id}`}
                   className="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <h4 className="text-xl font-semibold mb-2">{character.name}</h4>
-                  <p className="text-gray-600 mb-1">称号: {character.title || '未設定'}</p>
-                  <p className="text-gray-600 mb-1">出身: {character.nationality || '未設定'}</p>
-                  <p className="text-gray-600 mb-3">
-                    {character.height ? `${character.height}cm` : '未設定'} / {character.weight ? `${character.weight}kg` : '未設定'}
+                  <h4 className="text-xl font-semibold mb-2">
+                    {character.character_name_jp || character.character_name_en}
+                  </h4>
+                  <p className="text-gray-600 mb-1">
+                    称号: {character.nickname || '未設定'}
                   </p>
-                  <p className="text-sm text-gray-500">{character.description}</p>
+                  <p className="text-gray-600 mb-1">
+                    出身: {character.nationality || '未設定'}
+                  </p>
+                  <p className="text-gray-600 mb-3">
+                    {character.height || '未設定'} / {character.weight || '未設定'}
+                  </p>
+                  {character.character_description && (
+                    <p className="text-sm text-gray-500 line-clamp-3">
+                      {character.character_description}
+                    </p>
+                  )}
                 </a>
               ))}
             </div>

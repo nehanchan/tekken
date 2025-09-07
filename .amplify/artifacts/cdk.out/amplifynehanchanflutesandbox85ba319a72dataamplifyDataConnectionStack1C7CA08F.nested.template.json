@@ -177,7 +177,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "MoveCategoryMovesDataResolverFn",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b37acc4ad8ec2aabe9749fbe757efaa4771d99fd8f829e4794382f021279439f.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/871373835022ad47680f0d62d5afdd7b3e263aa1a9571f2497e314b2e053cc88.vtl"
     },
     "ResponseMappingTemplateS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49e7a1f2fb4c809b82bed6b0242a2a3bcfa2c5276ebd2539ff330fee36f8fe18.vtl"
@@ -463,7 +463,7 @@
     "FunctionVersion": "2018-05-29",
     "Name": "MoveCategoryDataResolverFn",
     "RequestMappingTemplateS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02a15a456a4c84a7b2428b83550ee95a8fa503c3f6b08d85574847ea252fbeea.vtl"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6133234eaf56801c3556e15cd29f4cb27d4b89d8abfaea5f1d8428bf70a68ccb.vtl"
     },
     "ResponseMappingTemplateS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dcb70e4856bc9a423e02b8b9e9c2ab3f71479784572d4c04a02d1f5b61a9f9ac.vtl"

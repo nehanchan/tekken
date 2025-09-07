@@ -26,6 +26,9 @@
     "validate-csv": "node scripts/validate-csv.js",
     "debug-data": "node scripts/debug-data.js",
     "quick-fix": "node scripts/quick-fix-moves.js",
+    "move-csv": "node scripts/import-move-csv.js",
+    "safe-move-csv": "node scripts/safe-import-move-csv.js",
+    "validate-move-csv": "node scripts/validate-move-csv.js",
     "amplify:sandbox": "ampx sandbox",
     "amplify:deploy": "npx ampx pipeline-deploy --branch main"
   },

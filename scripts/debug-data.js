@@ -1,4 +1,4 @@
-// scripts/debug-data.js
+// scripts/debug-data.js (新しいスキーマ対応版)
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import { readFile } from 'fs/promises';
@@ -18,7 +18,7 @@ const client = generateClient({
 });
 
 async function debugData() {
-  console.log('=== データ状況確認開始 ===\n');
+  console.log('=== データ状況確認開始（新スキーマ対応） ===\n');
 
   try {
     // 1. キャラクター確認
@@ -27,9 +27,23 @@ async function debugData() {
     const validCharacters = characters.filter(c => c !== null);
     
     console.log(`キャラクター数: ${validCharacters.length}`);
-    validCharacters.forEach(char => {
-      console.log(`  - ${char.characterId}: ${char.name}`);
-    });
+    
+    if (validCharacters.length > 0) {
+      // サンプルデータの構造確認
+      console.log('\nサンプルキャラクターデータ構造:');
+      console.log('フィールド:', Object.keys(validCharacters[0]));
+      console.log('サンプル:', JSON.stringify(validCharacters[0], null, 2));
+      
+      console.log('\nキャラクター一覧:');
+      validCharacters.forEach(char => {
+        // 新しいスキーマのフィールド名を使用
+        const charId = char.character_id || 'undefined';
+        const charName = char.character_name_jp || char.character_name_en || 'undefined';
+        console.log(`  - ${charId}: ${charName}`);
+      });
+    } else {
+      console.log('キャラクターデータが存在しません');
+    }
     
     // 2. 技分類確認
     console.log('\n2. 技分類データ確認');
@@ -37,9 +51,27 @@ async function debugData() {
     const validCategories = categories.filter(c => c !== null);
     
     console.log(`技分類数: ${validCategories.length}`);
-    validCategories.forEach(cat => {
-      console.log(`  - ${cat.id}: ${cat.categoryName}`);
-    });
+    
+    if (validCategories.length > 0) {
+      // サンプルデータの構造確認
+      console.log('\nサンプル技分類データ構造:');
+      console.log('フィールド:', Object.keys(validCategories[0]));
+      console.log('サンプル:', JSON.stringify(validCategories[0], null, 2));
+      
+      console.log('\n技分類一覧（最初の10件）:');
+      validCategories.slice(0, 10).forEach(cat => {
+        // 新しいスキーマのフィールド名を使用
+        const catId = cat.move_category_id || 'undefined';
+        const catName = cat.move_category || 'undefined';
+        console.log(`  - ${cat.id}: ${catId} - ${catName}`);
+      });
+      
+      if (validCategories.length > 10) {
+        console.log(`  ... 他${validCategories.length - 10}件`);
+      }
+    } else {
+      console.log('技分類データが存在しません');
+    }
     
     // 3. 技データ確認
     console.log('\n3. 技データ確認');
@@ -48,54 +80,76 @@ async function debugData() {
     
     console.log(`全技数: ${validMoves.length}`);
     
-    // キャラクター別技数
-    const movesByCharacter = {};
-    validMoves.forEach(move => {
-      if (!movesByCharacter[move.characterId]) {
-        movesByCharacter[move.characterId] = [];
-      }
-      movesByCharacter[move.characterId].push(move);
-    });
-    
-    Object.entries(movesByCharacter).forEach(([charId, moves]) => {
-      const character = validCharacters.find(c => c.characterId === charId);
-      console.log(`  ${charId} (${character?.name || '不明'}): ${moves.length}技`);
+    if (validMoves.length > 0) {
+      // サンプルデータの構造確認
+      console.log('\nサンプル技データ構造:');
+      console.log('フィールド:', Object.keys(validMoves[0]));
+      console.log('サンプル:', JSON.stringify(validMoves[0], null, 2));
       
-      moves.forEach(move => {
-        console.log(`    - ${move.moveId}: ${move.name} (category: ${move.categoryId})`);
+      // キャラクター別技数
+      const movesByCharacter = {};
+      validMoves.forEach(move => {
+        const charId = move.character_id || 'undefined';
+        if (!movesByCharacter[charId]) {
+          movesByCharacter[charId] = [];
+        }
+        movesByCharacter[charId].push(move);
       });
-    });
-    
-    // 4. 技分類別確認
-    console.log('\n4. 技分類別技数確認');
-    const movesByCategory = {};
-    validMoves.forEach(move => {
-      if (!movesByCategory[move.categoryId]) {
-        movesByCategory[move.categoryId] = [];
-      }
-      movesByCategory[move.categoryId].push(move);
-    });
-    
-    Object.entries(movesByCategory).forEach(([catId, moves]) => {
-      const category = validCategories.find(c => c.id === catId);
-      console.log(`  ${catId} (${category?.categoryName || '不明'}): ${moves.length}技`);
-    });
-    
-    // 5. 特定の組み合わせ確認（風間仁 + 打撃技）
-    console.log('\n5. 特定組み合わせ確認');
-    const jinCharacter = validCharacters.find(c => c.characterId === '001');
-    const strikeCategory = validCategories.find(c => c.categoryName === '打撃技');
-    
-    if (jinCharacter && strikeCategory) {
-      console.log(`風間仁 (${jinCharacter.characterId}) + 打撃技 (${strikeCategory.id})`);
       
-      const jinStrikeMoves = validMoves.filter(move => 
-        move.characterId === '001' && move.categoryId === strikeCategory.id
-      );
+      console.log('\nキャラクター別技数:');
+      Object.entries(movesByCharacter).forEach(([charId, moves]) => {
+        const character = validCharacters.find(c => c.character_id === charId);
+        const charName = character ? 
+          (character.character_name_jp || character.character_name_en) : 
+          '不明';
+        console.log(`  ${charId} (${charName}): ${moves.length}技`);
+      });
+    }
+    
+    // 4. データ整合性チェック
+    console.log('\n4. データ整合性チェック');
+    
+    // キャラクターIDの整合性
+    console.log('キャラクターデータ整合性:');
+    const charactersWithId = validCharacters.filter(c => c.character_id);
+    const charactersWithoutId = validCharacters.filter(c => !c.character_id);
+    console.log(`  character_id あり: ${charactersWithId.length}件`);
+    console.log(`  character_id なし: ${charactersWithoutId.length}件`);
+    
+    // 技分類IDの整合性
+    console.log('\n技分類データ整合性:');
+    const categoriesWithId = validCategories.filter(c => c.move_category_id);
+    const categoriesWithoutId = validCategories.filter(c => !c.move_category_id);
+    console.log(`  move_category_id あり: ${categoriesWithId.length}件`);
+    console.log(`  move_category_id なし: ${categoriesWithoutId.length}件`);
+    
+    // 5. 推奨対応策
+    console.log('\n5. 推奨対応策:');
+    
+    if (charactersWithoutId.length > 0) {
+      console.log('❌ 一部のキャラクターでcharacter_idが未設定です');
+      console.log('対策: キャラクターマスタを新しいスキーマで再作成してください');
+      console.log('  npm run character-csv template');
+      console.log('  npm run character-csv import character.csv --replace-all');
+    }
+    
+    if (categoriesWithoutId.length > 0) {
+      console.log('❌ 一部の技分類でmove_category_idが未設定です');
+      console.log('対策: 技分類マスタを新しいスキーマで再作成してください');
+      console.log('  npm run move-category-csv template');
+      console.log('  npm run move-category-csv import category.csv --replace-all');
+    }
+    
+    if (charactersWithId.length > 0 && categoriesWithId.length > 0) {
+      console.log('✅ データ整合性OK - 技データのインポートが可能です');
+      console.log('\n利用可能なキャラクターID:');
+      charactersWithId.slice(0, 5).forEach(char => {
+        console.log(`  - ${char.character_id}: ${char.character_name_jp || char.character_name_en}`);
+      });
       
-      console.log(`該当技数: ${jinStrikeMoves.length}`);
-      jinStrikeMoves.forEach(move => {
-        console.log(`  - ${move.name}: ${move.command || 'コマンドなし'}`);
+      console.log('\n利用可能な技分類ID（例）:');
+      categoriesWithId.slice(0, 5).forEach(cat => {
+        console.log(`  - ${cat.move_category_id}: ${cat.move_category}`);
       });
     }
     

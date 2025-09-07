@@ -30,21 +30,20 @@ interface MoveCategoryData {
 
 interface MoveData {
   id: string;
-  moveId: string;
+  move_id: string;
+  move_num?: number | null;
   character_id: string;
   move_category_id?: string | null;
-  name: string;
-  nameKana?: string | null;
+  move_name: string;
+  move_name_kana?: string | null;
   command?: string | null;
-  damage?: number | null;
-  startupFrame?: number | null;
-  activeFrame?: string | null;
-  hitFrame?: string | null;
-  blockFrame?: string | null;
+  startup_frame?: number | null;
+  active_frame?: string | null;
+  hit_frame?: string | null;
+  block_frame?: string | null;
   attribute?: string | null;
-  judgment?: string | null;
   effects?: (string | null)[] | null;
-  notes?: (string | null)[] | null;
+  remarks?: (string | null)[] | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -261,32 +260,32 @@ export default function CreateCharacterPage() {
                         <div key={`move-${move.id || `${move_category_id}-${moveIndex}`}`} className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
-                              <p className="font-semibold text-lg text-gray-900">{move.name}</p>
-                              <p className="text-sm text-gray-600">{move.nameKana}</p>
+                              <p className="font-semibold text-lg text-gray-900">{move.move_name}</p>
+                              <p className="text-sm text-gray-600">{move.move_name_kana}</p>
                             </div>
                             <div className="text-sm space-y-1">
-                              <p><span className="font-medium text-gray-700">発生:</span> <span className="text-gray-900">{move.startupFrame}f</span></p>
+                              <p><span className="font-medium text-gray-700">発生:</span> <span className="text-gray-900">{move.startup_frame}f</span></p>
                               <p><span className="font-medium text-gray-700">属性:</span> <span className="text-gray-900">{move.attribute}</span></p>
                             </div>
                             <div className="text-sm space-y-1">
-                              <p><span className="font-medium text-gray-700">ヒット:</span> <span className="text-green-600">{move.hitFrame}</span></p>
-                              <p><span className="font-medium text-gray-700">ガード:</span> <span className="text-red-600">{move.blockFrame}</span></p>
+                              <p><span className="font-medium text-gray-700">ヒット:</span> <span className="text-green-600">{move.hit_frame}</span></p>
+                              <p><span className="font-medium text-gray-700">ガード:</span> <span className="text-red-600">{move.block_frame}</span></p>
                             </div>
                             <div className="text-sm">
-                              <p><span className="font-medium text-gray-700">技ID:</span> <span className="text-gray-500">{move.moveId}</span></p>
+                              <p><span className="font-medium text-gray-700">技ID:</span> <span className="text-gray-500">{move.move_id}</span></p>
                             </div>
                           </div>
                           
-                          {move.notes && move.notes.length > 0 && (
+                          {move.remarks && move.remarks.length > 0 && (
                             <div className="mt-4 pt-4 border-t border-gray-100">
                               <p className="text-sm font-medium text-gray-700 mb-2">備考:</p>
                               <div className="space-y-1">
-                                {move.notes
-                                  .filter((note): note is string => note !== null && note !== undefined)
-                                  .map((note, noteIndex) => (
-                                    <div key={`note-${move.id || moveIndex}-${noteIndex}`} className="flex items-start">
+                                {move.remarks
+                                  .filter((remark): remark is string => remark !== null && remark !== undefined)
+                                  .map((remark, remarkIndex) => (
+                                    <div key={`remark-${move.id || moveIndex}-${remarkIndex}`} className="flex items-start">
                                       <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                      <span className="text-sm text-gray-600">{note}</span>
+                                      <span className="text-sm text-gray-600">{remark}</span>
                                     </div>
                                   ))
                                 }

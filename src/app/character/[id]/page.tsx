@@ -59,12 +59,21 @@ export default function CharacterDetailPage() {
   const [character, setCharacter] = useState<CharacterData | null>(null);
   const [categories, setCategories] = useState<MoveCategoryData[]>([]);
   const [movesByCategory, setMovesByCategory] = useState<{[key: string]: MoveData[]}>({});
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchCharacterData();
   }, [characterId]);
+
+  // categoriesが更新された時に全タブをオープンにする
+  useEffect(() => {
+    if (categories.length > 0) {
+      const allCategoryIds = new Set(categories.map(cat => cat.id));
+      setSelectedCategories(allCategoryIds);
+      console.log('全タブをオープンに設定:', Array.from(allCategoryIds));
+    }
+  }, [categories]);
 
   const fetchCharacterData = async () => {
     setLoading(true);
@@ -80,31 +89,63 @@ export default function CharacterDetailPage() {
       if (validCharacters[0]) {
         setCharacter(validCharacters[0]);
         
-        // キャラクターの全技取得
-        const { data: moves } = await client.models.Move.list({
-          filter: { character_id: { eq: characterId } },
-          authMode: 'apiKey'
-        });
+        // キャラクターの全技取得（ページネーション対応）
+        let allMoves: MoveData[] = [];
+        let nextToken = null;
         
-        const validMoves = (moves || []).filter(m => m !== null) as MoveData[];
+        do {
+          const params: any = {
+            filter: { character_id: { eq: characterId } },
+            authMode: 'apiKey',
+            limit: 1000
+          };
+          
+          if (nextToken) {
+            params.nextToken = nextToken;
+          }
+          
+          const result = await client.models.Move.list(params);
+          const pageMoves = (result.data || []).filter(m => m !== null) as MoveData[];
+          allMoves = allMoves.concat(pageMoves);
+          nextToken = result.nextToken;
+          
+        } while (nextToken);
         
-        // 技分類取得
-        const { data: allCategories } = await client.models.MoveCategory.list({
-          authMode: 'apiKey'
-        });
+        console.log(`${characterId}の技データ取得: ${allMoves.length}件`);
         
-        const validCategories = (allCategories || []).filter(c => c !== null) as MoveCategoryData[];
+        // 技分類取得（ページネーション対応）
+        let allCategories: MoveCategoryData[] = [];
+        nextToken = null;
+        
+        do {
+          const params: any = {
+            authMode: 'apiKey',
+            limit: 1000
+          };
+          
+          if (nextToken) {
+            params.nextToken = nextToken;
+          }
+          
+          const result = await client.models.MoveCategory.list(params);
+          const pageCategories = (result.data || []).filter(c => c !== null) as MoveCategoryData[];
+          allCategories = allCategories.concat(pageCategories);
+          nextToken = result.nextToken;
+          
+        } while (nextToken);
+        
+        console.log(`技分類データ取得: ${allCategories.length}件`);
         
         // 技分類別にグループ化
         const grouped: {[key: string]: MoveData[]} = {};
         const usedCategories: MoveCategoryData[] = [];
         
-        for (const move of validMoves) {
+        for (const move of allMoves) {
           const categoryId = move.move_category_id;
           if (categoryId) {
             if (!grouped[categoryId]) {
               grouped[categoryId] = [];
-              const category = validCategories.find(c => c.id === categoryId);
+              const category = allCategories.find(c => c.id === categoryId);
               if (category && !usedCategories.find(uc => uc.id === category.id)) {
                 usedCategories.push(category);
               }
@@ -113,8 +154,35 @@ export default function CharacterDetailPage() {
           }
         }
         
+        // 技分類を各分類の最小move_id順にソート
+        usedCategories.sort((a, b) => {
+          const aMovesInCategory = grouped[a.id] || [];
+          const bMovesInCategory = grouped[b.id] || [];
+          
+          // 各カテゴリ内の最小move_idを取得
+          const aMinMoveId = aMovesInCategory.length > 0 
+            ? Math.min(...aMovesInCategory.map(move => parseInt(move.move_id, 10)).filter(id => !isNaN(id)))
+            : Infinity;
+          const bMinMoveId = bMovesInCategory.length > 0 
+            ? Math.min(...bMovesInCategory.map(move => parseInt(move.move_id, 10)).filter(id => !isNaN(id)))
+            : Infinity;
+          
+          return aMinMoveId - bMinMoveId;
+        });
+        
+        // 各分類内の技をmove_id順にソート
+        Object.keys(grouped).forEach(categoryId => {
+          grouped[categoryId].sort((a, b) => {
+            const aId = String(a.move_id).padStart(5, '0');
+            const bId = String(b.move_id).padStart(5, '0');
+            return aId.localeCompare(bId);
+          });
+        });
+        
         setMovesByCategory(grouped);
         setCategories(usedCategories);
+        
+        console.log(`技分類別グループ化完了: ${usedCategories.length}分類`);
       }
     } catch (error) {
       console.error('データ取得エラー:', error);
@@ -124,7 +192,15 @@ export default function CharacterDetailPage() {
   };
 
   const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(prev => prev === categoryId ? '' : categoryId);
+    setSelectedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
   };
 
   if (loading) {
@@ -200,8 +276,21 @@ export default function CharacterDetailPage() {
         {character.character_description && (
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="font-semibold text-gray-700 mb-3">キャラクター紹介</h3>
-            <p className="text-gray-600 leading-relaxed">{character.character_description}</p>
-          </div>
+<div className="text-gray-600 leading-relaxed whitespace-pre-line">
+  {(() => {
+    let text = character.character_description;
+    
+    // 改行すべき位置を特定（引用符が続かない場合のみ）
+    text = text.replace(/。(?!\s*[」""])/g, '。\n');
+    text = text.replace(/」(?!\s*[」""])/g, '」\n');
+    
+    // …！の処理（最後に実行して他の処理と干渉しないように）
+    text = text.replace(/…！(?!\s*[」""])/g, '…！\n');
+    
+    return text;
+  })()}
+</div>
+      </div>
         )}
       </div>
 
@@ -212,7 +301,7 @@ export default function CharacterDetailPage() {
         {categories.length > 0 ? (
           categories.map(category => {
             const moves = movesByCategory[category.id] || [];
-            const isSelected = selectedCategory === category.id;
+            const isSelected = selectedCategories.has(category.id);
             
             return (
               <div key={category.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
@@ -284,7 +373,7 @@ export default function CharacterDetailPage() {
                             </td>
                             <td className="border border-gray-600 px-3 py-3 text-center text-sm">
                               <EffectDisplay 
-                                effectIds={move.effects || []} 
+                                effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
                                 size="sm"
                                 showTooltip={true}
                               />

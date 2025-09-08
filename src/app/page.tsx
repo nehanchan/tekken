@@ -44,6 +44,12 @@ export default function Home() {
             >
               キャラクターページ作成
             </a>
+            <a 
+              href="/character/edit"
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              キャラクター編集
+            </a>
           </div>
         </div>
 

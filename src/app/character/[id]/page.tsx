@@ -8,7 +8,6 @@ import CommandDisplay from '@/components/CommandDisplay';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
-// 型定義を明示的に定義
 interface CharacterData {
   id: string;
   character_id: string;
@@ -61,24 +60,22 @@ export default function CharacterDetailPage() {
   const [movesByCategory, setMovesByCategory] = useState<{[key: string]: MoveData[]}>({});
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
 
   useEffect(() => {
     fetchCharacterData();
   }, [characterId]);
 
-  // categoriesが更新された時に全タブをオープンにする
   useEffect(() => {
     if (categories.length > 0) {
       const allCategoryIds = new Set(categories.map(cat => cat.id));
       setSelectedCategories(allCategoryIds);
-      console.log('全タブをオープンに設定:', Array.from(allCategoryIds));
     }
   }, [categories]);
 
   const fetchCharacterData = async () => {
     setLoading(true);
     try {
-      // キャラクター情報取得
       const { data: characters } = await client.models.Character.list({
         filter: { character_id: { eq: characterId } },
         authMode: 'apiKey'
@@ -89,7 +86,6 @@ export default function CharacterDetailPage() {
       if (validCharacters[0]) {
         setCharacter(validCharacters[0]);
         
-        // キャラクターの全技取得（ページネーション対応）
         let allMoves: MoveData[] = [];
         let nextToken = null;
         
@@ -111,9 +107,6 @@ export default function CharacterDetailPage() {
           
         } while (nextToken);
         
-        console.log(`${characterId}の技データ取得: ${allMoves.length}件`);
-        
-        // 技分類取得（ページネーション対応）
         let allCategories: MoveCategoryData[] = [];
         nextToken = null;
         
@@ -134,9 +127,6 @@ export default function CharacterDetailPage() {
           
         } while (nextToken);
         
-        console.log(`技分類データ取得: ${allCategories.length}件`);
-        
-        // 技分類別にグループ化
         const grouped: {[key: string]: MoveData[]} = {};
         const usedCategories: MoveCategoryData[] = [];
         
@@ -154,12 +144,10 @@ export default function CharacterDetailPage() {
           }
         }
         
-        // 技分類を各分類の最小move_id順にソート
         usedCategories.sort((a, b) => {
           const aMovesInCategory = grouped[a.id] || [];
           const bMovesInCategory = grouped[b.id] || [];
           
-          // 各カテゴリ内の最小move_idを取得
           const aMinMoveId = aMovesInCategory.length > 0 
             ? Math.min(...aMovesInCategory.map(move => parseInt(move.move_id, 10)).filter(id => !isNaN(id)))
             : Infinity;
@@ -170,7 +158,6 @@ export default function CharacterDetailPage() {
           return aMinMoveId - bMinMoveId;
         });
         
-        // 各分類内の技をmove_id順にソート
         Object.keys(grouped).forEach(categoryId => {
           grouped[categoryId].sort((a, b) => {
             const aId = String(a.move_id).padStart(5, '0');
@@ -181,8 +168,6 @@ export default function CharacterDetailPage() {
         
         setMovesByCategory(grouped);
         setCategories(usedCategories);
-        
-        console.log(`技分類別グループ化完了: ${usedCategories.length}分類`);
       }
     } catch (error) {
       console.error('データ取得エラー:', error);
@@ -203,20 +188,69 @@ export default function CharacterDetailPage() {
     });
   };
 
+  // コマンド表示のシンプルな関数
+  const renderCommand = (command: string | null | undefined) => {
+    if (!command) {
+      return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
+    }
+
+    // CommandDisplayコンポーネントに完全に任せる
+    return (
+      <CommandDisplay 
+        command={command} 
+        size="lg"
+        className="justify-center"
+        showFallback={true}
+      />
+    );
+  };
+
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">読み込み中...</div>
+      <div 
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(to bottom right, #111827, #7f1d1d, #000000)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <div style={{ fontSize: '18px', color: '#fef2f2', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+          読み込み中...
+        </div>
       </div>
     );
   }
 
   if (!character) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">キャラクターが見つかりません</h1>
-          <a href="/character/create" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+      <div 
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(to bottom right, #111827, #7f1d1d, #000000)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#f87171', marginBottom: '16px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+            キャラクターが見つかりません
+          </h1>
+          <a 
+            href="/character/create" 
+            style={{
+              background: 'linear-gradient(to right, #dc2626, #b91c1c)',
+              color: 'white',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              textDecoration: 'none',
+              boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
+              transition: 'all 0.2s'
+            }}
+          >
             キャラクター作成ページに戻る
           </a>
         </div>
@@ -225,183 +259,301 @@ export default function CharacterDetailPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div 
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom right, #111827, #7f1d1d, #000000)',
+        padding: '24px'
+      }}
+    >
       {/* ヘッダー */}
-      <div className="mb-6">
-        <nav className="text-sm text-gray-500 mb-4">
-          <a href="/" className="hover:text-blue-600">トップ</a>
-          <span className="mx-2">›</span>
-          <a href="/character/create" className="hover:text-blue-600">キャラクター作成</a>
-          <span className="mx-2">›</span>
-          <span>{character.character_name_jp || character.character_name_en}</span>
+      <div style={{ marginBottom: '24px' }}>
+        <nav style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '16px' }}>
+          <a href="/" style={{ color: '#d1d5db', textDecoration: 'none' }}>トップ</a>
+          <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
+          <a href="/character/create" style={{ color: '#d1d5db', textDecoration: 'none' }}>キャラクター作成</a>
+          <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
+          <span style={{ color: '#fca5a5' }}>{character.character_name_jp || character.character_name_en}</span>
         </nav>
       </div>
 
       {/* キャラクター情報表示 */}
-      <div className="mb-8 bg-gradient-to-r from-blue-50 to-blue-100 p-8 rounded-lg shadow-lg">
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-blue-900 mb-2">
+      <div 
+        style={{
+          marginBottom: '32px',
+          background: 'linear-gradient(to right, #450a0a, #111827, #450a0a)',
+          padding: '32px',
+          borderRadius: '8px',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+          border: '1px solid rgba(185, 28, 28, 0.3)',
+          backdropFilter: 'blur(4px)',
+          maxWidth: '1152px',
+          margin: '0 auto 32px auto'
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <h1 style={{ 
+            fontSize: '36px', 
+            fontWeight: 'bold', 
+            color: '#fef2f2', 
+            marginBottom: '8px', 
+            textShadow: '2px 2px 8px rgba(0,0,0,0.8)' 
+          }}>
             {character.character_name_jp || character.character_name_en}
           </h1>
-          <p className="text-lg text-blue-700">
+          <p style={{ fontSize: '18px', color: '#fca5a5' }}>
             {character.character_name_en}
           </p>
           {character.nickname && (
-            <p className="text-xl text-blue-800 font-semibold">
+            <p style={{ fontSize: '20px', color: '#f87171', fontWeight: '600', marginTop: '8px' }}>
               {character.nickname}
             </p>
           )}
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="font-semibold text-gray-700 mb-2">基本情報</h3>
-            <p className="text-sm text-gray-600">
-              身長: {character.height || '未設定'}
-            </p>
-            <p className="text-sm text-gray-600">
-              体重: {character.weight || '未設定'}
-            </p>
-            <p className="text-sm text-gray-600">
-              国籍: {character.nationality || '未設定'}
-            </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '24px' }}>
+          <div 
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)',
+              padding: '16px',
+              borderRadius: '8px',
+              boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(185, 28, 28, 0.2)',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            <h3 style={{ fontWeight: '600', color: '#fca5a5', marginBottom: '8px' }}>基本情報</h3>
+            <p style={{ fontSize: '14px', color: '#d1d5db' }}>身長: {character.height || '未設定'}</p>
+            <p style={{ fontSize: '14px', color: '#d1d5db' }}>体重: {character.weight || '未設定'}</p>
+            <p style={{ fontSize: '14px', color: '#d1d5db' }}>国籍: {character.nationality || '未設定'}</p>
             {character.martial_arts && (
-              <p className="text-sm text-gray-600">
-                格闘技: {character.martial_arts}
-              </p>
+              <p style={{ fontSize: '14px', color: '#d1d5db' }}>格闘技: {character.martial_arts}</p>
             )}
           </div>
         </div>
         
         {character.character_description && (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="font-semibold text-gray-700 mb-3">キャラクター紹介</h3>
-<div className="text-gray-600 leading-relaxed whitespace-pre-line">
-  {(() => {
-    let text = character.character_description;
-    
-    // 改行すべき位置を特定（引用符が続かない場合のみ）
-    text = text.replace(/。(?!\s*[」""])/g, '。\n');
-    text = text.replace(/」(?!\s*[」""])/g, '」\n');
-    
-    // …！の処理（最後に実行して他の処理と干渉しないように）
-    text = text.replace(/…！(?!\s*[」""])/g, '…！\n');
-    
-    return text;
-  })()}
-</div>
-      </div>
+          <div 
+            style={{
+              border: '1px solid rgba(185, 28, 28, 0.3)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
+              background: 'rgba(0, 0, 0, 0.2)',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            <button 
+              onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '16px',
+                background: 'rgba(69, 10, 10, 0.5)',
+                border: 'none',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                borderBottom: '1px solid rgba(185, 28, 28, 0.2)'
+              }}
+            >
+              <h3 style={{ fontWeight: '600', color: '#fca5a5', margin: 0 }}>キャラクター紹介</h3>
+              <span style={{ 
+                transform: isDescriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+                transition: 'transform 0.2s', 
+                color: '#f87171' 
+              }}>
+                ▼
+              </span>
+            </button>
+            
+            {isDescriptionOpen && (
+              <div style={{ padding: '24px', background: 'rgba(0, 0, 0, 0.3)' }}>
+                <div style={{ color: '#e5e7eb', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+                  {character.character_description}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
       {/* 技分類選択・技表示 */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">技一覧</h2>
+      <div style={{ marginBottom: '16px' }}>
+        <h2 style={{ 
+          fontSize: '24px', 
+          fontWeight: 'bold', 
+          color: '#fef2f2', 
+          marginBottom: '24px', 
+          textShadow: '2px 2px 8px rgba(0,0,0,0.8)' 
+        }}>
+          技一覧
+        </h2>
         
         {categories.length > 0 ? (
-          categories.map(category => {
-            const moves = movesByCategory[category.id] || [];
-            const isSelected = selectedCategories.has(category.id);
-            
-            return (
-              <div key={category.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                <button 
-                  onClick={() => handleCategorySelect(category.id)}
-                  className="w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors"
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {categories.map(category => {
+              const moves = movesByCategory[category.id] || [];
+              const isSelected = selectedCategories.has(category.id);
+              
+              return (
+                <div 
+                  key={category.id} 
+                  style={{
+                    border: '1px solid rgba(185, 28, 28, 0.4)',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+                    background: 'linear-gradient(to right, rgba(69, 10, 10, 0.5), rgba(0, 0, 0, 0.5))',
+                    backdropFilter: 'blur(4px)'
+                  }}
                 >
-                  <span className="font-semibold text-gray-800">
-                    {category.move_category} ({moves.length}個の技)
-                  </span>
-                  <span className={`transform transition-transform ${isSelected ? 'rotate-180' : ''}`}>
-                    ▼
-                  </span>
-                </button>
-                
-                {isSelected && (
-                  <div className="p-4 bg-white overflow-x-auto">
-                    <table className="min-w-full border-collapse border border-gray-300">
-                      <thead className="bg-red-900 text-white">
-                        <tr>
-                          <th className="border border-gray-300 px-2 py-3 text-sm font-medium">No</th>
-                          <th className="border border-gray-300 px-4 py-3 text-sm font-medium">技名</th>
-                          <th className="border border-gray-300 px-6 py-3 text-sm font-medium">コマンド</th>
-                          <th className="border border-gray-300 px-3 py-3 text-sm font-medium">発生F</th>
-                          <th className="border border-gray-300 px-3 py-3 text-sm font-medium">持続F</th>
-                          <th className="border border-gray-300 px-3 py-3 text-sm font-medium">ヒット時硬直差</th>
-                          <th className="border border-gray-300 px-3 py-3 text-sm font-medium">ガード時硬直差</th>
-                          <th className="border border-gray-300 px-3 py-3 text-sm font-medium">属性</th>
-                          <th className="border border-gray-300 px-6 py-3 text-sm font-medium">エフェクト</th>
-                          <th className="border border-gray-300 px-6 py-3 text-sm font-medium">備考</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-black text-white">
-                        {moves.map((move, index) => (
-                          <tr key={move.id} className="hover:bg-red-900 hover:bg-opacity-20">
-                            <td className="border border-gray-600 px-2 py-3 text-center text-sm">
-                              {move.move_num || index + 1}
-                            </td>
-                            <td className="border border-gray-600 px-4 py-3 text-sm">
-                              <div>
-                                <div className="font-medium">{move.move_name}</div>
-                                {move.move_name_kana && (
-                                  <div className="text-xs text-gray-300">({move.move_name_kana})</div>
-                                )}
-                              </div>
-                            </td>
-                            <td className="border border-gray-600 px-6 py-3 text-sm">
-                              <CommandDisplay 
-                                command={move.command} 
-                                size="sm"
-                                className="justify-center"
-                                showFallback={true}
-                              />
-                            </td>
-                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
-                              {move.startup_frame || '-'}
-                            </td>
-                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
-                              {move.active_frame || '-'}
-                            </td>
-                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
-                              <FrameAdvantage value={move.hit_frame} />
-                            </td>
-                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
-                              <FrameAdvantage value={move.block_frame} />
-                            </td>
-                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
-                              {move.attribute || '-'}
-                            </td>
-                            <td className="border border-gray-600 px-3 py-3 text-center text-sm">
-                              <EffectDisplay 
-                                effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
-                                size="sm"
-                                showTooltip={true}
-                              />
-                            </td>
-                            <td className="border border-gray-600 px-6 py-3 text-sm">
-                              {move.remarks && move.remarks.length > 0 ? (
-                                <div className="space-y-1">
-                                  {move.remarks
-                                    .filter((remark): remark is string => remark !== null && remark !== undefined)
-                                    .map((remark, remarkIndex) => (
-                                      <div key={remarkIndex} className="text-xs">{remark}</div>
-                                    ))
-                                  }
-                                </div>
-                              ) : '-'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            );
-          })
+                  <button 
+                    onClick={() => handleCategorySelect(category.id)}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '16px',
+                      background: 'linear-gradient(to right, rgba(127, 29, 29, 0.7), rgba(69, 10, 10, 0.7))',
+                      border: 'none',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      borderBottom: '1px solid rgba(220, 38, 38, 0.3)'
+                    }}
+                  >
+                    <span style={{ 
+                      fontWeight: '600', 
+                      color: '#fef2f2', 
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)' 
+                    }}>
+                      {category.move_category} ({moves.length}個の技)
+                    </span>
+                    <span style={{ 
+                      transform: isSelected ? 'rotate(180deg)' : 'rotate(0deg)', 
+                      transition: 'transform 0.2s', 
+                      color: '#f87171' 
+                    }}>
+                      ▼
+                    </span>
+                  </button>
+                  
+                  {isSelected && (
+                    <div style={{ background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(69, 10, 10, 0.6))' }}>
+                      <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid rgba(185, 28, 28, 0.5)', minWidth: 'max-content' }}>
+                          <thead>
+                            <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>No</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', width: '288px', color: '#fef2f2' }}>技名</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 32px', fontSize: '14px', fontWeight: 'bold', width: '384px', color: '#fef2f2' }}>コマンド</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>発生</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>持続</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '112px', color: '#fef2f2' }}>ヒット</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '112px', color: '#fef2f2' }}>ガード</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>判定</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', width: '128px', color: '#fef2f2' }}>属性</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 32px', fontSize: '14px', fontWeight: 'bold', color: '#fef2f2' }}>備考</th>
+                            </tr>
+                          </thead>
+                          <tbody style={{ background: 'linear-gradient(to bottom, #000000, #111827, #000000)', color: 'white' }}>
+                            {moves.map((move, index) => (
+                              <tr 
+                                key={move.id} 
+                                style={{ 
+                                  borderBottom: '1px solid rgba(127, 29, 29, 0.2)',
+                                  transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(127, 29, 29, 0.3), rgba(185, 28, 28, 0.3))';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = 'transparent';
+                                }}
+                              >
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#fca5a5' }}>
+                                  {move.move_num || index + 1}
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 24px', fontSize: '14px' }}>
+                                  <div>
+                                    <div style={{ fontWeight: '500', fontSize: '16px', color: '#fef2f2' }}>{move.move_name}</div>
+                                    {move.move_name_kana && (
+                                      <div style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px' }}>({move.move_name_kana})</div>
+                                    )}
+                                  </div>
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40px' }}>
+                                    {renderCommand(move.command)}
+                                  </div>
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#fca5a5' }}>
+                                  {move.startup_frame || '-'}
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#fca5a5' }}>
+                                  {move.active_frame || '-'}
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
+                                  <FrameAdvantage value={move.hit_frame} />
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
+                                  <FrameAdvantage value={move.block_frame} />
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', color: '#fca5a5' }}>
+                                  {move.attribute || '-'}
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 24px', textAlign: 'center', fontSize: '14px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '32px' }}>
+                                    <EffectDisplay 
+                                      effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
+                                      size="md"
+                                      showTooltip={true}
+                                    />
+                                  </div>
+                                </td>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px', minWidth: '0' }}>
+                                  {move.remarks && move.remarks.length > 0 ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                      {move.remarks
+                                        .filter((remark): remark is string => remark !== null && remark !== undefined)
+                                        .map((remark, remarkIndex) => (
+                                          <div key={remarkIndex} style={{ fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word', color: '#fef2f2' }}>
+                                            {remark}
+                                          </div>
+                                        ))
+                                      }
+                                    </div>
+                                  ) : (
+                                    <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">このキャラクターには技データがありません</p>
+          <div 
+            style={{
+              textAlign: 'center',
+              padding: '48px',
+              background: 'linear-gradient(to right, rgba(69, 10, 10, 0.3), rgba(0, 0, 0, 0.3))',
+              borderRadius: '8px',
+              border: '1px solid rgba(185, 28, 28, 0.2)',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            <p style={{ color: '#fca5a5' }}>このキャラクターには技データがありません</p>
           </div>
         )}
       </div>

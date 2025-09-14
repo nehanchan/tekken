@@ -56,7 +56,7 @@ export default function CommandDisplay({
           return (
             <img
               key={`icon-${element.value}-${index}`}
-              src={getIconPath(element.value)}
+              src={getIconPath(element.value, element.iconType)}
               alt={element.value}
               className={`${sizeClasses[size]} object-contain flex-shrink-0`}
               onError={(e) => {
@@ -76,7 +76,80 @@ export default function CommandDisplay({
   );
 }
 
-interface CommandDisplayDetailedProps extends CommandDisplayProps {
+// 任意のテキストに対してアイコン置換を行う汎用コンポーネント
+interface TextWithIconsProps {
+  text?: string | null;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+  showFallback?: boolean;
+  textClassName?: string; // テキスト部分のスタイル
+}
+
+export function TextWithIcons({ 
+  text, 
+  size = 'md', 
+  className = '',
+  showFallback = true,
+  textClassName = 'text-sm text-gray-200'
+}: TextWithIconsProps) {
+  // テキストが空またはnullの場合
+  if (!text || text.trim() === '') {
+    return showFallback ? (
+      <span className={`text-gray-400 text-sm ${className}`}>-</span>
+    ) : null;
+  }
+
+  const elements = parseCommandToElements(text);
+
+  // 解析できなかった場合（全て文字列だった場合など）はテキストで表示
+  if (elements.length === 0 || elements.every(el => el.type === 'text')) {
+    return (
+      <span className={`${textClassName} ${className}`}>
+        {text}
+      </span>
+    );
+  }
+
+  return (
+    <div className={`inline-flex items-center gap-1 flex-wrap ${className}`}>
+      {elements.map((element, index) => {
+        if (element.type === 'text') {
+          return (
+            <span 
+              key={`text-${index}`} 
+              className={`${textClassName} whitespace-nowrap`}
+            >
+              {element.value}
+            </span>
+          );
+        } else {
+          return (
+            <img
+              key={`icon-${element.value}-${index}`}
+              src={getIconPath(element.value, element.iconType)}
+              alt={element.value}
+              className={`${sizeClasses[size]} object-contain flex-shrink-0`}
+              onError={(e) => {
+                // 画像が見つからない場合はテキストに置換
+                const target = e.target as HTMLImageElement;
+                const span = document.createElement('span');
+                span.textContent = element.value;
+                span.className = 'text-xs font-mono bg-gray-200 text-gray-800 px-1 py-0.5 rounded';
+                target.parentNode?.replaceChild(span, target);
+              }}
+              title={element.value} // ホバー時にアイコン名を表示
+            />
+          );
+        }
+      })}
+    </div>
+  );
+}
+
+interface CommandDisplayDetailedProps {
+  command?: string | null;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
   showOriginal?: boolean;
   showDebug?: boolean;
 }

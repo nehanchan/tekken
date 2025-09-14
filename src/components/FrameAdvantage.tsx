@@ -3,10 +3,75 @@
 
 import React from 'react';
 
+// TextWithIconsを直接インポートできない場合の対応
+interface TextWithIconsProps {
+  text?: string | null;
+  size?: 'sm' | 'md' | 'lg';
+  textClassName?: string;
+}
+
+// 一時的にCommandDisplayから関数をインポート
+import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
+
+// TextWithIconsの簡単な実装
+function TextWithIconsLocal({ 
+  text, 
+  size = 'sm', 
+  textClassName = 'text-yellow-300 font-medium',
+  showFallback = false 
+}: TextWithIconsProps) {
+  if (!text || text.trim() === '') {
+    return showFallback ? <span>-</span> : <span>{text}</span>;
+  }
+
+  const elements = parseCommandToElements(text);
+  
+  if (elements.length === 0 || elements.every(el => el.type === 'text')) {
+    return <span className={textClassName}>{text}</span>;
+  }
+
+  const sizeClasses = {
+    sm: 'h-4 w-4',
+    md: 'h-6 w-6', 
+    lg: 'h-8 w-8'
+  };
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      {elements.map((element, index) => {
+        if (element.type === 'text') {
+          return (
+            <span key={`text-${index}`} className={textClassName}>
+              {element.value}
+            </span>
+          );
+        } else {
+          const iconPath = getIconPath(element.value, element.iconType);
+          return (
+            <img
+              key={`icon-${element.value}-${index}`}
+              src={iconPath}
+              alt={element.value}
+              className={`${sizeClasses[size]} object-contain`}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                const span = document.createElement('span');
+                span.textContent = element.value;
+                span.className = textClassName;
+                target.parentNode?.replaceChild(span, target);
+              }}
+            />
+          );
+        }
+      })}
+    </span>
+  );
+}
+
 interface FrameAdvantageProps {
   value?: string | number | null | undefined;
   className?: string;
-  showBackground?: boolean; // 背景色も表示するか
+  showBackground?: boolean;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -35,10 +100,15 @@ export default function FrameAdvantage({
   };
   
   if (numericValue === null) {
-    // 数値以外（"投げ", "ダウン"など）
+    // 数値以外（"投げ", "ダウン"など） - アイコン置換対応
     return (
       <span className={`text-yellow-300 font-medium ${sizeClasses[size]} ${className}`}>
-        {stringValue}
+        <TextWithIconsLocal 
+          text={stringValue} 
+          size={size === 'lg' ? 'md' : 'sm'}
+          textClassName="text-yellow-300 font-medium"
+          showFallback={false}
+        />
       </span>
     );
   }
@@ -48,51 +118,50 @@ export default function FrameAdvantage({
   let bgClass = '';
   
   if (numericValue > 0) {
-    textClass = 'text-green-300 font-semibold'; // 正の数：明るい緑、太字
+    textClass = 'text-green-300 font-semibold';
     bgClass = showBackground ? 'bg-green-900 bg-opacity-30 px-2 py-1 rounded' : '';
   } else if (numericValue < 0) {
-    textClass = 'text-red-300 font-semibold'; // 負の数：明るい赤、太字  
+    textClass = 'text-red-300 font-semibold';
     bgClass = showBackground ? 'bg-red-900 bg-opacity-30 px-2 py-1 rounded' : '';
   } else {
-    // 0の場合
     textClass = 'text-gray-200 font-medium';
     bgClass = showBackground ? 'bg-gray-700 bg-opacity-30 px-2 py-1 rounded' : '';
   }
 
+  // 数値の場合もアイコン置換を適用
   return (
-    <span className={`${textClass} ${bgClass} ${sizeClasses[size]} ${className}`}>
-      {stringValue}
+    <span className={`${bgClass} ${sizeClasses[size]} ${className}`}>
+      <TextWithIconsLocal 
+        text={stringValue} 
+        size={size === 'lg' ? 'md' : 'sm'}
+        textClassName={textClass}
+        showFallback={false}
+      />
     </span>
   );
 }
 
 /**
  * 文字列から数値を抽出する関数
- * @param value "+3", "-5", "0", "ダウン" など
- * @returns 数値またはnull
  */
 function parseNumericValue(value: string): number | null {
   if (!value || typeof value !== 'string') return null;
   
-  // 数値のみの場合（"0", "3", "-5"など）
   const directNumber = parseInt(value, 10);
   if (!isNaN(directNumber)) {
     return directNumber;
   }
   
-  // +記号付きの場合（"+3"など）
   if (value.startsWith('+')) {
     const number = parseInt(value.substring(1), 10);
     return isNaN(number) ? null : number;
   }
   
-  // -記号付きの場合（"-5"など）
   if (value.startsWith('-')) {
     const number = parseInt(value, 10);
     return isNaN(number) ? null : number;
   }
   
-  // その他の文字列（"ダウン", "投げ"など）
   return null;
 }
 

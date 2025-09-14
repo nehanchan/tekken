@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { client } from '@/lib/client';
-import CommandDisplay from '@/components/CommandDisplay';
+import CommandDisplay, { TextWithIcons } from '@/components/CommandDisplay';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
@@ -188,23 +188,33 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // コマンド表示のシンプルな関数
-  const renderCommand = (command: string | null | undefined) => {
-    if (!command) {
-      return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
-    }
-
+  // 技名表示のアイコン置換対応
+  const renderMoveName = (moveName: string, moveNameKana?: string | null) => {
     return (
-      <CommandDisplay 
-        command={command} 
-        size="lg"
-        className="justify-start"
-        showFallback={true}
-      />
+      <div>
+        <div style={{ fontWeight: '500', fontSize: '16px', color: '#fef2f2' }}>
+          <TextWithIcons 
+            text={moveName} 
+            size="sm"
+            textClassName="text-white font-medium"
+            showFallback={false}
+          />
+        </div>
+        {moveNameKana && (
+          <div style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px' }}>
+            (<TextWithIcons 
+              text={moveNameKana} 
+              size="sm"
+              textClassName="text-rose-300"
+              showFallback={false}
+            />)
+          </div>
+        )}
+      </div>
     );
   };
 
-  // 属性の色分け関数
+  // 属性の色分け関数（アイコン置換対応）
   const renderAttribute = (attribute: string | null | undefined) => {
     if (!attribute) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -213,9 +223,96 @@ export default function CharacterDetailPage() {
     const color = (attribute === 'D' || attribute === '浮') ? '#4ade80' : '#ffffff';
     
     return (
-      <span style={{ color: color, fontWeight: '500' }}>
-        {attribute}
+      <div style={{ color: color, fontWeight: '500' }}>
+        <TextWithIcons 
+          text={attribute} 
+          size="sm"
+          textClassName="font-medium"
+          showFallback={false}
+        />
+      </div>
+    );
+  };
+
+  // 備考表示のアイコン置換対応
+  const renderRemarks = (remarks?: (string | null)[] | null) => {
+    if (!remarks || remarks.length === 0) {
+      return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
+    }
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {remarks
+          .filter((remark): remark is string => remark !== null && remark !== undefined)
+          .map((remark, remarkIndex) => (
+            <div key={remarkIndex} style={{ 
+              fontSize: '14px', 
+              lineHeight: '1.6', 
+              wordBreak: 'break-word', 
+              color: '#fef2f2',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <span>・</span>
+              <TextWithIcons 
+                text={remark} 
+                size="lg"
+                textClassName="text-gray-100"
+                className="flex items-center gap-1"
+                showFallback={false}
+              />
+            </div>
+          ))
+        }
+      </div>
+    );
+  };
+
+  // キャラクター紹介文のアイコン置換対応
+  const renderDescription = (description: string) => {
+    return (
+      <div style={{ color: '#e5e7eb', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+        <TextWithIcons 
+          text={description} 
+          size="sm"
+          textClassName="text-gray-200 leading-relaxed"
+          showFallback={false}
+        />
+      </div>
+    );
+  };
+
+  // キャラクター名のアイコン置換対応
+  const renderCharacterName = (nameJp?: string | null, nameEn?: string) => {
+    const displayName = nameJp || nameEn;
+    if (!displayName) return null;
+
+    return (
+      <span style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+        <TextWithIcons 
+          text={displayName} 
+          size="md"
+          textClassName="text-4xl font-bold text-red-50"
+          showFallback={false}
+        />
       </span>
+    );
+  };
+
+  // ニックネームのアイコン置換対応
+  const renderNickname = (nickname?: string | null) => {
+    if (!nickname) return null;
+    
+    return (
+      <p style={{ fontSize: '20px', color: '#f87171', fontWeight: '600', marginTop: '8px' }}>
+        <TextWithIcons 
+          text={nickname} 
+          size="sm"
+          textClassName="text-red-400 font-semibold"
+          showFallback={false}
+        />
+      </p>
     );
   };
 
@@ -409,7 +506,14 @@ export default function CharacterDetailPage() {
           <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
           <a href="/character/create" style={{ color: '#d1d5db', textDecoration: 'none' }}>キャラクター作成</a>
           <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
-          <span style={{ color: '#fca5a5' }}>{character.character_name_jp || character.character_name_en}</span>
+          <span style={{ color: '#fca5a5' }}>
+            <TextWithIcons 
+              text={character.character_name_jp || character.character_name_en} 
+              size="sm"
+              textClassName="text-rose-300"
+              showFallback={false}
+            />
+          </span>
         </nav>
       </div>
 
@@ -435,16 +539,17 @@ export default function CharacterDetailPage() {
             marginBottom: '8px', 
             textShadow: '2px 2px 8px rgba(0,0,0,0.8)' 
           }}>
-            {character.character_name_jp || character.character_name_en}
+            {renderCharacterName(character.character_name_jp, character.character_name_en)}
           </h1>
           <p style={{ fontSize: '18px', color: '#fca5a5' }}>
-            {character.character_name_en}
+            <TextWithIcons 
+              text={character.character_name_en} 
+              size="sm"
+              textClassName="text-rose-300"
+              showFallback={false}
+            />
           </p>
-          {character.nickname && (
-            <p style={{ fontSize: '20px', color: '#f87171', fontWeight: '600', marginTop: '8px' }}>
-              {character.nickname}
-            </p>
-          )}
+          {renderNickname(character.nickname)}
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '24px' }}>
@@ -463,7 +568,14 @@ export default function CharacterDetailPage() {
             <p style={{ fontSize: '14px', color: '#d1d5db' }}>体重: {character.weight || '未設定'}</p>
             <p style={{ fontSize: '14px', color: '#d1d5db' }}>国籍: {character.nationality || '未設定'}</p>
             {character.martial_arts && (
-              <p style={{ fontSize: '14px', color: '#d1d5db' }}>格闘技: {character.martial_arts}</p>
+              <p style={{ fontSize: '14px', color: '#d1d5db' }}>
+                格闘技: <TextWithIcons 
+                  text={character.martial_arts} 
+                  size="sm"
+                  textClassName="text-gray-300"
+                  showFallback={false}
+                />
+              </p>
             )}
           </div>
         </div>
@@ -507,9 +619,7 @@ export default function CharacterDetailPage() {
             
             {isDescriptionOpen && (
               <div style={{ padding: '24px', background: 'rgba(0, 0, 0, 0.3)' }}>
-                <div style={{ color: '#e5e7eb', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-                  {character.character_description}
-                </div>
+                {renderDescription(character.character_description)}
               </div>
             )}
           </div>
@@ -567,7 +677,12 @@ export default function CharacterDetailPage() {
                       color: '#fef2f2', 
                       textShadow: '1px 1px 2px rgba(0,0,0,0.8)' 
                     }}>
-                      {category.move_category} ({moves.length}個の技)
+                      <TextWithIcons 
+                        text={`${category.move_category} (${moves.length}個の技)`} 
+                        size="sm"
+                        textClassName="font-semibold text-red-50"
+                        showFallback={false}
+                      />
                     </span>
                     <span style={{ 
                       transform: isSelected ? 'rotate(180deg)' : 'rotate(0deg)', 
@@ -615,23 +730,28 @@ export default function CharacterDetailPage() {
                                   {move.move_num || index + 1}
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 24px', fontSize: '14px' }}>
-                                  <div>
-                                    <div style={{ fontWeight: '500', fontSize: '16px', color: '#fef2f2' }}>{move.move_name}</div>
-                                    {move.move_name_kana && (
-                                      <div style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px' }}>({move.move_name_kana})</div>
-                                    )}
-                                  </div>
+                                  {renderMoveName(move.move_name, move.move_name_kana)}
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', minHeight: '40px' }}>
-                                    {renderCommand(move.command)}
+                                    <CommandDisplay 
+                                      command={move.command} 
+                                      size="lg"
+                                      className="justify-start"
+                                      showFallback={true}
+                                    />
                                   </div>
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>
                                   {move.startup_frame || '-'}
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>
-                                  {move.active_frame || '-'}
+                                  <TextWithIcons 
+                                    text={move.active_frame || '-'} 
+                                    size="sm"
+                                    textClassName="text-white font-medium"
+                                    showFallback={true}
+                                  />
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
                                   <FrameAdvantage value={move.hit_frame} />
@@ -652,20 +772,7 @@ export default function CharacterDetailPage() {
                                   </div>
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px', minWidth: '0' }}>
-                                  {move.remarks && move.remarks.length > 0 ? (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                      {move.remarks
-                                        .filter((remark): remark is string => remark !== null && remark !== undefined)
-                                        .map((remark, remarkIndex) => (
-                                          <div key={remarkIndex} style={{ fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word', color: '#fef2f2' }}>
-                                            ・{remark}
-                                          </div>
-                                        ))
-                                      }
-                                    </div>
-                                  ) : (
-                                    <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>
-                                  )}
+                                  {renderRemarks(move.remarks)}
                                 </td>
                               </tr>
                             ))}

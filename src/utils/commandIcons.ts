@@ -6,18 +6,36 @@ const COMMAND_ICONS = [
   'TR', 'uk', 'WB', 'wk', 'wl', 'wp', 'wr', 'wu', 'xn', 'zb'
 ];
 
+// 要素の型定義
+export interface CommandElement {
+  type: 'text' | 'icon';
+  value: string;
+}
+
 /**
- * コマンド文字列をアイコン配列に変換する
- * @param command コマンド文字列（例: "fontcrfcrp"）またはnull/undefined
- * @returns アイコンファイル名の配列（例: ["fo", "nt", "cr", "fc", "rp"]）
+ * 半角括弧を全角括弧に変換する関数
+ * @param text 変換対象の文字列
+ * @returns 変換後の文字列
  */
-export function parseCommandToIcons(command: string | null | undefined): string[] {
+function convertParentheses(text: string): string {
+  return text
+    .replace(/\(/g, '（')  // 半角 ( を全角 （ に変換
+    .replace(/\)/g, '）'); // 半角 ) を全角 ） に変換
+}
+
+/**
+ * コマンド文字列を文字列とアイコンの配列に変換する
+ * @param command コマンド文字列（例: "相手に接近してlprp"）またはnull/undefined
+ * @returns 要素配列（例: [{type: 'text', value: '相手に接近して'}, {type: 'icon', value: 'lp'}, {type: 'icon', value: 'rp'}]）
+ */
+export function parseCommandToElements(command: string | null | undefined): CommandElement[] {
   if (!command || typeof command !== 'string') {
     return [];
   }
 
-  const icons: string[] = [];
+  const elements: CommandElement[] = [];
   let i = 0;
+  let currentText = '';
 
   while (i < command.length) {
     let matched = false;
@@ -28,7 +46,23 @@ export function parseCommandToIcons(command: string | null | undefined): string[
         const substring = command.substring(i, i + iconLength);
         
         if (COMMAND_ICONS.includes(substring)) {
-          icons.push(substring);
+          // アイコンが見つかった場合
+          
+          // 蓄積された文字列があれば追加（半角括弧を全角に変換）
+          if (currentText.length > 0) {
+            elements.push({
+              type: 'text',
+              value: convertParentheses(currentText)
+            });
+            currentText = '';
+          }
+          
+          // アイコンを追加
+          elements.push({
+            type: 'icon',
+            value: substring
+          });
+          
           i += iconLength;
           matched = true;
           break;
@@ -36,14 +70,34 @@ export function parseCommandToIcons(command: string | null | undefined): string[
       }
     }
     
-    // マッチしなかった場合は1文字スキップ
+    // マッチしなかった場合は文字列として蓄積
     if (!matched) {
-      console.warn(`コマンド解析: 不明な文字 "${command[i]}" at position ${i} in "${command}"`);
+      currentText += command[i];
       i++;
     }
   }
 
-  return icons;
+  // 最後に残った文字列があれば追加（半角括弧を全角に変換）
+  if (currentText.length > 0) {
+    elements.push({
+      type: 'text',
+      value: convertParentheses(currentText)
+    });
+  }
+
+  return elements;
+}
+
+/**
+ * コマンド文字列をアイコン配列に変換する（後方互換性のため残す）
+ * @param command コマンド文字列（例: "fontcrfcrp"）またはnull/undefined
+ * @returns アイコンファイル名の配列（例: ["fo", "nt", "cr", "fc", "rp"]）
+ */
+export function parseCommandToIcons(command: string | null | undefined): string[] {
+  const elements = parseCommandToElements(command);
+  return elements
+    .filter(element => element.type === 'icon')
+    .map(element => element.value);
 }
 
 /**
@@ -63,10 +117,27 @@ export function getIconPath(iconName: string): string {
 export function isValidCommand(command: string | null | undefined): boolean {
   if (!command) return false;
   
-  const icons = parseCommandToIcons(command);
-  const reconstructed = icons.join('');
+  const elements = parseCommandToElements(command);
   
-  // 完全に解析できた場合のみ有効とする
+  // 何らかの要素が解析できた場合は有効とする
+  return elements.length > 0;
+}
+
+/**
+ * コマンドが純粋にアイコンのみで構成されているかチェック
+ * @param command コマンド文字列またはnull/undefined
+ * @returns アイコンのみの場合true
+ */
+export function isIconOnlyCommand(command: string | null | undefined): boolean {
+  if (!command) return false;
+  
+  const elements = parseCommandToElements(command);
+  const reconstructed = elements
+    .filter(el => el.type === 'icon')
+    .map(el => el.value)
+    .join('');
+  
+  // 完全にアイコンのみで再構築できた場合
   return reconstructed === command;
 }
 
@@ -76,8 +147,34 @@ export function isValidCommand(command: string | null | undefined): boolean {
  */
 export function debugCommand(command: string | null | undefined): void {
   console.log(`コマンド解析: "${command}"`);
-  const icons = parseCommandToIcons(command);
-  console.log('アイコン:', icons);
-  console.log('再構築:', icons.join(''));
+  const elements = parseCommandToElements(command);
+  console.log('要素:', elements);
+  
+  const textParts = elements.filter(el => el.type === 'text').map(el => el.value);
+  const iconParts = elements.filter(el => el.type === 'icon').map(el => el.value);
+  
+  console.log('文字列部分:', textParts);
+  console.log('アイコン部分:', iconParts);
   console.log('有効:', isValidCommand(command));
+  console.log('アイコンのみ:', isIconOnlyCommand(command));
+}
+
+/**
+ * 使用可能なアイコン一覧を取得
+ * @returns アイコン名の配列
+ */
+export function getAvailableIcons(): string[] {
+  return [...COMMAND_ICONS];
+}
+
+/**
+ * コマンドに含まれるアイコンが全て利用可能かチェック
+ * @param command コマンド文字列またはnull/undefined
+ * @returns 利用不可能なアイコンの配列
+ */
+export function getUnavailableIcons(command: string | null | undefined): string[] {
+  if (!command) return [];
+  
+  const icons = parseCommandToIcons(command);
+  return icons.filter(icon => !COMMAND_ICONS.includes(icon));
 }

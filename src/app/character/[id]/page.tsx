@@ -194,14 +194,28 @@ export default function CharacterDetailPage() {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
     }
 
-    // CommandDisplayコンポーネントに完全に任せる
     return (
       <CommandDisplay 
         command={command} 
         size="lg"
-        className="justify-center"
+        className="justify-start"
         showFallback={true}
       />
+    );
+  };
+
+  // 属性の色分け関数
+  const renderAttribute = (attribute: string | null | undefined) => {
+    if (!attribute) {
+      return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
+    }
+
+    const color = (attribute === 'D' || attribute === '浮') ? '#4ade80' : '#ffffff';
+    
+    return (
+      <span style={{ color: color, fontWeight: '500' }}>
+        {attribute}
+      </span>
     );
   };
 
@@ -263,9 +277,131 @@ export default function CharacterDetailPage() {
       style={{
         minHeight: '100vh',
         background: 'linear-gradient(to bottom right, #111827, #7f1d1d, #000000)',
-        padding: '24px'
+        padding: '24px',
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
+      {/* 炎のエフェクト背景 */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      >
+        {/* 炎のパーティクル */}
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              bottom: '-20px',
+              left: `${5 + i * 8}%`,
+              width: '60px',
+              height: '120px',
+              background: `radial-gradient(ellipse at center bottom, 
+                rgba(255, 69, 0, 0.8) 0%, 
+                rgba(255, 140, 0, 0.6) 30%, 
+                rgba(255, 215, 0, 0.4) 60%, 
+                transparent 100%)`,
+              borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+              animation: `flame-${i % 3} ${3 + (i % 2)}s ease-in-out infinite`,
+              transform: `scale(${0.8 + (i % 3) * 0.2})`,
+              filter: 'blur(1px)'
+            }}
+          />
+        ))}
+        
+        {/* 大きな炎のベース */}
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={`base-${i}`}
+            style={{
+              position: 'absolute',
+              bottom: '-40px',
+              left: `${10 + i * 15}%`,
+              width: '100px',
+              height: '200px',
+              background: `radial-gradient(ellipse at center bottom, 
+                rgba(220, 20, 60, 0.6) 0%, 
+                rgba(255, 69, 0, 0.5) 25%, 
+                rgba(255, 140, 0, 0.3) 50%, 
+                transparent 100%)`,
+              borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+              animation: `flame-base ${4 + i}s ease-in-out infinite ${i * 0.5}s`,
+              filter: 'blur(2px)'
+            }}
+          />
+        ))}
+      </div>
+
+      {/* CSSアニメーション定義 */}
+      <style jsx>{`
+        @keyframes flame-0 {
+          0%, 100% { 
+            transform: translateY(0) scaleY(1) scaleX(1) rotate(-2deg);
+            opacity: 0.7;
+          }
+          25% { 
+            transform: translateY(-20px) scaleY(1.3) scaleX(0.8) rotate(1deg);
+            opacity: 0.9;
+          }
+          50% { 
+            transform: translateY(-10px) scaleY(1.1) scaleX(1.1) rotate(-1deg);
+            opacity: 0.8;
+          }
+          75% { 
+            transform: translateY(-30px) scaleY(1.4) scaleX(0.7) rotate(2deg);
+            opacity: 0.6;
+          }
+        }
+        
+        @keyframes flame-1 {
+          0%, 100% { 
+            transform: translateY(-5px) scaleY(1.1) scaleX(0.9) rotate(1deg);
+            opacity: 0.6;
+          }
+          33% { 
+            transform: translateY(-25px) scaleY(1.4) scaleX(0.7) rotate(-2deg);
+            opacity: 0.8;
+          }
+          66% { 
+            transform: translateY(-15px) scaleY(1.2) scaleX(1.0) rotate(1.5deg);
+            opacity: 0.9;
+          }
+        }
+        
+        @keyframes flame-2 {
+          0%, 100% { 
+            transform: translateY(-10px) scaleY(1.2) scaleX(0.8) rotate(-1deg);
+            opacity: 0.8;
+          }
+          40% { 
+            transform: translateY(-35px) scaleY(1.5) scaleX(0.6) rotate(2deg);
+            opacity: 0.7;
+          }
+          80% { 
+            transform: translateY(-20px) scaleY(1.3) scaleX(0.9) rotate(-1.5deg);
+            opacity: 0.9;
+          }
+        }
+        
+        @keyframes flame-base {
+          0%, 100% { 
+            transform: translateY(0) scaleY(1) scaleX(1) rotate(0deg);
+            opacity: 0.4;
+          }
+          50% { 
+            transform: translateY(-40px) scaleY(1.2) scaleX(0.8) rotate(1deg);
+            opacity: 0.6;
+          }
+        }
+      `}</style>
       {/* ヘッダー */}
       <div style={{ marginBottom: '24px' }}>
         <nav style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '16px' }}>
@@ -445,16 +581,16 @@ export default function CharacterDetailPage() {
                   {isSelected && (
                     <div style={{ background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(69, 10, 10, 0.6))' }}>
                       <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid rgba(185, 28, 28, 0.5)', minWidth: 'max-content' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid rgba(185, 28, 28, 0.5)', minWidth: 'max-content', tableLayout: 'fixed' }}>
                           <thead>
                             <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
                               <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>No</th>
                               <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', width: '288px', color: '#fef2f2' }}>技名</th>
                               <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 32px', fontSize: '14px', fontWeight: 'bold', width: '384px', color: '#fef2f2' }}>コマンド</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>発生</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>持続</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '112px', color: '#fef2f2' }}>ヒット</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '112px', color: '#fef2f2' }}>ガード</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '64px', color: '#fef2f2' }}>発生</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '88px', color: '#fef2f2' }}>持続</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '72px', color: '#fef2f2' }}>ヒット</th>
+                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>ガード</th>
                               <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>判定</th>
                               <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', width: '128px', color: '#fef2f2' }}>属性</th>
                               <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 32px', fontSize: '14px', fontWeight: 'bold', color: '#fef2f2' }}>備考</th>
@@ -487,14 +623,14 @@ export default function CharacterDetailPage() {
                                   </div>
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', minHeight: '40px' }}>
                                     {renderCommand(move.command)}
                                   </div>
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#fca5a5' }}>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>
                                   {move.startup_frame || '-'}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#fca5a5' }}>
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>
                                   {move.active_frame || '-'}
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
@@ -503,8 +639,8 @@ export default function CharacterDetailPage() {
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
                                   <FrameAdvantage value={move.block_frame} />
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', color: '#fca5a5' }}>
-                                  {move.attribute || '-'}
+                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
+                                  {renderAttribute(move.attribute)}
                                 </td>
                                 <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 24px', textAlign: 'center', fontSize: '14px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '32px' }}>
@@ -522,7 +658,7 @@ export default function CharacterDetailPage() {
                                         .filter((remark): remark is string => remark !== null && remark !== undefined)
                                         .map((remark, remarkIndex) => (
                                           <div key={remarkIndex} style={{ fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word', color: '#fef2f2' }}>
-                                            {remark}
+                                            ・{remark}
                                           </div>
                                         ))
                                       }

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { parseCommandToIcons, getIconPath } from '@/utils/commandIcons';
+import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
 
 interface CommandDisplayProps {
   command?: string | null;
@@ -29,36 +29,49 @@ export default function CommandDisplay({
     ) : null;
   }
 
-  const icons = parseCommandToIcons(command);
+  const elements = parseCommandToElements(command);
 
-  // アイコンが解析できなかった場合はテキストで表示
-  if (icons.length === 0) {
+  // 解析できなかった場合（全て文字列だった場合など）はテキストで表示
+  if (elements.length === 0) {
     return (
-      <span className={`text-sm font-mono ${className}`}>
+      <span className={`text-sm font-mono text-gray-200 ${className}`}>
         {command}
       </span>
     );
   }
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
-      {icons.map((iconName, index) => (
-        <img
-          key={`${iconName}-${index}`}
-          src={getIconPath(iconName)}
-          alt={iconName}
-          className={`${sizeClasses[size]} object-contain`}
-          onError={(e) => {
-            // 画像が見つからない場合はテキストに置換
-            const target = e.target as HTMLImageElement;
-            const span = document.createElement('span');
-            span.textContent = iconName;
-            span.className = 'text-xs font-mono bg-gray-200 px-1 py-0.5 rounded';
-            target.parentNode?.replaceChild(span, target);
-          }}
-          title={iconName} // ホバー時にアイコン名を表示
-        />
-      ))}
+    <div className={`flex items-center gap-1 justify-start ${className}`}>
+      {elements.map((element, index) => {
+        if (element.type === 'text') {
+          return (
+            <span 
+              key={`text-${index}`} 
+              className="text-sm text-gray-200 whitespace-nowrap"
+            >
+              {element.value}
+            </span>
+          );
+        } else {
+          return (
+            <img
+              key={`icon-${element.value}-${index}`}
+              src={getIconPath(element.value)}
+              alt={element.value}
+              className={`${sizeClasses[size]} object-contain flex-shrink-0`}
+              onError={(e) => {
+                // 画像が見つからない場合はテキストに置換
+                const target = e.target as HTMLImageElement;
+                const span = document.createElement('span');
+                span.textContent = element.value;
+                span.className = 'text-xs font-mono bg-gray-200 text-gray-800 px-1 py-0.5 rounded';
+                target.parentNode?.replaceChild(span, target);
+              }}
+              title={element.value} // ホバー時にアイコン名を表示
+            />
+          );
+        }
+      })}
     </div>
   );
 }
@@ -75,7 +88,7 @@ export function CommandDisplayDetailed({
   showOriginal = false,
   showDebug = false
 }: CommandDisplayDetailedProps) {
-  const icons = command ? parseCommandToIcons(command) : [];
+  const elements = command ? parseCommandToElements(command) : [];
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -93,9 +106,10 @@ export function CommandDisplayDetailed({
       
       {showDebug && command && (
         <div className="text-xs text-gray-400 space-y-1">
-          <div>アイコン: [{icons.join(', ')}]</div>
-          <div>解析結果: {icons.join('')}</div>
-          <div>一致: {icons.join('') === command ? '✓' : '✗'}</div>
+          <div>要素数: {elements.length}</div>
+          <div>解析結果: [
+            {elements.map(el => `${el.type}:"${el.value}"`).join(', ')}
+          ]</div>
         </div>
       )}
     </div>

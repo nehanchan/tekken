@@ -1,15 +1,21 @@
 // コマンドアイコンのマッピング定義
 const COMMAND_ICONS = [
-  'ah', 'all', 'ba', 'bc', 'bj', 'cm', 'cr', 'dk', 'ei', 'FB',
-  'fc', 'fj', 'fo', 'GV', 'HO', 'HT', 'ij', 'ju', 'KS', 'lk',
-  'lp', 'nb', 'ng', 'nh', 'nt', 'nv', 'PC', 'qy', 'rk', 'rp',
-  'TR', 'uk', 'WB', 'wk', 'wl', 'wp', 'wr', 'wu', 'xn', 'zb'
+  'ah', 'all', 'ba', 'bc', 'bj', 'cm', 'cr', 'dk', 'ei', 
+  'fc', 'fj', 'fo', 'ij', 'ju', 'lk',
+  'lp', 'nb', 'ng', 'nh', 'nt', 'nv', 'qy', 'rk', 'rp',
+  'uk', 'wk', 'wl', 'wp', 'wr', 'wu', 'xn', 'zb'
+];
+
+// エフェクトアイコンの定義
+const EFFECT_ICONS = [
+  'TR', 'FB', 'KS', 'GV', 'HO', 'HT', 'PC', 'WB'
 ];
 
 // 要素の型定義
 export interface CommandElement {
   type: 'text' | 'icon';
   value: string;
+  iconType?: string;
 }
 
 /**
@@ -45,7 +51,8 @@ export function parseCommandToElements(command: string | null | undefined): Comm
       if (i + iconLength <= command.length) {
         const substring = command.substring(i, i + iconLength);
         
-        if (COMMAND_ICONS.includes(substring)) {
+        // コマンドアイコンまたはエフェクトアイコンのいずれかに含まれているかチェック
+        if (COMMAND_ICONS.includes(substring) || EFFECT_ICONS.includes(substring)) {
           // アイコンが見つかった場合
           
           // 蓄積された文字列があれば追加（半角括弧を全角に変換）
@@ -58,9 +65,11 @@ export function parseCommandToElements(command: string | null | undefined): Comm
           }
           
           // アイコンを追加
+          const iconType = EFFECT_ICONS.includes(substring) ? 'effect' : 'command';
           elements.push({
             type: 'icon',
-            value: substring
+            value: substring,
+            iconType: iconType
           });
           
           i += iconLength;
@@ -103,9 +112,13 @@ export function parseCommandToIcons(command: string | null | undefined): string[
 /**
  * アイコンファイルのパスを取得
  * @param iconName アイコン名
+ * @param iconType アイコンタイプ（'command' | 'effect'）
  * @returns アイコンファイルのパス
  */
-export function getIconPath(iconName: string): string {
+export function getIconPath(iconName: string, iconType?: string): string {
+  if (iconType === 'effect' || EFFECT_ICONS.includes(iconName)) {
+    return `/effect-icons/${iconName}.png`;
+  }
   return `/command-icons/${iconName}.png`;
 }
 
@@ -168,6 +181,14 @@ export function getAvailableIcons(): string[] {
 }
 
 /**
+ * 使用可能なエフェクトアイコン一覧を取得
+ * @returns エフェクトアイコン名の配列
+ */
+export function getAvailableEffectIcons(): string[] {
+  return [...EFFECT_ICONS];
+}
+
+/**
  * コマンドに含まれるアイコンが全て利用可能かチェック
  * @param command コマンド文字列またはnull/undefined
  * @returns 利用不可能なアイコンの配列
@@ -176,5 +197,6 @@ export function getUnavailableIcons(command: string | null | undefined): string[
   if (!command) return [];
   
   const icons = parseCommandToIcons(command);
-  return icons.filter(icon => !COMMAND_ICONS.includes(icon));
+  const allIcons = [...COMMAND_ICONS, ...EFFECT_ICONS];
+  return icons.filter(icon => !allIcons.includes(icon));
 }

@@ -10,6 +10,12 @@ interface CommandDisplayProps {
   showFallback?: boolean;
 }
 
+interface CommandElement {
+  type: 'text' | 'icon';
+  value: string;
+  iconType?: string;
+}
+
 const sizeClasses = {
   sm: 'h-4 w-4',
   md: 'h-6 w-6', 
@@ -42,7 +48,7 @@ export default function CommandDisplay({
 
   return (
     <div className={`flex items-center gap-1 justify-start ${className}`}>
-      {elements.map((element, index) => {
+      {elements.map((element: CommandElement, index: number) => {
         if (element.type === 'text') {
           return (
             <span 
@@ -112,7 +118,7 @@ export function TextWithIcons({
 
   return (
     <div className={`inline-flex items-center gap-1 flex-wrap ${className}`}>
-      {elements.map((element, index) => {
+      {elements.map((element: CommandElement, index: number) => {
         if (element.type === 'text') {
           return (
             <span 
@@ -126,7 +132,7 @@ export function TextWithIcons({
           return (
             <img
               key={`icon-${element.value}-${index}`}
-              src={getIconPath(element.value, element.iconType)}
+              src={getIconPath(element.value)}
               alt={element.value}
               className={`${sizeClasses[size]} object-contain flex-shrink-0`}
               onError={(e) => {

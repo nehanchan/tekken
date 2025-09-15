@@ -188,33 +188,41 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // 技名表示のアイコン置換対応
+  // 技名表示
   const renderMoveName = (moveName: string, moveNameKana?: string | null) => {
     return (
       <div>
         <div style={{ fontWeight: '500', fontSize: '16px', color: '#fef2f2' }}>
-          <TextWithIcons 
-            text={moveName} 
-            size="sm"
-            textClassName="text-white font-medium"
-            showFallback={false}
-          />
+          {typeof TextWithIcons !== 'undefined' ? (
+            <TextWithIcons 
+              text={moveName} 
+              size="sm"
+              textClassName="text-white font-medium"
+              showFallback={false}
+            />
+          ) : (
+            moveName
+          )}
         </div>
         {moveNameKana && (
           <div style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px' }}>
-            (<TextWithIcons 
-              text={moveNameKana} 
-              size="sm"
-              textClassName="text-rose-300"
-              showFallback={false}
-            />)
+            ({typeof TextWithIcons !== 'undefined' ? (
+              <TextWithIcons 
+                text={moveNameKana} 
+                size="sm"
+                textClassName="text-rose-300"
+                showFallback={false}
+              />
+            ) : (
+              moveNameKana
+            )})
           </div>
         )}
       </div>
     );
   };
 
-  // 属性の色分け関数（アイコン置換対応）
+  // 属性の色分け
   const renderAttribute = (attribute: string | null | undefined) => {
     if (!attribute) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -224,17 +232,21 @@ export default function CharacterDetailPage() {
     
     return (
       <div style={{ color: color, fontWeight: '500' }}>
-        <TextWithIcons 
-          text={attribute} 
-          size="sm"
-          textClassName="font-medium"
-          showFallback={false}
-        />
+        {typeof TextWithIcons !== 'undefined' ? (
+          <TextWithIcons 
+            text={attribute} 
+            size="sm"
+            textClassName="font-medium"
+            showFallback={false}
+          />
+        ) : (
+          attribute
+        )}
       </div>
     );
   };
 
-  // 備考表示のアイコン置換対応
+  // 備考表示
   const renderRemarks = (remarks?: (string | null)[] | null) => {
     if (!remarks || remarks.length === 0) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -255,13 +267,17 @@ export default function CharacterDetailPage() {
               gap: '4px'
             }}>
               <span>・</span>
-              <TextWithIcons 
-                text={remark} 
-                size="lg"
-                textClassName="text-gray-100"
-                className="flex items-center gap-1"
-                showFallback={false}
-              />
+              {typeof TextWithIcons !== 'undefined' ? (
+                <TextWithIcons 
+                  text={remark} 
+                  size="lg"
+                  textClassName="text-gray-100"
+                  className="flex items-center gap-1"
+                  showFallback={false}
+                />
+              ) : (
+                remark
+              )}
             </div>
           ))
         }
@@ -269,49 +285,61 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // キャラクター紹介文のアイコン置換対応
+  // キャラクター紹介文
   const renderDescription = (description: string) => {
     return (
       <div style={{ color: '#e5e7eb', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-        <TextWithIcons 
-          text={description} 
-          size="sm"
-          textClassName="text-gray-200 leading-relaxed"
-          showFallback={false}
-        />
+        {typeof TextWithIcons !== 'undefined' ? (
+          <TextWithIcons 
+            text={description} 
+            size="sm"
+            textClassName="text-gray-200 leading-relaxed"
+            showFallback={false}
+          />
+        ) : (
+          description
+        )}
       </div>
     );
   };
 
-  // キャラクター名のアイコン置換対応
+  // キャラクター名
   const renderCharacterName = (nameJp?: string | null, nameEn?: string) => {
     const displayName = nameJp || nameEn;
     if (!displayName) return null;
 
     return (
       <span style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-        <TextWithIcons 
-          text={displayName} 
-          size="md"
-          textClassName="text-4xl font-bold text-red-50"
-          showFallback={false}
-        />
+        {typeof TextWithIcons !== 'undefined' ? (
+          <TextWithIcons 
+            text={displayName} 
+            size="md"
+            textClassName="text-4xl font-bold text-red-50"
+            showFallback={false}
+          />
+        ) : (
+          displayName
+        )}
       </span>
     );
   };
 
-  // ニックネームのアイコン置換対応
+  // ニックネーム
   const renderNickname = (nickname?: string | null) => {
     if (!nickname) return null;
     
     return (
       <p style={{ fontSize: '20px', color: '#f87171', fontWeight: '600', marginTop: '8px' }}>
-        <TextWithIcons 
-          text={nickname} 
-          size="sm"
-          textClassName="text-red-400 font-semibold"
-          showFallback={false}
-        />
+        {typeof TextWithIcons !== 'undefined' ? (
+          <TextWithIcons 
+            text={nickname} 
+            size="sm"
+            textClassName="text-red-400 font-semibold"
+            showFallback={false}
+          />
+        ) : (
+          nickname
+        )}
       </p>
     );
   };
@@ -499,6 +527,7 @@ export default function CharacterDetailPage() {
           }
         }
       `}</style>
+      
       {/* ヘッダー */}
       <div style={{ marginBottom: '24px' }}>
         <nav style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '16px' }}>
@@ -507,12 +536,16 @@ export default function CharacterDetailPage() {
           <a href="/character/create" style={{ color: '#d1d5db', textDecoration: 'none' }}>キャラクター作成</a>
           <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
           <span style={{ color: '#fca5a5' }}>
-            <TextWithIcons 
-              text={character.character_name_jp || character.character_name_en} 
-              size="sm"
-              textClassName="text-rose-300"
-              showFallback={false}
-            />
+            {typeof TextWithIcons !== 'undefined' ? (
+              <TextWithIcons 
+                text={character.character_name_jp || character.character_name_en} 
+                size="sm"
+                textClassName="text-rose-300"
+                showFallback={false}
+              />
+            ) : (
+              character.character_name_jp || character.character_name_en
+            )}
           </span>
         </nav>
       </div>
@@ -542,12 +575,16 @@ export default function CharacterDetailPage() {
             {renderCharacterName(character.character_name_jp, character.character_name_en)}
           </h1>
           <p style={{ fontSize: '18px', color: '#fca5a5' }}>
-            <TextWithIcons 
-              text={character.character_name_en} 
-              size="sm"
-              textClassName="text-rose-300"
-              showFallback={false}
-            />
+            {typeof TextWithIcons !== 'undefined' ? (
+              <TextWithIcons 
+                text={character.character_name_en} 
+                size="sm"
+                textClassName="text-rose-300"
+                showFallback={false}
+              />
+            ) : (
+              character.character_name_en
+            )}
           </p>
           {renderNickname(character.nickname)}
         </div>
@@ -569,12 +606,16 @@ export default function CharacterDetailPage() {
             <p style={{ fontSize: '14px', color: '#d1d5db' }}>国籍: {character.nationality || '未設定'}</p>
             {character.martial_arts && (
               <p style={{ fontSize: '14px', color: '#d1d5db' }}>
-                格闘技: <TextWithIcons 
-                  text={character.martial_arts} 
-                  size="sm"
-                  textClassName="text-gray-300"
-                  showFallback={false}
-                />
+                格闘技: {typeof TextWithIcons !== 'undefined' ? (
+                  <TextWithIcons 
+                    text={character.martial_arts} 
+                    size="sm"
+                    textClassName="text-gray-300"
+                    showFallback={false}
+                  />
+                ) : (
+                  character.martial_arts
+                )}
               </p>
             )}
           </div>
@@ -677,12 +718,16 @@ export default function CharacterDetailPage() {
                       color: '#fef2f2', 
                       textShadow: '1px 1px 2px rgba(0,0,0,0.8)' 
                     }}>
-                      <TextWithIcons 
-                        text={`${category.move_category} (${moves.length}個の技)`} 
-                        size="sm"
-                        textClassName="font-semibold text-red-50"
-                        showFallback={false}
-                      />
+                      {typeof TextWithIcons !== 'undefined' ? (
+                        <TextWithIcons 
+                          text={`${category.move_category} (${moves.length}個の技)`} 
+                          size="sm"
+                          textClassName="font-semibold text-red-50"
+                          showFallback={false}
+                        />
+                      ) : (
+                        `${category.move_category} (${moves.length}個の技)`
+                      )}
                     </span>
                     <span style={{ 
                       transform: isSelected ? 'rotate(180deg)' : 'rotate(0deg)', 
@@ -695,23 +740,135 @@ export default function CharacterDetailPage() {
                   
                   {isSelected && (
                     <div style={{ background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(69, 10, 10, 0.6))' }}>
-                      <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid rgba(185, 28, 28, 0.5)', minWidth: 'max-content', tableLayout: 'fixed' }}>
+                      {/* レスポンシブテーブル - 固定列対応 */}
+                      <div style={{ position: 'relative', overflowX: 'auto' }}>
+                        <table style={{ 
+                          width: '100%', 
+                          borderCollapse: 'collapse', 
+                          border: '1px solid rgb(185, 28, 28)', 
+                          minWidth: 'max-content'
+                        }}>
                           <thead>
                             <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>No</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', width: '288px', color: '#fef2f2' }}>技名</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 32px', fontSize: '14px', fontWeight: 'bold', width: '384px', color: '#fef2f2' }}>コマンド</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '64px', color: '#fef2f2' }}>発生</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '88px', color: '#fef2f2' }}>持続</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '72px', color: '#fef2f2' }}>ヒット</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>ガード</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', width: '80px', color: '#fef2f2' }}>判定</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', width: '128px', color: '#fef2f2' }}>属性</th>
-                              <th style={{ border: '1px solid rgba(185, 28, 28, 0.5)', padding: '12px 32px', fontSize: '14px', fontWeight: 'bold', color: '#fef2f2' }}>備考</th>
+                              {/* 固定列 - No */}
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '80px', 
+                                color: '#fef2f2',
+                                position: 'sticky',
+                                left: '0',
+                                zIndex: 20,
+                                background: 'linear-gradient(to right, #7f1d1d, #b91c1c)',
+                                boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
+                              }}>
+                                No
+                              </th>
+                              {/* 固定列 - 技名 */}
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 24px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '280px', 
+                                color: '#fef2f2',
+                                position: 'sticky',
+                                left: '80px',
+                                zIndex: 20,
+                                background: 'linear-gradient(to right, #7f1d1d, #b91c1c)',
+                                boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
+                              }}>
+                                技名
+                              </th>
+                              {/* スクロール可能な列 */}
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 32px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '350px', 
+                                color: '#fef2f2' 
+                              }}>
+                                コマンド
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '64px', 
+                                color: '#fef2f2' 
+                              }}>
+                                発生
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '88px', 
+                                color: '#fef2f2' 
+                              }}>
+                                持続
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '72px', 
+                                color: '#fef2f2' 
+                              }}>
+                                ヒット
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '80px', 
+                                color: '#fef2f2' 
+                              }}>
+                                ガード
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '80px', 
+                                color: '#fef2f2' 
+                              }}>
+                                判定
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 24px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                width: '120px', 
+                                color: '#fef2f2' 
+                              }}>
+                                属性
+                              </th>
+                              <th style={{ 
+                                border: '1px solid rgb(185, 28, 28)', 
+                                padding: '12px 32px', 
+                                fontSize: '14px', 
+                                fontWeight: 'bold', 
+                                minWidth: '200px', 
+                                color: '#fef2f2' 
+                              }}>
+                                備考
+                              </th>
                             </tr>
                           </thead>
-                          <tbody style={{ background: 'linear-gradient(to bottom, #000000, #111827, #000000)', color: 'white' }}>
+                          <tbody style={{ 
+                            background: '#000000', 
+                            color: 'white' 
+                          }}>
                             {moves.map((move, index) => (
                               <tr 
                                 key={move.id} 
@@ -720,59 +877,158 @@ export default function CharacterDetailPage() {
                                   transition: 'all 0.2s'
                                 }}
                                 onMouseEnter={(e) => {
-                                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(127, 29, 29, 0.3), rgba(185, 28, 28, 0.3))';
+                                  e.currentTarget.style.background = 'rgba(127, 29, 29, 0.3)';
                                 }}
                                 onMouseLeave={(e) => {
                                   e.currentTarget.style.background = 'transparent';
                                 }}
                               >
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#fca5a5' }}>
+                                {/* 固定列 - No */}
+<td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  borderRight: 'none', // 右側の枠線を削除
+                                  padding: '16px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px', 
+                                  fontWeight: '500', 
+                                  color: '#fca5a5',
+                                  position: 'sticky',
+                                  left: '0',
+                                  zIndex: 10,
+                                  background: '#000000',
+                                  boxShadow: 'none'
+                                }}>
                                   {move.move_num || index + 1}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 24px', fontSize: '14px' }}>
+                                {/* 固定列 - 技名 */}
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  borderLeft: 'none', // 左側の枠線を削除
+                                  padding: '16px 24px', 
+                                  fontSize: '14px',
+                                  position: 'sticky',
+                                  left: '80px',
+                                  zIndex: 10,
+                                  background: '#000000',
+                                  boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
+                                }}>
                                   {renderMoveName(move.move_name, move.move_name_kana)}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', minHeight: '40px' }}>
-                                    <CommandDisplay 
-                                      command={move.command} 
-                                      size="lg"
-                                      className="justify-start"
-                                      showFallback={true}
-                                    />
+                                {/* スクロール可能な列 */}
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px 32px', 
+                                  fontSize: '14px' 
+                                }}>
+                                  <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'flex-start', 
+                                    minHeight: '40px' 
+                                  }}>
+                                    {typeof CommandDisplay !== 'undefined' ? (
+                                      <CommandDisplay 
+                                        command={move.command} 
+                                        size="lg"
+                                        className="justify-start"
+                                        showFallback={true}
+                                      />
+                                    ) : (
+                                      <span>{move.command || '-'}</span>
+                                    )}
                                   </div>
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px', 
+                                  fontWeight: '500', 
+                                  color: '#ffffff' 
+                                }}>
                                   {move.startup_frame || '-'}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>
-                                  <TextWithIcons 
-                                    text={move.active_frame || '-'} 
-                                    size="sm"
-                                    textClassName="text-white font-medium"
-                                    showFallback={true}
-                                  />
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px', 
+                                  fontWeight: '500', 
+                                  color: '#ffffff' 
+                                }}>
+                                  {typeof TextWithIcons !== 'undefined' ? (
+                                    <TextWithIcons 
+                                      text={move.active_frame || '-'} 
+                                      size="sm"
+                                      textClassName="text-white font-medium"
+                                      showFallback={true}
+                                    />
+                                  ) : (
+                                    move.active_frame || '-'
+                                  )}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
-                                  <FrameAdvantage value={move.hit_frame} />
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px' 
+                                }}>
+                                  {typeof FrameAdvantage !== 'undefined' ? (
+                                    <FrameAdvantage value={move.hit_frame} />
+                                  ) : (
+                                    <span>{move.hit_frame || '-'}</span>
+                                  )}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
-                                  <FrameAdvantage value={move.block_frame} />
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px' 
+                                }}>
+                                  {typeof FrameAdvantage !== 'undefined' ? (
+                                    <FrameAdvantage value={move.block_frame} />
+                                  ) : (
+                                    <span>{move.block_frame || '-'}</span>
+                                  )}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px', textAlign: 'center', fontSize: '14px' }}>
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px' 
+                                }}>
                                   {renderAttribute(move.attribute)}
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 24px', textAlign: 'center', fontSize: '14px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '32px' }}>
-                                    <EffectDisplay 
-                                      effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
-                                      size="md"
-                                      showTooltip={true}
-                                    />
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px 24px', 
+                                  textAlign: 'center', 
+                                  fontSize: '14px' 
+                                }}>
+                                  <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    minHeight: '32px' 
+                                  }}>
+                                    {typeof EffectDisplay !== 'undefined' ? (
+                                      <EffectDisplay 
+                                        effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
+                                        size="md"
+                                        showTooltip={true}
+                                      />
+                                    ) : (
+                                      <span>-</span>
+                                    )}
                                   </div>
                                 </td>
-                                <td style={{ border: '1px solid rgba(185, 28, 28, 0.3)', padding: '16px 32px', fontSize: '14px', minWidth: '0' }}>
-                                  {renderRemarks(move.remarks)}
+                                <td style={{ 
+                                  border: '2px solid rgba(185, 28, 28, 0.3)', 
+                                  padding: '16px 24px', 
+                                  fontSize: '14px',
+                                  width: '200px',
+                                  maxWidth: '200px'
+                                }}>                              {renderRemarks(move.remarks)}
                                 </td>
                               </tr>
                             ))}

@@ -3,23 +3,117 @@
 
 import React from 'react';
 
-// TextWithIconsを直接インポートできない場合の対応
-interface TextWithIconsProps {
+// CommandElementの型定義
+interface CommandElement {
+  type: 'text' | 'icon';
+  value: string;
+  iconType?: string;
+}
+
+// CommandDisplayからの関数を直接実装（強化版）
+function parseCommandToElements(text: string | null | undefined): CommandElement[] {
+  if (!text || typeof text !== 'string') {
+    return [];
+  }
+
+  const COMMAND_ICONS = [
+    'ah', 'all', 'ba', 'bc', 'bj', 'cm', 'cr', 'dk', 'ei',
+    'fc', 'fj', 'fo', 'ij', 'ju', 'lk',
+    'lp', 'nb', 'ng', 'nh', 'nt', 'nv', 'qy', 'rk', 'rp',
+    'uk', 'wk', 'wl', 'wp', 'wr', 'wu', 'xn', 'zb'
+  ];
+
+  // エフェクトアイコンの定義
+  const EFFECT_ICONS = [
+    'TR', 'FB', 'KS', 'GV', 'HO', 'HT', 'PC', 'WB'
+  ];
+
+  // 短い文字列の場合、エフェクトアイコンの完全一致をチェック
+  const trimmedText = text.trim();
+  if (EFFECT_ICONS.includes(trimmedText)) {
+    return [{
+      type: 'icon',
+      value: trimmedText,
+      iconType: 'effect'
+    }];
+  }
+
+  const elements: CommandElement[] = [];
+  let i = 0;
+  let currentText = '';
+
+  while (i < text.length) {
+    let matched = false;
+    
+    // 長いアイコン名から順に検索（3文字 -> 2文字）
+    for (const iconLength of [3, 2]) {
+      if (i + iconLength <= text.length) {
+        const substring = text.substring(i, i + iconLength);
+        
+        if (COMMAND_ICONS.includes(substring) || EFFECT_ICONS.includes(substring)) {
+          if (currentText.length > 0) {
+            elements.push({
+              type: 'text',
+              value: currentText.replace(/\(/g, '（').replace(/\)/g, '）')
+            });
+            currentText = '';
+          }
+          
+          const iconType = EFFECT_ICONS.includes(substring) ? 'effect' : 'command';
+          elements.push({
+            type: 'icon',
+            value: substring,
+            iconType: iconType
+          });
+          
+          i += iconLength;
+          matched = true;
+          break;
+        }
+      }
+    }
+    
+    if (!matched) {
+      currentText += text[i];
+      i++;
+    }
+  }
+
+  if (currentText.length > 0) {
+    elements.push({
+      type: 'text',
+      value: currentText.replace(/\(/g, '（').replace(/\)/g, '）')
+    });
+  }
+
+  return elements;
+}
+
+function getIconPath(iconName: string, iconType?: string): string {
+  const EFFECT_ICONS = [
+    'TR', 'FB', 'KS', 'GV', 'HO', 'HT', 'PC', 'WB'
+  ];
+  
+  if (iconType === 'effect' || EFFECT_ICONS.includes(iconName)) {
+    return `/effect-icons/${iconName}.png`;
+  }
+  return `/command-icons/${iconName}.png`;
+}
+
+// TextWithIconsの簡単な実装
+interface TextWithIconsLocalProps {
   text?: string | null;
   size?: 'sm' | 'md' | 'lg';
   textClassName?: string;
+  showFallback?: boolean;
 }
 
-// 一時的にCommandDisplayから関数をインポート
-import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
-
-// TextWithIconsの簡単な実装
 function TextWithIconsLocal({ 
   text, 
   size = 'sm', 
   textClassName = 'text-yellow-300 font-medium',
   showFallback = false 
-}: TextWithIconsProps) {
+}: TextWithIconsLocalProps) {
   if (!text || text.trim() === '') {
     return showFallback ? <span>-</span> : <span>{text}</span>;
   }
@@ -105,7 +199,7 @@ export default function FrameAdvantage({
       <span className={`text-yellow-300 font-medium ${sizeClasses[size]} ${className}`}>
         <TextWithIconsLocal 
           text={stringValue} 
-          size={size === 'lg' ? 'md' : 'sm'}
+          size={size === 'sm' ? 'md' : 'md'}
           textClassName="text-yellow-300 font-medium"
           showFallback={false}
         />
@@ -133,7 +227,7 @@ export default function FrameAdvantage({
     <span className={`${bgClass} ${sizeClasses[size]} ${className}`}>
       <TextWithIconsLocal 
         text={stringValue} 
-        size={size === 'lg' ? 'md' : 'sm'}
+        size={size === 'sm' ? 'md' : 'lg'}
         textClassName={textClass}
         showFallback={false}
       />

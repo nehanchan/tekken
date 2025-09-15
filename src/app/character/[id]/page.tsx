@@ -1,4 +1,4 @@
-// src/app/character/[id]/page.tsx (エラー修正版)
+// src/app/character/[id]/page.tsx (完全版 - 修正された列幅)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -190,18 +190,17 @@ export default function CharacterDetailPage() {
     }
   };
 
-  // handleCategorySelect関数も不要になったため削除
-  // const handleCategorySelect = (categoryId: string) => {
-  //   setSelectedCategories(prev => {
-  //     const newSet = new Set(prev);
-  //     if (newSet.has(categoryId)) {
-  //       newSet.delete(categoryId);
-  //     } else {
-  //       newSet.add(categoryId);
-  //     }
-  //     return newSet;
-  //   });
-  // };
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
+  };
 
   // 技名表示
   const renderMoveName = (moveName: string, moveNameKana?: string | null) => {
@@ -423,7 +422,7 @@ export default function CharacterDetailPage() {
     </div>
   );
 
-  // デスクトップ表示用のテーブル行コンポーネント
+  // デスクトップ表示用のテーブル行コンポーネント（修正された列幅）
   const renderDesktopMoveRow = (move: MoveData, index: number) => (
     <tr 
       key={move.id} 
@@ -438,32 +437,49 @@ export default function CharacterDetailPage() {
         e.currentTarget.style.background = 'transparent';
       }}
     >
-      {/* No */}
+      {/* No - 40px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px', 
+        padding: '12px 8px', 
         textAlign: 'center', 
         fontSize: '14px', 
         fontWeight: '500', 
-        color: '#fca5a5'
+        color: '#fca5a5',
+        width: '40px',
+        maxWidth: '40px',
+        minWidth: '40px',
+        position: 'sticky',
+        left: '0',
+        zIndex: 10,
+        background: 'inherit'
       }}>
         {move.move_num || index + 1}
       </td>
       
-      {/* 技名 */}
+      {/* 技名 - 250px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px 24px', 
-        fontSize: '14px'
+        padding: '12px 16px', 
+        fontSize: '14px',
+        width: '250px',
+        maxWidth: '250px',
+        minWidth: '250px',
+        position: 'sticky',
+        left: '40px',
+        zIndex: 10,
+        background: 'inherit'
       }}>
         {renderMoveName(move.move_name, move.move_name_kana)}
       </td>
       
-      {/* 通常の列 */}
+      {/* コマンド - 350px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px 32px', 
-        fontSize: '14px' 
+        padding: '12px 24px', 
+        fontSize: '14px',
+        width: '350px',
+        maxWidth: '350px',
+        minWidth: '350px'
       }}>
         <div style={{ 
           display: 'flex', 
@@ -484,24 +500,32 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
+      {/* 発生 - 40px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px', 
+        padding: '12px 8px', 
         textAlign: 'center', 
         fontSize: '14px', 
         fontWeight: '500', 
-        color: '#ffffff' 
+        color: '#ffffff',
+        width: '40px',
+        maxWidth: '40px',
+        minWidth: '40px'
       }}>
         {move.startup_frame || '-'}
       </td>
       
+      {/* 持続 - 68px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px', 
+        padding: '12px 8px', 
         textAlign: 'center', 
         fontSize: '14px', 
         fontWeight: '500', 
-        color: '#ffffff' 
+        color: '#ffffff',
+        width: '68px',
+        maxWidth: '68px',
+        minWidth: '68px'
       }}>
         {TextWithIcons ? (
           <TextWithIcons 
@@ -515,11 +539,15 @@ export default function CharacterDetailPage() {
         )}
       </td>
       
+      {/* ヒット - 64px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px', 
+        padding: '12px 8px', 
         textAlign: 'center', 
-        fontSize: '14px' 
+        fontSize: '14px',
+        width: '64px',
+        maxWidth: '64px',
+        minWidth: '64px'
       }}>
         {FrameAdvantage ? (
           <FrameAdvantage value={move.hit_frame} />
@@ -528,11 +556,15 @@ export default function CharacterDetailPage() {
         )}
       </td>
       
+      {/* ガード - 64px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px', 
+        padding: '12px 8px', 
         textAlign: 'center', 
-        fontSize: '14px' 
+        fontSize: '14px',
+        width: '64px',
+        maxWidth: '64px',
+        minWidth: '64px'
       }}>
         {FrameAdvantage ? (
           <FrameAdvantage value={move.block_frame} />
@@ -541,20 +573,28 @@ export default function CharacterDetailPage() {
         )}
       </td>
       
+      {/* 判定 - 90px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px', 
+        padding: '12px', 
         textAlign: 'center', 
-        fontSize: '14px' 
+        fontSize: '14px',
+        width: '90px',
+        maxWidth: '90px',
+        minWidth: '90px'
       }}>
         {renderAttribute(move.attribute)}
       </td>
       
+      {/* 属性 - 120px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px 24px', 
+        padding: '12px 16px', 
         textAlign: 'center', 
-        fontSize: '14px' 
+        fontSize: '14px',
+        width: '120px',
+        maxWidth: '120px',
+        minWidth: '120px'
       }}>
         <div style={{ 
           display: 'flex', 
@@ -574,12 +614,14 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
+      {/* 備考 - 328px */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '16px 24px', 
+        padding: '12px 16px', 
         fontSize: '14px',
-        width: '200px',
-        maxWidth: '200px'
+        width: '328px',
+        maxWidth: '328px',
+        minWidth: '328px'
       }}>
         {renderRemarks(move.remarks)}
       </td>
@@ -657,16 +699,7 @@ export default function CharacterDetailPage() {
           <a href="/character/create" style={{ color: '#d1d5db', textDecoration: 'none' }}>キャラクター作成</a>
           <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
           <span style={{ color: '#fca5a5' }}>
-            {TextWithIcons ? (
-              <TextWithIcons 
-                text={character.character_name_jp || character.character_name_en} 
-                size="sm"
-                textClassName="text-rose-300"
-                showFallback={false}
-              />
-            ) : (
-              character.character_name_jp || character.character_name_en
-            )}
+            {character.character_name_jp || character.character_name_en}
           </span>
         </nav>
       </div>
@@ -846,16 +879,7 @@ export default function CharacterDetailPage() {
                       textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
                       fontSize: isMobile ? '14px' : '16px'
                     }}>
-                      {TextWithIcons ? (
-                        <TextWithIcons 
-                          text={`${category.move_category} (${moves.length}個の技)`} 
-                          size="sm"
-                          textClassName="font-semibold text-red-50"
-                          showFallback={false}
-                        />
-                      ) : (
-                        `${category.move_category} (${moves.length}個の技)`
-                      )}
+                      {`${category.move_category} (${moves.length}個の技)`}
                     </span>
                     <span style={{ 
                       transform: isSelected ? 'rotate(180deg)' : 'rotate(0deg)', 
@@ -880,17 +904,20 @@ export default function CharacterDetailPage() {
                             width: '100%', 
                             borderCollapse: 'collapse', 
                             border: '1px solid rgb(185, 28, 28)', 
-                            minWidth: 'max-content'
+                            minWidth: 'max-content',
+                            tableLayout: 'fixed'  // 固定レイアウトを強制
                           }}>
                             <thead>
                               <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
-                                {/* 固定列 - No */}
+                                {/* No - 40px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 16px', 
+                                  padding: '8px 4px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '80px', 
+                                  width: '40px',
+                                  maxWidth: '40px',
+                                  minWidth: '40px',
                                   color: '#fef2f2',
                                   position: 'sticky',
                                   left: '0',
@@ -900,99 +927,133 @@ export default function CharacterDetailPage() {
                                 }}>
                                   No
                                 </th>
-                                {/* 固定列 - 技名 */}
+                                
+                                {/* 技名 - 250px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 24px', 
+                                  padding: '8px 16px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '280px', 
+                                  width: '250px',
+                                  maxWidth: '250px',
+                                  minWidth: '250px',
                                   color: '#fef2f2',
                                   position: 'sticky',
-                                  left: '80px',
+                                  left: '40px',
                                   zIndex: 20,
                                   background: 'linear-gradient(to right, #7f1d1d, #b91c1c)',
                                   boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
                                 }}>
                                   技名
                                 </th>
-                                {/* スクロール可能な列 */}
+                                
+                                {/* コマンド - 350px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 32px', 
+                                  padding: '8px 24px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '350px', 
+                                  width: '350px',
+                                  maxWidth: '350px',
+                                  minWidth: '350px',
                                   color: '#fef2f2' 
                                 }}>
                                   コマンド
                                 </th>
+                                
+                                {/* 発生 - 40px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 16px', 
+                                  padding: '8px 4px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '64px', 
+                                  width: '40px',
+                                  maxWidth: '40px',
+                                  minWidth: '40px',
                                   color: '#fef2f2' 
                                 }}>
                                   発生
                                 </th>
+                                
+                                {/* 持続 - 68px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 16px', 
+                                  padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '88px', 
+                                  width: '68px',
+                                  maxWidth: '68px',
+                                  minWidth: '68px',
                                   color: '#fef2f2' 
                                 }}>
                                   持続
                                 </th>
+                                
+                                {/* ヒット - 64px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 16px', 
+                                  padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '72px', 
+                                  width: '64px',
+                                  maxWidth: '64px',
+                                  minWidth: '64px',
                                   color: '#fef2f2' 
                                 }}>
                                   ヒット
                                 </th>
+                                
+                                {/* ガード - 64px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 16px', 
+                                  padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '80px', 
+                                  width: '64px',
+                                  maxWidth: '64px',
+                                  minWidth: '64px',
                                   color: '#fef2f2' 
                                 }}>
                                   ガード
                                 </th>
+                                
+                                {/* 判定 - 90px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 16px', 
+                                  padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '80px', 
+                                  width: '90px',
+                                  maxWidth: '90px',
+                                  minWidth: '90px',
                                   color: '#fef2f2' 
                                 }}>
                                   判定
                                 </th>
+                                
+                                {/* 属性 - 120px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 24px', 
+                                  padding: '8px 16px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '120px', 
+                                  width: '120px',
+                                  maxWidth: '120px',
+                                  minWidth: '120px',
                                   color: '#fef2f2' 
                                 }}>
                                   属性
                                 </th>
+                                
+                                {/* 備考 - 328px */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '12px 32px', 
+                                  padding: '8px 16px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  minWidth: '200px', 
+                                  width: '328px',
+                                  maxWidth: '328px',
+                                  minWidth: '328px',
                                   color: '#fef2f2' 
                                 }}>
                                   備考

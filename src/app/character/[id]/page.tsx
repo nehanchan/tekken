@@ -1,10 +1,10 @@
-// src/app/character/[id]/page.tsx (完全版 - 修正された列幅)
+// src/app/character/[id]/page.tsx (修正版 - アイコン置換を技一覧のみに限定)
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { client } from '@/lib/client';
-import CommandDisplay, { TextWithIcons } from '@/components/CommandDisplay';
+import CommandDisplay, { TextWithIcons, PlainText } from '@/components/CommandDisplay';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
@@ -202,41 +202,35 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // 技名表示
+  // 技名表示（技一覧でのみアイコン置換を有効化）
   const renderMoveName = (moveName: string, moveNameKana?: string | null) => {
     return (
       <div>
         <div style={{ fontWeight: '500', fontSize: isMobile ? '14px' : '16px', color: '#fef2f2' }}>
-          {TextWithIcons ? (
-            <TextWithIcons 
-              text={moveName} 
-              size="sm"
-              textClassName="text-white font-medium"
-              showFallback={false}
-            />
-          ) : (
-            moveName
-          )}
+          <TextWithIcons 
+            text={moveName} 
+            size="sm"
+            textClassName="text-white font-medium"
+            showFallback={false}
+            enableIconReplacement={true} // 技名ではアイコン置換を有効化
+          />
         </div>
         {moveNameKana && !isMobile && (
           <div style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px' }}>
-            ({TextWithIcons ? (
-              <TextWithIcons 
-                text={moveNameKana} 
-                size="sm"
-                textClassName="text-rose-300"
-                showFallback={false}
-              />
-            ) : (
-              moveNameKana
-            )})
+            (<TextWithIcons 
+              text={moveNameKana} 
+              size="sm"
+              textClassName="text-rose-300"
+              showFallback={false}
+              enableIconReplacement={true} // 技名読みでもアイコン置換を有効化
+            />)
           </div>
         )}
       </div>
     );
   };
 
-  // 属性の色分け
+  // 属性の色分け（技一覧でのみアイコン置換を有効化）
   const renderAttribute = (attribute: string | null | undefined) => {
     if (!attribute) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -246,21 +240,18 @@ export default function CharacterDetailPage() {
     
     return (
       <div style={{ color: color, fontWeight: '500' }}>
-        {TextWithIcons ? (
-          <TextWithIcons 
-            text={attribute} 
-            size="sm"
-            textClassName="font-medium"
-            showFallback={false}
-          />
-        ) : (
-          attribute
-        )}
+        <TextWithIcons 
+          text={attribute} 
+          size="sm"
+          textClassName="font-medium"
+          showFallback={false}
+          enableIconReplacement={true} // 属性でアイコン置換を有効化
+        />
       </div>
     );
   };
 
-  // 備考表示
+  // 備考表示（技一覧でのみアイコン置換を有効化）
   const renderRemarks = (remarks?: (string | null)[] | null) => {
     if (!remarks || remarks.length === 0) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -281,17 +272,14 @@ export default function CharacterDetailPage() {
               gap: '4px'
             }}>
               <span>・</span>
-              {TextWithIcons ? (
-                <TextWithIcons 
-                  text={remark} 
-                  size="lg"
-                  textClassName="text-gray-100"
-                  className="flex items-center gap-1"
-                  showFallback={false}
-                />
-              ) : (
-                remark
-              )}
+              <TextWithIcons 
+                text={remark} 
+                size="lg"
+                textClassName="text-gray-100"
+                className="flex items-center gap-1"
+                showFallback={false}
+                enableIconReplacement={true} // 備考でアイコン置換を有効化
+              />
             </div>
           ))
         }
@@ -299,61 +287,46 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // キャラクター紹介文
+  // キャラクター紹介文（アイコン置換なし）
   const renderDescription = (description: string) => {
     return (
       <div style={{ color: '#e5e7eb', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-        {TextWithIcons ? (
-          <TextWithIcons 
-            text={description} 
-            size="sm"
-            textClassName="text-gray-200 leading-relaxed"
-            showFallback={false}
-          />
-        ) : (
-          description
-        )}
+        <PlainText 
+          text={description} 
+          className="text-gray-200 leading-relaxed"
+          showFallback={false}
+        />
       </div>
     );
   };
 
-  // キャラクター名
+  // キャラクター名（アイコン置換なし）
   const renderCharacterName = (nameJp?: string | null, nameEn?: string) => {
     const displayName = nameJp || nameEn;
     if (!displayName) return null;
 
     return (
       <span style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-        {TextWithIcons ? (
-          <TextWithIcons 
-            text={displayName} 
-            size="md"
-            textClassName={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold text-red-50`}
-            showFallback={false}
-          />
-        ) : (
-          displayName
-        )}
+        <PlainText 
+          text={displayName} 
+          className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold text-red-50`}
+          showFallback={false}
+        />
       </span>
     );
   };
 
-  // ニックネーム
+  // ニックネーム（アイコン置換なし）
   const renderNickname = (nickname?: string | null) => {
     if (!nickname) return null;
     
     return (
       <p style={{ fontSize: isMobile ? '16px' : '20px', color: '#f87171', fontWeight: '600', marginTop: '8px' }}>
-        {TextWithIcons ? (
-          <TextWithIcons 
-            text={nickname} 
-            size="sm"
-            textClassName="text-red-400 font-semibold"
-            showFallback={false}
-          />
-        ) : (
-          nickname
-        )}
+        <PlainText 
+          text={nickname} 
+          className="text-red-400 font-semibold"
+          showFallback={false}
+        />
       </p>
     );
   };
@@ -408,16 +381,12 @@ export default function CharacterDetailPage() {
         justifyContent: 'flex-start',
         padding: '8px 0'
       }}>
-        {CommandDisplay ? (
-          <CommandDisplay 
-            command={move.command} 
-            size="md"
-            className="justify-start"
-            showFallback={true}
-          />
-        ) : (
-          <span style={{ color: '#d1d5db' }}>{move.command || '-'}</span>
-        )}
+        <CommandDisplay 
+          command={move.command} 
+          size="md"
+          className="justify-start"
+          showFallback={true}
+        />
       </div>
     </div>
   );
@@ -487,16 +456,12 @@ export default function CharacterDetailPage() {
           justifyContent: 'flex-start', 
           minHeight: '40px' 
         }}>
-          {CommandDisplay ? (
-            <CommandDisplay 
-              command={move.command} 
-              size="lg"
-              className="justify-start"
-              showFallback={true}
-            />
-          ) : (
-            <span>{move.command || '-'}</span>
-          )}
+          <CommandDisplay 
+            command={move.command} 
+            size="lg"
+            className="justify-start"
+            showFallback={true}
+          />
         </div>
       </td>
       
@@ -527,16 +492,13 @@ export default function CharacterDetailPage() {
         maxWidth: '68px',
         minWidth: '68px'
       }}>
-        {TextWithIcons ? (
-          <TextWithIcons 
-            text={move.active_frame || '-'} 
-            size="sm"
-            textClassName="text-white font-medium"
-            showFallback={true}
-          />
-        ) : (
-          move.active_frame || '-'
-        )}
+        <TextWithIcons 
+          text={move.active_frame || '-'} 
+          size="sm"
+          textClassName="text-white font-medium"
+          showFallback={true}
+          enableIconReplacement={true}
+        />
       </td>
       
       {/* ヒット - 64px */}
@@ -549,11 +511,7 @@ export default function CharacterDetailPage() {
         maxWidth: '64px',
         minWidth: '64px'
       }}>
-        {FrameAdvantage ? (
-          <FrameAdvantage value={move.hit_frame} />
-        ) : (
-          <span>{move.hit_frame || '-'}</span>
-        )}
+        <FrameAdvantage value={move.hit_frame} />
       </td>
       
       {/* ガード - 64px */}
@@ -566,11 +524,7 @@ export default function CharacterDetailPage() {
         maxWidth: '64px',
         minWidth: '64px'
       }}>
-        {FrameAdvantage ? (
-          <FrameAdvantage value={move.block_frame} />
-        ) : (
-          <span>{move.block_frame || '-'}</span>
-        )}
+        <FrameAdvantage value={move.block_frame} />
       </td>
       
       {/* 判定 - 90px */}
@@ -602,15 +556,11 @@ export default function CharacterDetailPage() {
           justifyContent: 'center', 
           minHeight: '32px' 
         }}>
-          {EffectDisplay ? (
-            <EffectDisplay 
-              effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
-              size="md"
-              showTooltip={false}
-            />
-          ) : (
-            <span>-</span>
-          )}
+          <EffectDisplay 
+            effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
+            size="md"
+            showTooltip={false}
+          />
         </div>
       </td>
       
@@ -729,16 +679,11 @@ export default function CharacterDetailPage() {
             {renderCharacterName(character.character_name_jp, character.character_name_en)}
           </h1>
           <p style={{ fontSize: isMobile ? '16px' : '18px', color: '#fca5a5' }}>
-            {TextWithIcons ? (
-              <TextWithIcons 
-                text={character.character_name_en} 
-                size="sm"
-                textClassName="text-rose-300"
-                showFallback={false}
-              />
-            ) : (
-              character.character_name_en
-            )}
+            <PlainText 
+              text={character.character_name_en} 
+              className="text-rose-300"
+              showFallback={false}
+            />
           </p>
           {renderNickname(character.nickname)}
         </div>
@@ -766,16 +711,11 @@ export default function CharacterDetailPage() {
             <p style={{ fontSize: '14px', color: '#d1d5db' }}>国籍: {character.nationality || '未設定'}</p>
             {character.martial_arts && (
               <p style={{ fontSize: '14px', color: '#d1d5db' }}>
-                格闘技: {TextWithIcons ? (
-                  <TextWithIcons 
-                    text={character.martial_arts} 
-                    size="sm"
-                    textClassName="text-gray-300"
-                    showFallback={false}
-                  />
-                ) : (
-                  character.martial_arts
-                )}
+                格闘技: <PlainText 
+                  text={character.martial_arts} 
+                  className="text-gray-300"
+                  showFallback={false}
+                />
               </p>
             )}
           </div>
@@ -1189,16 +1129,12 @@ export default function CharacterDetailPage() {
                 borderRadius: '6px',
                 border: '1px solid rgba(185, 28, 28, 0.2)'
               }}>
-                {CommandDisplay ? (
-                  <CommandDisplay 
-                    command={selectedMove.command} 
-                    size="lg"
-                    className="justify-start"
-                    showFallback={true}
-                  />
-                ) : (
-                  <span style={{ color: '#d1d5db' }}>{selectedMove.command || '-'}</span>
-                )}
+                <CommandDisplay 
+                  command={selectedMove.command} 
+                  size="lg"
+                  className="justify-start"
+                  showFallback={true}
+                />
               </div>
             </div>
 
@@ -1239,16 +1175,13 @@ export default function CharacterDetailPage() {
                 }}>
                   <div style={{ fontSize: '12px', color: '#d1d5db', marginBottom: '4px' }}>持続</div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: '#ffffff' }}>
-                    {TextWithIcons ? (
-                      <TextWithIcons 
-                        text={selectedMove.active_frame || '-'} 
-                        size="sm"
-                        textClassName="text-white font-semibold"
-                        showFallback={true}
-                      />
-                    ) : (
-                      selectedMove.active_frame || '-'
-                    )}
+                    <TextWithIcons 
+                      text={selectedMove.active_frame || '-'} 
+                      size="sm"
+                      textClassName="text-white font-semibold"
+                      showFallback={true}
+                      enableIconReplacement={true}
+                    />
                   </div>
                 </div>
                 
@@ -1261,11 +1194,7 @@ export default function CharacterDetailPage() {
                 }}>
                   <div style={{ fontSize: '12px', color: '#d1d5db', marginBottom: '4px' }}>ヒット</div>
                   <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                    {FrameAdvantage ? (
-                      <FrameAdvantage value={selectedMove.hit_frame} size="md" />
-                    ) : (
-                      <span style={{ color: '#ffffff' }}>{selectedMove.hit_frame || '-'}</span>
-                    )}
+                    <FrameAdvantage value={selectedMove.hit_frame} size="md" />
                   </div>
                 </div>
                 
@@ -1278,11 +1207,7 @@ export default function CharacterDetailPage() {
                 }}>
                   <div style={{ fontSize: '12px', color: '#d1d5db', marginBottom: '4px' }}>ガード</div>
                   <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                    {FrameAdvantage ? (
-                      <FrameAdvantage value={selectedMove.block_frame} size="md" />
-                    ) : (
-                      <span style={{ color: '#ffffff' }}>{selectedMove.block_frame || '-'}</span>
-                    )}
+                    <FrameAdvantage value={selectedMove.block_frame} size="md" />
                   </div>
                 </div>
               </div>
@@ -1325,15 +1250,11 @@ export default function CharacterDetailPage() {
                 }}>
                   <div style={{ fontSize: '12px', color: '#d1d5db', marginBottom: '4px' }}>属性</div>
                   <div style={{ fontSize: '16px', fontWeight: '600' }}>
-                    {EffectDisplay ? (
-                      <EffectDisplay 
-                        effectIds={selectedMove.effects ? selectedMove.effects.filter(e => e !== null) : []} 
-                        size="md"
-                        showTooltip={false}
-                      />
-                    ) : (
-                      <span style={{ color: '#ffffff' }}>-</span>
-                    )}
+                    <EffectDisplay 
+                      effectIds={selectedMove.effects ? selectedMove.effects.filter(e => e !== null) : []} 
+                      size="md"
+                      showTooltip={false}
+                    />
                   </div>
                 </div>
               </div>

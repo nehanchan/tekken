@@ -100,66 +100,61 @@ function getIconPath(iconName: string, iconType?: string): string {
   return `/command-icons/${iconName}.png`;
 }
 
-// TextWithIconsの簡単な実装
-interface TextWithIconsLocalProps {
+// フレーム表示専用のTextWithIcons（限定的な置換のみ）
+interface TextWithIconsFrameProps {
   text?: string | null;
   size?: 'sm' | 'md' | 'lg';
   textClassName?: string;
   showFallback?: boolean;
 }
 
-function TextWithIconsLocal({ 
+function TextWithIconsFrame({ 
   text, 
   size = 'sm', 
   textClassName = 'text-yellow-300 font-medium',
   showFallback = false 
-}: TextWithIconsLocalProps) {
+}: TextWithIconsFrameProps) {
   if (!text || text.trim() === '') {
     return showFallback ? <span>-</span> : <span>{text}</span>;
   }
 
-  const elements = parseCommandToElements(text);
+  // フレーム表示では、特定のエフェクトアイコンのみ置換を行う
+  // 一般的なテキスト（「投げ」「ダウン」など）は置換しない
+  const FRAME_REPLACEABLE_ICONS = ['TR', 'FB', 'KS', 'GV', 'HO', 'HT', 'PC', 'WB'];
   
-  if (elements.length === 0 || elements.every(el => el.type === 'text')) {
-    return <span className={textClassName}>{text}</span>;
+  // 完全一致の場合のみエフェクトアイコンに置換
+  if (FRAME_REPLACEABLE_ICONS.includes(text.trim())) {
+    const elements = parseCommandToElements(text);
+    
+    if (elements.length === 1 && elements[0].type === 'icon') {
+      const sizeClasses = {
+        sm: 'h-4 w-4',
+        md: 'h-6 w-6', 
+        lg: 'h-8 w-8'
+      };
+
+      const element = elements[0];
+      const iconPath = getIconPath(element.value, element.iconType);
+      
+      return (
+        <img
+          src={iconPath}
+          alt={element.value}
+          className={`${sizeClasses[size]} object-contain`}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            const span = document.createElement('span');
+            span.textContent = element.value;
+            span.className = textClassName;
+            target.parentNode?.replaceChild(span, target);
+          }}
+        />
+      );
+    }
   }
 
-  const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-6 w-6', 
-    lg: 'h-8 w-8'
-  };
-
-  return (
-    <span className="inline-flex items-center gap-1">
-      {elements.map((element, index) => {
-        if (element.type === 'text') {
-          return (
-            <span key={`text-${index}`} className={textClassName}>
-              {element.value}
-            </span>
-          );
-        } else {
-          const iconPath = getIconPath(element.value, element.iconType);
-          return (
-            <img
-              key={`icon-${element.value}-${index}`}
-              src={iconPath}
-              alt={element.value}
-              className={`${sizeClasses[size]} object-contain`}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                const span = document.createElement('span');
-                span.textContent = element.value;
-                span.className = textClassName;
-                target.parentNode?.replaceChild(span, target);
-              }}
-            />
-          );
-        }
-      })}
-    </span>
-  );
+  // それ以外は通常のテキスト表示（置換なし）
+  return <span className={textClassName}>{text}</span>;
 }
 
 interface FrameAdvantageProps {
@@ -194,10 +189,10 @@ export default function FrameAdvantage({
   };
   
   if (numericValue === null) {
-    // 数値以外（"投げ", "ダウン"など） - アイコン置換対応
+    // 数値以外（"投げ", "ダウン"など） - 限定的なアイコン置換のみ
     return (
       <span className={`text-yellow-300 font-medium ${sizeClasses[size]} ${className}`}>
-        <TextWithIconsLocal 
+        <TextWithIconsFrame 
           text={stringValue} 
           size={size === 'sm' ? 'md' : 'md'}
           textClassName="text-yellow-300 font-medium"
@@ -222,15 +217,10 @@ export default function FrameAdvantage({
     bgClass = showBackground ? 'bg-gray-700 bg-opacity-30 px-2 py-1 rounded' : '';
   }
 
-  // 数値の場合もアイコン置換を適用
+  // 数値の場合は通常のテキスト表示（アイコン置換なし）
   return (
-    <span className={`${bgClass} ${sizeClasses[size]} ${className}`}>
-      <TextWithIconsLocal 
-        text={stringValue} 
-        size={size === 'sm' ? 'md' : 'lg'}
-        textClassName={textClass}
-        showFallback={false}
-      />
+    <span className={`${bgClass} ${sizeClasses[size]} ${className} ${textClass}`}>
+      {stringValue}
     </span>
   );
 }

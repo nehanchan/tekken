@@ -82,13 +82,14 @@ export default function CommandDisplay({
   );
 }
 
-// 任意のテキストに対してアイコン置換を行う汎用コンポーネント
+// 技一覧専用のテキスト置換コンポーネント（限定的な使用のみ）
 interface TextWithIconsProps {
   text?: string | null;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   showFallback?: boolean;
   textClassName?: string; // テキスト部分のスタイル
+  enableIconReplacement?: boolean; // アイコン置換を有効にするかどうか
 }
 
 export function TextWithIcons({ 
@@ -96,13 +97,23 @@ export function TextWithIcons({
   size = 'md', 
   className = '',
   showFallback = true,
-  textClassName = 'text-sm text-gray-200'
+  textClassName = 'text-sm text-gray-200',
+  enableIconReplacement = false // デフォルトは無効
 }: TextWithIconsProps) {
   // テキストが空またはnullの場合
   if (!text || text.trim() === '') {
     return showFallback ? (
       <span className={`text-gray-400 text-sm ${className}`}>-</span>
     ) : null;
+  }
+
+  // アイコン置換が無効な場合は通常のテキスト表示
+  if (!enableIconReplacement) {
+    return (
+      <span className={`${textClassName} ${className}`}>
+        {text}
+      </span>
+    );
   }
 
   const elements = parseCommandToElements(text);
@@ -149,6 +160,29 @@ export function TextWithIcons({
         }
       })}
     </div>
+  );
+}
+
+// 通常のテキスト表示（アイコン置換なし）
+export function PlainText({ 
+  text, 
+  className = '',
+  showFallback = true 
+}: { 
+  text?: string | null; 
+  className?: string; 
+  showFallback?: boolean; 
+}) {
+  if (!text || text.trim() === '') {
+    return showFallback ? (
+      <span className={`text-gray-400 text-sm ${className}`}>-</span>
+    ) : null;
+  }
+
+  return (
+    <span className={className}>
+      {text}
+    </span>
   );
 }
 

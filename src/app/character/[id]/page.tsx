@@ -1,4 +1,4 @@
-// src/app/character/[id]/page.tsx (修正版 - アイコン置換を技一覧のみに限定)
+// src/app/character/[id]/page.tsx (修正版 - コマンド折り返し対応)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +7,20 @@ import { client } from '@/lib/client';
 import CommandDisplay, { TextWithIcons, PlainText } from '@/components/CommandDisplay';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
+
+// 列幅設定（ここで一括管理）
+const COLUMN_WIDTHS = {
+  no: '30px',          // No列
+  move_name: '250px',  // 技名列  
+  command: '420px',    // コマンド列（幅を拡張）
+  startup: '40px',     // 発生列
+  active: '52px',      // 持続列
+  hit: '48px',         // ヒット列
+  guard: '48px',       // ガード列
+  attribute: '70px',   // 判定列
+  effect: '70px',     // 属性列
+  remarks: '400px'     // 備考列
+};
 
 interface CharacterData {
   id: string;
@@ -391,7 +405,7 @@ export default function CharacterDetailPage() {
     </div>
   );
 
-  // デスクトップ表示用のテーブル行コンポーネント（修正された列幅）
+  // デスクトップ表示用のテーブル行コンポーネント（コマンド折り返し対応）
   const renderDesktopMoveRow = (move: MoveData, index: number) => (
     <tr 
       key={move.id} 
@@ -406,7 +420,7 @@ export default function CharacterDetailPage() {
         e.currentTarget.style.background = 'transparent';
       }}
     >
-      {/* No - 40px */}
+      {/* No */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 8px', 
@@ -414,9 +428,9 @@ export default function CharacterDetailPage() {
         fontSize: '14px', 
         fontWeight: '500', 
         color: '#fca5a5',
-        width: '40px',
-        maxWidth: '40px',
-        minWidth: '40px',
+        width: COLUMN_WIDTHS.no,
+        maxWidth: COLUMN_WIDTHS.no,
+        minWidth: COLUMN_WIDTHS.no,
         position: 'sticky',
         left: '0',
         zIndex: 10,
@@ -425,47 +439,55 @@ export default function CharacterDetailPage() {
         {move.move_num || index + 1}
       </td>
       
-      {/* 技名 - 250px */}
+      {/* 技名 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 16px', 
         fontSize: '14px',
-        width: '250px',
-        maxWidth: '250px',
-        minWidth: '250px',
+        width: COLUMN_WIDTHS.move_name,
+        maxWidth: COLUMN_WIDTHS.move_name,
+        minWidth: COLUMN_WIDTHS.move_name,
         position: 'sticky',
-        left: '40px',
+        left: COLUMN_WIDTHS.no,
         zIndex: 10,
         background: 'inherit'
       }}>
         {renderMoveName(move.move_name, move.move_name_kana)}
       </td>
       
-      {/* コマンド - 350px */}
+      {/* コマンド（折り返し対応） */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 24px', 
+        padding: '12px 16px', 
         fontSize: '14px',
-        width: '350px',
-        maxWidth: '350px',
-        minWidth: '350px'
+        width: COLUMN_WIDTHS.command,
+        maxWidth: COLUMN_WIDTHS.command,
+        minWidth: COLUMN_WIDTHS.command,
+        // 折り返し設定
+        wordWrap: 'break-word',
+        wordBreak: 'break-all',
+        whiteSpace: 'normal',
+        lineHeight: '1.4'
       }}>
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'flex-start', 
-          minHeight: '40px' 
+          minHeight: '40px',
+          // flex-wrapを追加して折り返しを許可
+          flexWrap: 'wrap',
+          gap: '2px'
         }}>
           <CommandDisplay 
             command={move.command} 
             size="lg"
-            className="justify-start"
+            className="justify-start flex-wrap" // flex-wrapクラスを追加
             showFallback={true}
           />
         </div>
       </td>
       
-      {/* 発生 - 40px */}
+      {/* 発生 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 8px', 
@@ -473,14 +495,14 @@ export default function CharacterDetailPage() {
         fontSize: '14px', 
         fontWeight: '500', 
         color: '#ffffff',
-        width: '40px',
-        maxWidth: '40px',
-        minWidth: '40px'
+        width: COLUMN_WIDTHS.startup,
+        maxWidth: COLUMN_WIDTHS.startup,
+        minWidth: COLUMN_WIDTHS.startup
       }}>
         {move.startup_frame || '-'}
       </td>
       
-      {/* 持続 - 68px */}
+      {/* 持続 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 8px', 
@@ -488,9 +510,9 @@ export default function CharacterDetailPage() {
         fontSize: '14px', 
         fontWeight: '500', 
         color: '#ffffff',
-        width: '68px',
-        maxWidth: '68px',
-        minWidth: '68px'
+        width: COLUMN_WIDTHS.active,
+        maxWidth: COLUMN_WIDTHS.active,
+        minWidth: COLUMN_WIDTHS.active
       }}>
         <TextWithIcons 
           text={move.active_frame || '-'} 
@@ -501,54 +523,54 @@ export default function CharacterDetailPage() {
         />
       </td>
       
-      {/* ヒット - 64px */}
+      {/* ヒット */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 8px', 
         textAlign: 'center', 
         fontSize: '14px',
-        width: '64px',
-        maxWidth: '64px',
-        minWidth: '64px'
+        width: COLUMN_WIDTHS.hit,
+        maxWidth: COLUMN_WIDTHS.hit,
+        minWidth: COLUMN_WIDTHS.hit
       }}>
         <FrameAdvantage value={move.hit_frame} />
       </td>
       
-      {/* ガード - 64px */}
+      {/* ガード */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 8px', 
         textAlign: 'center', 
         fontSize: '14px',
-        width: '64px',
-        maxWidth: '64px',
-        minWidth: '64px'
+        width: COLUMN_WIDTHS.guard,
+        maxWidth: COLUMN_WIDTHS.guard,
+        minWidth: COLUMN_WIDTHS.guard
       }}>
         <FrameAdvantage value={move.block_frame} />
       </td>
       
-      {/* 判定 - 90px */}
+      {/* 判定 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px', 
         textAlign: 'center', 
         fontSize: '14px',
-        width: '90px',
-        maxWidth: '90px',
-        minWidth: '90px'
+        width: COLUMN_WIDTHS.attribute,
+        maxWidth: COLUMN_WIDTHS.attribute,
+        minWidth: COLUMN_WIDTHS.attribute
       }}>
         {renderAttribute(move.attribute)}
       </td>
       
-      {/* 属性 - 120px */}
+      {/* 属性 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 16px', 
         textAlign: 'center', 
         fontSize: '14px',
-        width: '120px',
-        maxWidth: '120px',
-        minWidth: '120px'
+        width: COLUMN_WIDTHS.effect,
+        maxWidth: COLUMN_WIDTHS.effect,
+        minWidth: COLUMN_WIDTHS.effect
       }}>
         <div style={{ 
           display: 'flex', 
@@ -564,14 +586,14 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
-      {/* 備考 - 328px */}
+      {/* 備考 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: '12px 16px', 
         fontSize: '14px',
-        width: '328px',
-        maxWidth: '328px',
-        minWidth: '328px'
+        width: COLUMN_WIDTHS.remarks,
+        maxWidth: COLUMN_WIDTHS.remarks,
+        minWidth: COLUMN_WIDTHS.remarks
       }}>
         {renderRemarks(move.remarks)}
       </td>
@@ -849,15 +871,15 @@ export default function CharacterDetailPage() {
                           }}>
                             <thead>
                               <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
-                                {/* No - 40px */}
+                                {/* No */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px 4px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '40px',
-                                  maxWidth: '40px',
-                                  minWidth: '40px',
+                                  width: COLUMN_WIDTHS.no,
+                                  maxWidth: COLUMN_WIDTHS.no,
+                                  minWidth: COLUMN_WIDTHS.no,
                                   color: '#fef2f2',
                                   position: 'sticky',
                                   left: '0',
@@ -868,18 +890,18 @@ export default function CharacterDetailPage() {
                                   No
                                 </th>
                                 
-                                {/* 技名 - 250px */}
+                                {/* 技名 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px 16px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '250px',
-                                  maxWidth: '250px',
-                                  minWidth: '250px',
+                                  width: COLUMN_WIDTHS.move_name,
+                                  maxWidth: COLUMN_WIDTHS.move_name,
+                                  minWidth: COLUMN_WIDTHS.move_name,
                                   color: '#fef2f2',
                                   position: 'sticky',
-                                  left: '40px',
+                                  left: COLUMN_WIDTHS.no,
                                   zIndex: 20,
                                   background: 'linear-gradient(to right, #7f1d1d, #b91c1c)',
                                   boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
@@ -887,113 +909,113 @@ export default function CharacterDetailPage() {
                                   技名
                                 </th>
                                 
-                                {/* コマンド - 350px */}
+                                {/* コマンド */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px 24px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '350px',
-                                  maxWidth: '350px',
-                                  minWidth: '350px',
+                                  width: COLUMN_WIDTHS.command,
+                                  maxWidth: COLUMN_WIDTHS.command,
+                                  minWidth: COLUMN_WIDTHS.command,
                                   color: '#fef2f2' 
                                 }}>
                                   コマンド
                                 </th>
                                 
-                                {/* 発生 - 40px */}
+                                {/* 発生 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px 4px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '40px',
-                                  maxWidth: '40px',
-                                  minWidth: '40px',
+                                  width: COLUMN_WIDTHS.startup,
+                                  maxWidth: COLUMN_WIDTHS.startup,
+                                  minWidth: COLUMN_WIDTHS.startup,
                                   color: '#fef2f2' 
                                 }}>
                                   発生
                                 </th>
                                 
-                                {/* 持続 - 68px */}
+                                {/* 持続 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '68px',
-                                  maxWidth: '68px',
-                                  minWidth: '68px',
+                                  width: COLUMN_WIDTHS.active,
+                                  maxWidth: COLUMN_WIDTHS.active,
+                                  minWidth: COLUMN_WIDTHS.active,
                                   color: '#fef2f2' 
                                 }}>
                                   持続
                                 </th>
                                 
-                                {/* ヒット - 64px */}
+                                {/* ヒット */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '64px',
-                                  maxWidth: '64px',
-                                  minWidth: '64px',
+                                  width: COLUMN_WIDTHS.hit,
+                                  maxWidth: COLUMN_WIDTHS.hit,
+                                  minWidth: COLUMN_WIDTHS.hit,
                                   color: '#fef2f2' 
                                 }}>
                                   ヒット
                                 </th>
                                 
-                                {/* ガード - 64px */}
+                                {/* ガード */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '64px',
-                                  maxWidth: '64px',
-                                  minWidth: '64px',
+                                  width: COLUMN_WIDTHS.guard,
+                                  maxWidth: COLUMN_WIDTHS.guard,
+                                  minWidth: COLUMN_WIDTHS.guard,
                                   color: '#fef2f2' 
                                 }}>
                                   ガード
                                 </th>
                                 
-                                {/* 判定 - 90px */}
+                                {/* 判定 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '90px',
-                                  maxWidth: '90px',
-                                  minWidth: '90px',
+                                  width: COLUMN_WIDTHS.attribute,
+                                  maxWidth: COLUMN_WIDTHS.attribute,
+                                  minWidth: COLUMN_WIDTHS.attribute,
                                   color: '#fef2f2' 
                                 }}>
                                   判定
                                 </th>
                                 
-                                {/* 属性 - 120px */}
+                                {/* 属性 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px 16px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '120px',
-                                  maxWidth: '120px',
-                                  minWidth: '120px',
+                                  width: COLUMN_WIDTHS.effect,
+                                  maxWidth: COLUMN_WIDTHS.effect,
+                                  minWidth: COLUMN_WIDTHS.effect,
                                   color: '#fef2f2' 
                                 }}>
                                   属性
                                 </th>
                                 
-                                {/* 備考 - 328px */}
+                                {/* 備考 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: '8px 16px', 
                                   fontSize: '14px', 
                                   fontWeight: 'bold', 
-                                  width: '328px',
-                                  maxWidth: '328px',
-                                  minWidth: '328px',
+                                  width: COLUMN_WIDTHS.remarks,
+                                  maxWidth: COLUMN_WIDTHS.remarks,
+                                  minWidth: COLUMN_WIDTHS.remarks,
                                   color: '#fef2f2' 
                                 }}>
                                   備考
@@ -1127,14 +1149,26 @@ export default function CharacterDetailPage() {
                 background: 'rgba(0, 0, 0, 0.4)',
                 padding: '12px',
                 borderRadius: '6px',
-                border: '1px solid rgba(185, 28, 28, 0.2)'
+                border: '1px solid rgba(185, 28, 28, 0.2)',
+                // モーダル内でも折り返しを有効化
+                wordWrap: 'break-word',
+                wordBreak: 'break-all',
+                whiteSpace: 'normal'
               }}>
-                <CommandDisplay 
-                  command={selectedMove.command} 
-                  size="lg"
-                  className="justify-start"
-                  showFallback={true}
-                />
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'flex-start',
+                  flexWrap: 'wrap',
+                  gap: '2px'
+                }}>
+                  <CommandDisplay 
+                    command={selectedMove.command} 
+                    size="lg"
+                    className="justify-start flex-wrap"
+                    showFallback={true}
+                  />
+                </div>
               </div>
             </div>
 

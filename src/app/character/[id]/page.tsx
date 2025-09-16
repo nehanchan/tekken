@@ -1,4 +1,4 @@
-// src/app/character/[id]/page.tsx (修正版 - コマンド折り返し対応)
+// src/app/character/[id]/page.tsx (完全版 - レスポンシブコマンド表示対応)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,18 +8,18 @@ import CommandDisplay, { TextWithIcons, PlainText } from '@/components/CommandDi
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
-// 列幅設定（ここで一括管理）
+// 列幅設定（レスポンシブ対応）
 const COLUMN_WIDTHS = {
-  no: '30px',          // No列
-  move_name: '250px',  // 技名列  
-  command: '420px',    // コマンド列（幅を拡張）
-  startup: '40px',     // 発生列
-  active: '52px',      // 持続列
-  hit: '48px',         // ヒット列
-  guard: '48px',       // ガード列
-  attribute: '70px',   // 判定列
-  effect: '70px',     // 属性列
-  remarks: '400px'     // 備考列
+  no: '30px',
+  move_name: '250px',
+  command: '320px',    // コマンド列の幅を調整
+  startup: '40px',
+  active: '52px',
+  hit: '48px',
+  guard: '48px',
+  attribute: '70px',
+  effect: '70px',
+  remarks: '400px'
 };
 
 interface CharacterData {
@@ -78,16 +78,36 @@ export default function CharacterDetailPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedMove, setSelectedMove] = useState<MoveData | null>(null);
   const [showMoveModal, setShowMoveModal] = useState(false);
+  const [textScale, setTextScale] = useState(1);
 
-  // 画面サイズの監視
+  // 画面サイズ監視とテキストスケール計算
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      
+      if (width >= 768) {
+        const minWidth = 768;
+        const maxWidth = 1400;
+        const minScale = 0.65;
+        const maxScale = 1.0;
+        
+        if (width <= minWidth) {
+          setTextScale(minScale);
+        } else if (width >= maxWidth) {
+          setTextScale(maxScale);
+        } else {
+          const scale = minScale + (maxScale - minScale) * ((width - minWidth) / (maxWidth - minWidth));
+          setTextScale(scale);
+        }
+      } else {
+        setTextScale(1);
+      }
     };
 
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   useEffect(() => {
@@ -101,6 +121,7 @@ export default function CharacterDetailPage() {
     }
   }, [categories]);
 
+  // データ取得処理
   const fetchCharacterData = async () => {
     setLoading(true);
     try {
@@ -114,6 +135,7 @@ export default function CharacterDetailPage() {
       if (validCharacters[0]) {
         setCharacter(validCharacters[0]);
         
+        // 技データ取得（ページネーション対応）
         let allMoves: MoveData[] = [];
         let nextToken = null;
         
@@ -135,6 +157,7 @@ export default function CharacterDetailPage() {
           
         } while (nextToken);
         
+        // 技分類データ取得（ページネーション対応）
         let allCategories: MoveCategoryData[] = [];
         nextToken = null;
         
@@ -155,6 +178,7 @@ export default function CharacterDetailPage() {
           
         } while (nextToken);
         
+        // データ整理
         const grouped: {[key: string]: MoveData[]} = {};
         const usedCategories: MoveCategoryData[] = [];
         
@@ -172,6 +196,7 @@ export default function CharacterDetailPage() {
           }
         }
         
+        // カテゴリソート（move_idの最小値順）
         usedCategories.sort((a, b) => {
           const aMovesInCategory = grouped[a.id] || [];
           const bMovesInCategory = grouped[b.id] || [];
@@ -186,6 +211,7 @@ export default function CharacterDetailPage() {
           return aMinMoveId - bMinMoveId;
         });
         
+        // 各カテゴリ内の技をmove_id順でソート
         Object.keys(grouped).forEach(categoryId => {
           grouped[categoryId].sort((a, b) => {
             const aId = String(a.move_id).padStart(5, '0');
@@ -204,6 +230,12 @@ export default function CharacterDetailPage() {
     }
   };
 
+  // スケールされたフォントサイズを計算
+  const getScaledFontSize = (baseSize: number) => {
+    return Math.max(baseSize * textScale, 10);
+  };
+
+  // カテゴリ選択処理
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategories(prev => {
       const newSet = new Set(prev);
@@ -216,27 +248,80 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // 技名表示（技一覧でのみアイコン置換を有効化）
+  // レスポンシブ対応のCommandDisplayコンポーネント
+  const ResponsiveCommandDisplay = ({ 
+    command, 
+    size = 'md', 
+    className = '', 
+    showFallback = true 
+  }: {
+    command?: string | null;
+    size?: 'sm' | 'md' | 'lg';
+    className?: string;
+    showFallback?: boolean;
+  }) => {
+    if (!command || command.trim() === '') {
+      return showFallback ? (
+        <span className={`text-gray-400 ${className}`} style={{ fontSize: `${getScaledFontSize(12)}px` }}>-</span>
+      ) : null;
+    }
+
+    // アイコンサイズもテキストスケールに応じて調整
+    const baseSizes = {
+      sm: 14,
+      md: 18, 
+      lg: 22
+    };
+
+    const scaledSize = Math.max(getScaledFontSize(baseSizes[size]), 12);
+
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: `${Math.max(textScale * 2, 1)}px`,
+        flexWrap: 'wrap',
+        fontSize: `${getScaledFontSize(12)}px`
+      }} className={className}>
+        <CommandDisplay 
+          command={command} 
+          size={textScale > 0.8 ? 'md' : 'sm'}
+          className="justify-start flex-wrap"
+          showFallback={showFallback}
+        />
+      </div>
+    );
+  };
+
+  // 技名表示
   const renderMoveName = (moveName: string, moveNameKana?: string | null) => {
     return (
       <div>
-        <div style={{ fontWeight: '500', fontSize: isMobile ? '14px' : '16px', color: '#fef2f2' }}>
+        <div style={{ 
+          fontWeight: '500', 
+          fontSize: `${getScaledFontSize(isMobile ? 14 : 16)}px`, 
+          color: '#fef2f2' 
+        }}>
           <TextWithIcons 
             text={moveName} 
             size="sm"
             textClassName="text-white font-medium"
             showFallback={false}
-            enableIconReplacement={true} // 技名ではアイコン置換を有効化
+            enableIconReplacement={true}
           />
         </div>
         {moveNameKana && !isMobile && (
-          <div style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px' }}>
+          <div style={{ 
+            fontSize: `${getScaledFontSize(12)}px`, 
+            color: '#fca5a5', 
+            marginTop: '4px' 
+          }}>
             (<TextWithIcons 
               text={moveNameKana} 
               size="sm"
               textClassName="text-rose-300"
               showFallback={false}
-              enableIconReplacement={true} // 技名読みでもアイコン置換を有効化
+              enableIconReplacement={true}
             />)
           </div>
         )}
@@ -244,7 +329,7 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // 属性の色分け（技一覧でのみアイコン置換を有効化）
+  // 属性表示
   const renderAttribute = (attribute: string | null | undefined) => {
     if (!attribute) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -253,19 +338,23 @@ export default function CharacterDetailPage() {
     const color = (attribute === 'D' || attribute === '浮') ? '#4ade80' : '#ffffff';
     
     return (
-      <div style={{ color: color, fontWeight: '500' }}>
+      <div style={{ 
+        color: color, 
+        fontWeight: '500',
+        fontSize: `${getScaledFontSize(14)}px`
+      }}>
         <TextWithIcons 
           text={attribute} 
           size="sm"
           textClassName="font-medium"
           showFallback={false}
-          enableIconReplacement={true} // 属性でアイコン置換を有効化
+          enableIconReplacement={true}
         />
       </div>
     );
   };
 
-  // 備考表示（技一覧でのみアイコン置換を有効化）
+  // 備考表示
   const renderRemarks = (remarks?: (string | null)[] | null) => {
     if (!remarks || remarks.length === 0) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -277,7 +366,7 @@ export default function CharacterDetailPage() {
           .filter((remark): remark is string => remark !== null && remark !== undefined)
           .map((remark, remarkIndex) => (
             <div key={remarkIndex} style={{ 
-              fontSize: '14px', 
+              fontSize: `${getScaledFontSize(14)}px`, 
               lineHeight: '1.6', 
               wordBreak: 'break-word', 
               color: '#fef2f2',
@@ -292,7 +381,7 @@ export default function CharacterDetailPage() {
                 textClassName="text-gray-100"
                 className="flex items-center gap-1"
                 showFallback={false}
-                enableIconReplacement={true} // 備考でアイコン置換を有効化
+                enableIconReplacement={true}
               />
             </div>
           ))
@@ -301,7 +390,7 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // キャラクター紹介文（アイコン置換なし）
+  // キャラクター紹介文
   const renderDescription = (description: string) => {
     return (
       <div style={{ color: '#e5e7eb', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
@@ -314,7 +403,7 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // キャラクター名（アイコン置換なし）
+  // キャラクター名
   const renderCharacterName = (nameJp?: string | null, nameEn?: string) => {
     const displayName = nameJp || nameEn;
     if (!displayName) return null;
@@ -330,7 +419,7 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // ニックネーム（アイコン置換なし）
+  // ニックネーム
   const renderNickname = (nickname?: string | null) => {
     if (!nickname) return null;
     
@@ -345,7 +434,7 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // モバイル表示用の技行コンポーネント
+  // モバイル表示用の技行
   const renderMobileMoveRow = (move: MoveData, index: number) => (
     <div 
       key={move.id}
@@ -395,7 +484,7 @@ export default function CharacterDetailPage() {
         justifyContent: 'flex-start',
         padding: '8px 0'
       }}>
-        <CommandDisplay 
+        <ResponsiveCommandDisplay 
           command={move.command} 
           size="md"
           className="justify-start"
@@ -405,7 +494,7 @@ export default function CharacterDetailPage() {
     </div>
   );
 
-  // デスクトップ表示用のテーブル行コンポーネント（コマンド折り返し対応）
+  // デスクトップ表示用のテーブル行
   const renderDesktopMoveRow = (move: MoveData, index: number) => (
     <tr 
       key={move.id} 
@@ -423,9 +512,9 @@ export default function CharacterDetailPage() {
       {/* No */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 8px', 
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
         textAlign: 'center', 
-        fontSize: '14px', 
+        fontSize: `${getScaledFontSize(14)}px`, 
         fontWeight: '500', 
         color: '#fca5a5',
         width: COLUMN_WIDTHS.no,
@@ -442,8 +531,8 @@ export default function CharacterDetailPage() {
       {/* 技名 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 16px', 
-        fontSize: '14px',
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.move_name,
         maxWidth: COLUMN_WIDTHS.move_name,
         minWidth: COLUMN_WIDTHS.move_name,
@@ -455,15 +544,14 @@ export default function CharacterDetailPage() {
         {renderMoveName(move.move_name, move.move_name_kana)}
       </td>
       
-      {/* コマンド（折り返し対応） */}
+      {/* コマンド */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 16px', 
-        fontSize: '14px',
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(12)}px`, 
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.command,
         maxWidth: COLUMN_WIDTHS.command,
         minWidth: COLUMN_WIDTHS.command,
-        // 折り返し設定
         wordWrap: 'break-word',
         wordBreak: 'break-all',
         whiteSpace: 'normal',
@@ -473,15 +561,14 @@ export default function CharacterDetailPage() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'flex-start', 
-          minHeight: '40px',
-          // flex-wrapを追加して折り返しを許可
+          minHeight: `${getScaledFontSize(32)}px`,
           flexWrap: 'wrap',
-          gap: '2px'
+          gap: `${Math.max(textScale * 2, 1)}px`
         }}>
-          <CommandDisplay 
+          <ResponsiveCommandDisplay 
             command={move.command} 
-            size="lg"
-            className="justify-start flex-wrap" // flex-wrapクラスを追加
+            size={textScale > 0.8 ? 'lg' : textScale > 0.7 ? 'md' : 'sm'}
+            className="justify-start flex-wrap"
             showFallback={true}
           />
         </div>
@@ -490,9 +577,9 @@ export default function CharacterDetailPage() {
       {/* 発生 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 8px', 
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
         textAlign: 'center', 
-        fontSize: '14px', 
+        fontSize: `${getScaledFontSize(14)}px`, 
         fontWeight: '500', 
         color: '#ffffff',
         width: COLUMN_WIDTHS.startup,
@@ -505,9 +592,9 @@ export default function CharacterDetailPage() {
       {/* 持続 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 8px', 
+        padding: `${getScaledFontSize(8)}px`, 
         textAlign: 'center', 
-        fontSize: '14px', 
+        fontSize: `${getScaledFontSize(14)}px`, 
         fontWeight: '500', 
         color: '#ffffff',
         width: COLUMN_WIDTHS.active,
@@ -526,35 +613,35 @@ export default function CharacterDetailPage() {
       {/* ヒット */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 8px', 
+        padding: `${getScaledFontSize(8)}px`, 
         textAlign: 'center', 
-        fontSize: '14px',
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.hit,
         maxWidth: COLUMN_WIDTHS.hit,
         minWidth: COLUMN_WIDTHS.hit
       }}>
-        <FrameAdvantage value={move.hit_frame} />
+        <FrameAdvantage value={move.hit_frame} size={textScale > 0.8 ? 'md' : 'sm'} />
       </td>
       
       {/* ガード */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 8px', 
+        padding: `${getScaledFontSize(8)}px`, 
         textAlign: 'center', 
-        fontSize: '14px',
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.guard,
         maxWidth: COLUMN_WIDTHS.guard,
         minWidth: COLUMN_WIDTHS.guard
       }}>
-        <FrameAdvantage value={move.block_frame} />
+        <FrameAdvantage value={move.block_frame} size={textScale > 0.8 ? 'md' : 'sm'} />
       </td>
       
       {/* 判定 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px', 
+        padding: `${getScaledFontSize(8)}px`, 
         textAlign: 'center', 
-        fontSize: '14px',
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.attribute,
         maxWidth: COLUMN_WIDTHS.attribute,
         minWidth: COLUMN_WIDTHS.attribute
@@ -565,9 +652,9 @@ export default function CharacterDetailPage() {
       {/* 属性 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 16px', 
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
         textAlign: 'center', 
-        fontSize: '14px',
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.effect,
         maxWidth: COLUMN_WIDTHS.effect,
         minWidth: COLUMN_WIDTHS.effect
@@ -576,11 +663,11 @@ export default function CharacterDetailPage() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
-          minHeight: '32px' 
+          minHeight: `${getScaledFontSize(32)}px` 
         }}>
           <EffectDisplay 
             effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
-            size="md"
+            size={textScale > 0.8 ? 'md' : 'sm'}
             showTooltip={false}
           />
         </div>
@@ -589,8 +676,8 @@ export default function CharacterDetailPage() {
       {/* 備考 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: '12px 16px', 
-        fontSize: '14px',
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
+        fontSize: `${getScaledFontSize(14)}px`,
         width: COLUMN_WIDTHS.remarks,
         maxWidth: COLUMN_WIDTHS.remarks,
         minWidth: COLUMN_WIDTHS.remarks
@@ -600,6 +687,7 @@ export default function CharacterDetailPage() {
     </tr>
   );
 
+  // ローディング表示
   if (loading) {
     return (
       <div 
@@ -618,6 +706,7 @@ export default function CharacterDetailPage() {
     );
   }
 
+  // キャラクターが見つからない場合
   if (!character) {
     return (
       <div 
@@ -653,6 +742,7 @@ export default function CharacterDetailPage() {
     );
   }
 
+  // メイン表示
   return (
     <div 
       style={{
@@ -674,6 +764,18 @@ export default function CharacterDetailPage() {
             {character.character_name_jp || character.character_name_en}
           </span>
         </nav>
+        
+        {/* デバッグ表示: 現在のテキストスケール */}
+        {!isMobile && (
+          <div style={{ 
+            fontSize: '12px', 
+            color: '#6b7280', 
+            textAlign: 'right',
+            marginBottom: '8px'
+          }}>
+            スケール: {textScale.toFixed(2)} | 画面幅: {typeof window !== 'undefined' ? window.innerWidth : 0}px
+          </div>
+        )}
       </div>
 
       {/* キャラクター情報表示 */}
@@ -710,7 +812,7 @@ export default function CharacterDetailPage() {
           {renderNickname(character.nickname)}
         </div>
         
-        {/* 基本情報 - モバイルで簡略化 */}
+        {/* 基本情報 */}
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', 
@@ -743,6 +845,7 @@ export default function CharacterDetailPage() {
           </div>
         </div>
         
+        {/* キャラクター紹介 */}
         {character.character_description && (
           <div 
             style={{
@@ -867,15 +970,15 @@ export default function CharacterDetailPage() {
                             borderCollapse: 'collapse', 
                             border: '1px solid rgb(185, 28, 28)', 
                             minWidth: 'max-content',
-                            tableLayout: 'fixed'  // 固定レイアウトを強制
+                            tableLayout: 'fixed'
                           }}>
                             <thead>
                               <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
                                 {/* No */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px 4px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.no,
                                   maxWidth: COLUMN_WIDTHS.no,
@@ -893,8 +996,8 @@ export default function CharacterDetailPage() {
                                 {/* 技名 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px 16px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.move_name,
                                   maxWidth: COLUMN_WIDTHS.move_name,
@@ -912,8 +1015,8 @@ export default function CharacterDetailPage() {
                                 {/* コマンド */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px 24px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(12)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.command,
                                   maxWidth: COLUMN_WIDTHS.command,
@@ -926,8 +1029,8 @@ export default function CharacterDetailPage() {
                                 {/* 発生 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px 4px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.startup,
                                   maxWidth: COLUMN_WIDTHS.startup,
@@ -940,8 +1043,8 @@ export default function CharacterDetailPage() {
                                 {/* 持続 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.active,
                                   maxWidth: COLUMN_WIDTHS.active,
@@ -954,8 +1057,8 @@ export default function CharacterDetailPage() {
                                 {/* ヒット */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.hit,
                                   maxWidth: COLUMN_WIDTHS.hit,
@@ -968,8 +1071,8 @@ export default function CharacterDetailPage() {
                                 {/* ガード */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.guard,
                                   maxWidth: COLUMN_WIDTHS.guard,
@@ -982,8 +1085,8 @@ export default function CharacterDetailPage() {
                                 {/* 判定 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.attribute,
                                   maxWidth: COLUMN_WIDTHS.attribute,
@@ -996,8 +1099,8 @@ export default function CharacterDetailPage() {
                                 {/* 属性 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px 16px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.effect,
                                   maxWidth: COLUMN_WIDTHS.effect,
@@ -1010,8 +1113,8 @@ export default function CharacterDetailPage() {
                                 {/* 備考 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: '8px 16px', 
-                                  fontSize: '14px', 
+                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
+                                  fontSize: `${getScaledFontSize(14)}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.remarks,
                                   maxWidth: COLUMN_WIDTHS.remarks,
@@ -1150,7 +1253,6 @@ export default function CharacterDetailPage() {
                 padding: '12px',
                 borderRadius: '6px',
                 border: '1px solid rgba(185, 28, 28, 0.2)',
-                // モーダル内でも折り返しを有効化
                 wordWrap: 'break-word',
                 wordBreak: 'break-all',
                 whiteSpace: 'normal'
@@ -1162,7 +1264,7 @@ export default function CharacterDetailPage() {
                   flexWrap: 'wrap',
                   gap: '2px'
                 }}>
-                  <CommandDisplay 
+                  <ResponsiveCommandDisplay 
                     command={selectedMove.command} 
                     size="lg"
                     className="justify-start flex-wrap"

@@ -1,18 +1,19 @@
-// src/app/character/[id]/page.tsx (完全版 - レスポンシブコマンド表示対応)
+// src/app/character/[id]/page.tsx (コマンド列折り返し対応版)
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { client } from '@/lib/client';
 import CommandDisplay, { TextWithIcons, PlainText } from '@/components/CommandDisplay';
+import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
-// 列幅設定（レスポンシブ対応）
+// 列幅設定（元に戻す）
 const COLUMN_WIDTHS = {
   no: '30px',
   move_name: '250px',
-  command: '320px',    // コマンド列の幅を調整
+  command: '320px',    // 元の幅に戻す
   startup: '40px',
   active: '52px',
   hit: '48px',
@@ -80,25 +81,26 @@ export default function CharacterDetailPage() {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [textScale, setTextScale] = useState(1);
 
-  // 画面サイズ監視とテキストスケール計算
+  // 画面サイズ監視とテキストスケール計算（より積極的な調整）
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 768);
       
       if (width >= 768) {
-        const minWidth = 768;
-        const maxWidth = 1400;
-        const minScale = 0.65;
-        const maxScale = 1.0;
-        
-        if (width <= minWidth) {
-          setTextScale(minScale);
-        } else if (width >= maxWidth) {
-          setTextScale(maxScale);
+        // より積極的なスケール調整（コマンド列の折り返しを促進）
+        if (width <= 800) {
+          setTextScale(0.55);  // より小さく
+        } else if (width <= 900) {
+          setTextScale(0.65);
+        } else if (width <= 1000) {
+          setTextScale(0.75);
+        } else if (width <= 1100) {
+          setTextScale(0.85);
+        } else if (width <= 1200) {
+          setTextScale(0.9);
         } else {
-          const scale = minScale + (maxScale - minScale) * ((width - minWidth) / (maxWidth - minWidth));
-          setTextScale(scale);
+          setTextScale(1.0);
         }
       } else {
         setTextScale(1);
@@ -230,9 +232,14 @@ export default function CharacterDetailPage() {
     }
   };
 
-  // スケールされたフォントサイズを計算
+  // スケールされたフォントサイズを計算（統一サイズ）
   const getScaledFontSize = (baseSize: number) => {
-    return Math.max(baseSize * textScale, 10);
+    return Math.max(baseSize * textScale, 8); // 最小サイズを8pxに設定
+  };
+
+  // テーブル用の統一フォントサイズ
+  const getTableFontSize = () => {
+    return getScaledFontSize(12); // テーブル内は全て12pxベース
   };
 
   // カテゴリ選択処理
@@ -248,7 +255,7 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // レスポンシブ対応のCommandDisplayコンポーネント
+  // 改良されたResponsiveCommandDisplayコンポーネント（直接処理版）
   const ResponsiveCommandDisplay = ({ 
     command, 
     size = 'md', 
@@ -262,33 +269,89 @@ export default function CharacterDetailPage() {
   }) => {
     if (!command || command.trim() === '') {
       return showFallback ? (
-        <span className={`text-gray-400 ${className}`} style={{ fontSize: `${getScaledFontSize(12)}px` }}>-</span>
+        <span className={`text-gray-400 ${className}`} style={{ fontSize: `${getTableFontSize()}px` }}>-</span>
       ) : null;
     }
 
-    // アイコンサイズもテキストスケールに応じて調整
-    const baseSizes = {
-      sm: 14,
-      md: 18, 
-      lg: 22
+    // アイコン置換を試行
+    const elements = parseCommandToElements(command);
+    
+    // アイコン置換できなかった場合は強制折り返しテキスト表示
+    if (elements.length === 0 || elements.every(el => el.type === 'text')) {
+      return (
+        <div style={{ 
+          fontSize: `${getTableFontSize()}px`,
+          lineHeight: '1.3',
+          width: '100%',
+          maxWidth: '100%',
+          wordBreak: 'break-all',
+          overflowWrap: 'anywhere',
+          whiteSpace: 'normal',
+          hyphens: 'auto',
+          color: '#d1d5db'
+        }} className={className}>
+          {command}
+        </div>
+      );
+    }
+
+    // アイコン置換された場合の表示
+    const sizeClasses = {
+      sm: 'h-4 w-4',
+      md: 'h-6 w-6', 
+      lg: 'h-8 w-8'
     };
 
-    const scaledSize = Math.max(getScaledFontSize(baseSizes[size]), 12);
+    const iconSize = textScale > 0.8 ? 'md' : 'sm';
 
     return (
       <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+        display: 'flex',
+        alignItems: 'center',
         gap: `${Math.max(textScale * 2, 1)}px`,
         flexWrap: 'wrap',
-        fontSize: `${getScaledFontSize(12)}px`
+        fontSize: `${getTableFontSize()}px`,
+        lineHeight: '1.3',
+        width: '100%',
+        maxWidth: '100%'
       }} className={className}>
-        <CommandDisplay 
-          command={command} 
-          size={textScale > 0.8 ? 'md' : 'sm'}
-          className="justify-start flex-wrap"
-          showFallback={showFallback}
-        />
+        {elements.map((element, index) => {
+          if (element.type === 'text') {
+            return (
+              <span 
+                key={`text-${index}`} 
+                style={{
+                  wordBreak: 'break-all',
+                  overflowWrap: 'anywhere',
+                  whiteSpace: 'normal',
+                  color: '#d1d5db'
+                }}
+              >
+                {element.value}
+              </span>
+            );
+          } else {
+            return (
+              <img
+                key={`icon-${element.value}-${index}`}
+                src={getIconPath(element.value, element.iconType)}
+                alt={element.value}
+                className={`${sizeClasses[iconSize]} object-contain flex-shrink-0`}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  const span = document.createElement('span');
+                  span.textContent = element.value;
+                  span.className = 'text-xs font-mono bg-gray-200 text-gray-800 px-1 py-0.5 rounded';
+                  span.style.wordBreak = 'break-all';
+                  span.style.overflowWrap = 'anywhere';
+                  span.style.whiteSpace = 'normal';
+                  target.parentNode?.replaceChild(span, target);
+                }}
+                title={element.value}
+              />
+            );
+          }
+        })}
       </div>
     );
   };
@@ -299,8 +362,9 @@ export default function CharacterDetailPage() {
       <div>
         <div style={{ 
           fontWeight: '500', 
-          fontSize: `${getScaledFontSize(isMobile ? 14 : 16)}px`, 
-          color: '#fef2f2' 
+          fontSize: `${getTableFontSize()}px`, 
+          color: '#fef2f2',
+          lineHeight: '1.2'
         }}>
           <TextWithIcons 
             text={moveName} 
@@ -312,9 +376,10 @@ export default function CharacterDetailPage() {
         </div>
         {moveNameKana && !isMobile && (
           <div style={{ 
-            fontSize: `${getScaledFontSize(12)}px`, 
+            fontSize: `${Math.max(getTableFontSize() - 2, 8)}px`, 
             color: '#fca5a5', 
-            marginTop: '4px' 
+            marginTop: '2px',
+            lineHeight: '1.2'
           }}>
             (<TextWithIcons 
               text={moveNameKana} 
@@ -341,7 +406,7 @@ export default function CharacterDetailPage() {
       <div style={{ 
         color: color, 
         fontWeight: '500',
-        fontSize: `${getScaledFontSize(14)}px`
+        fontSize: `${getTableFontSize()}px`
       }}>
         <TextWithIcons 
           text={attribute} 
@@ -361,25 +426,25 @@ export default function CharacterDetailPage() {
     }
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: `${Math.max(textScale * 6, 4)}px` }}>
         {remarks
           .filter((remark): remark is string => remark !== null && remark !== undefined)
           .map((remark, remarkIndex) => (
             <div key={remarkIndex} style={{ 
-              fontSize: `${getScaledFontSize(14)}px`, 
-              lineHeight: '1.6', 
+              fontSize: `${getTableFontSize()}px`, 
+              lineHeight: '1.4', 
               wordBreak: 'break-word', 
               color: '#fef2f2',
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               gap: '4px'
             }}>
-              <span>・</span>
+              <span style={{ flexShrink: 0, marginTop: '2px' }}>・</span>
               <TextWithIcons 
                 text={remark} 
-                size="lg"
+                size={textScale > 0.8 ? 'md' : 'sm'} // 他の列と同様のサイズ調整
                 textClassName="text-gray-100"
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 flex-wrap"
                 showFallback={false}
                 enableIconReplacement={true}
               />
@@ -480,14 +545,14 @@ export default function CharacterDetailPage() {
       
       <div style={{ 
         display: 'flex', 
-        alignItems: 'center', 
+        alignItems: 'flex-start', 
         justifyContent: 'flex-start',
         padding: '8px 0'
       }}>
         <ResponsiveCommandDisplay 
           command={move.command} 
           size="md"
-          className="justify-start"
+          className="w-full"
           showFallback={true}
         />
       </div>
@@ -512,18 +577,14 @@ export default function CharacterDetailPage() {
       {/* No */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
+        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`, 
+        fontSize: `${getTableFontSize()}px`, 
         fontWeight: '500', 
         color: '#fca5a5',
         width: COLUMN_WIDTHS.no,
         maxWidth: COLUMN_WIDTHS.no,
-        minWidth: COLUMN_WIDTHS.no,
-        position: 'sticky',
-        left: '0',
-        zIndex: 10,
-        background: 'inherit'
+        minWidth: COLUMN_WIDTHS.no
       }}>
         {move.move_num || index + 1}
       </td>
@@ -531,15 +592,11 @@ export default function CharacterDetailPage() {
       {/* 技名 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
-        fontSize: `${getScaledFontSize(14)}px`,
+        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.move_name,
         maxWidth: COLUMN_WIDTHS.move_name,
-        minWidth: COLUMN_WIDTHS.move_name,
-        position: 'sticky',
-        left: COLUMN_WIDTHS.no,
-        zIndex: 10,
-        background: 'inherit'
+        minWidth: COLUMN_WIDTHS.move_name
       }}>
         {renderMoveName(move.move_name, move.move_name_kana)}
       </td>
@@ -547,28 +604,25 @@ export default function CharacterDetailPage() {
       {/* コマンド */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(12)}px`, 
-        fontSize: `${getScaledFontSize(14)}px`,
+        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(8)}px`, 
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.command,
         maxWidth: COLUMN_WIDTHS.command,
         minWidth: COLUMN_WIDTHS.command,
-        wordWrap: 'break-word',
-        wordBreak: 'break-all',
-        whiteSpace: 'normal',
-        lineHeight: '1.4'
+        lineHeight: '1.3',
+        verticalAlign: 'middle'
       }}>
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'flex-start', 
-          minHeight: `${getScaledFontSize(32)}px`,
-          flexWrap: 'wrap',
-          gap: `${Math.max(textScale * 2, 1)}px`
+          minHeight: `${getScaledFontSize(24)}px`,
+          width: '100%'
         }}>
           <ResponsiveCommandDisplay 
             command={move.command} 
-            size={textScale > 0.8 ? 'lg' : textScale > 0.7 ? 'md' : 'sm'}
-            className="justify-start flex-wrap"
+            size={textScale > 0.8 ? 'md' : 'sm'}
+            className="w-full"
             showFallback={true}
           />
         </div>
@@ -577,9 +631,9 @@ export default function CharacterDetailPage() {
       {/* 発生 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
+        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`, 
+        fontSize: `${getTableFontSize()}px`, 
         fontWeight: '500', 
         color: '#ffffff',
         width: COLUMN_WIDTHS.startup,
@@ -592,9 +646,9 @@ export default function CharacterDetailPage() {
       {/* 持続 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px`, 
+        padding: `${getScaledFontSize(6)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`, 
+        fontSize: `${getTableFontSize()}px`, 
         fontWeight: '500', 
         color: '#ffffff',
         width: COLUMN_WIDTHS.active,
@@ -613,35 +667,51 @@ export default function CharacterDetailPage() {
       {/* ヒット */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px`, 
+        padding: `${getScaledFontSize(6)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`,
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.hit,
         maxWidth: COLUMN_WIDTHS.hit,
         minWidth: COLUMN_WIDTHS.hit
       }}>
-        <FrameAdvantage value={move.hit_frame} size={textScale > 0.8 ? 'md' : 'sm'} />
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          minHeight: `${getScaledFontSize(24)}px`,
+          width: '100%'
+        }}>
+          <FrameAdvantage value={move.hit_frame} size={textScale > 0.8 ? 'md' : 'sm'} />
+        </div>
       </td>
       
       {/* ガード */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px`, 
+        padding: `${getScaledFontSize(6)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`,
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.guard,
         maxWidth: COLUMN_WIDTHS.guard,
         minWidth: COLUMN_WIDTHS.guard
       }}>
-        <FrameAdvantage value={move.block_frame} size={textScale > 0.8 ? 'md' : 'sm'} />
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          minHeight: `${getScaledFontSize(24)}px`,
+          width: '100%'
+        }}>
+          <FrameAdvantage value={move.block_frame} size={textScale > 0.8 ? 'md' : 'sm'} />
+        </div>
       </td>
       
       {/* 判定 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px`, 
+        padding: `${getScaledFontSize(6)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`,
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.attribute,
         maxWidth: COLUMN_WIDTHS.attribute,
         minWidth: COLUMN_WIDTHS.attribute
@@ -652,9 +722,9 @@ export default function CharacterDetailPage() {
       {/* 属性 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
+        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
         textAlign: 'center', 
-        fontSize: `${getScaledFontSize(14)}px`,
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.effect,
         maxWidth: COLUMN_WIDTHS.effect,
         minWidth: COLUMN_WIDTHS.effect
@@ -663,7 +733,7 @@ export default function CharacterDetailPage() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
-          minHeight: `${getScaledFontSize(32)}px` 
+          minHeight: `${getScaledFontSize(24)}px` 
         }}>
           <EffectDisplay 
             effectIds={move.effects ? move.effects.filter(e => e !== null) : []} 
@@ -676,11 +746,12 @@ export default function CharacterDetailPage() {
       {/* 備考 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
-        fontSize: `${getScaledFontSize(14)}px`,
+        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
+        fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.remarks,
         maxWidth: COLUMN_WIDTHS.remarks,
-        minWidth: COLUMN_WIDTHS.remarks
+        minWidth: COLUMN_WIDTHS.remarks,
+        verticalAlign: 'top'
       }}>
         {renderRemarks(move.remarks)}
       </td>
@@ -723,7 +794,7 @@ export default function CharacterDetailPage() {
             キャラクターが見つかりません
           </h1>
           <a 
-            href="/character/create" 
+            href="/" 
             style={{
               background: 'linear-gradient(to right, #dc2626, #b91c1c)',
               color: 'white',
@@ -735,7 +806,7 @@ export default function CharacterDetailPage() {
               transition: 'all 0.2s'
             }}
           >
-            キャラクター作成ページに戻る
+            トップページに戻る
           </a>
         </div>
       </div>
@@ -757,8 +828,6 @@ export default function CharacterDetailPage() {
       <div style={{ marginBottom: isMobile ? '16px' : '24px' }}>
         <nav style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#d1d5db', textDecoration: 'none' }}>トップ</a>
-          <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
-          <a href="/character/create" style={{ color: '#d1d5db', textDecoration: 'none' }}>キャラクター作成</a>
           <span style={{ margin: '0 8px', color: '#ef4444' }}>›</span>
           <span style={{ color: '#fca5a5' }}>
             {character.character_name_jp || character.character_name_en}
@@ -977,18 +1046,13 @@ export default function CharacterDetailPage() {
                                 {/* No */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.no,
                                   maxWidth: COLUMN_WIDTHS.no,
                                   minWidth: COLUMN_WIDTHS.no,
-                                  color: '#fef2f2',
-                                  position: 'sticky',
-                                  left: '0',
-                                  zIndex: 20,
-                                  background: 'linear-gradient(to right, #7f1d1d, #b91c1c)',
-                                  boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
+                                  color: '#fef2f2'
                                 }}>
                                   No
                                 </th>
@@ -996,18 +1060,13 @@ export default function CharacterDetailPage() {
                                 {/* 技名 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.move_name,
                                   maxWidth: COLUMN_WIDTHS.move_name,
                                   minWidth: COLUMN_WIDTHS.move_name,
-                                  color: '#fef2f2',
-                                  position: 'sticky',
-                                  left: COLUMN_WIDTHS.no,
-                                  zIndex: 20,
-                                  background: 'linear-gradient(to right, #7f1d1d, #b91c1c)',
-                                  boxShadow: '2px 0 5px rgba(0,0,0,0.3)'
+                                  color: '#fef2f2'
                                 }}>
                                   技名
                                 </th>
@@ -1015,8 +1074,8 @@ export default function CharacterDetailPage() {
                                 {/* コマンド */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(12)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px ${getScaledFontSize(8)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.command,
                                   maxWidth: COLUMN_WIDTHS.command,
@@ -1029,8 +1088,8 @@ export default function CharacterDetailPage() {
                                 {/* 発生 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(4)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.startup,
                                   maxWidth: COLUMN_WIDTHS.startup,
@@ -1043,8 +1102,8 @@ export default function CharacterDetailPage() {
                                 {/* 持続 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.active,
                                   maxWidth: COLUMN_WIDTHS.active,
@@ -1057,8 +1116,8 @@ export default function CharacterDetailPage() {
                                 {/* ヒット */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.hit,
                                   maxWidth: COLUMN_WIDTHS.hit,
@@ -1071,8 +1130,8 @@ export default function CharacterDetailPage() {
                                 {/* ガード */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.guard,
                                   maxWidth: COLUMN_WIDTHS.guard,
@@ -1085,8 +1144,8 @@ export default function CharacterDetailPage() {
                                 {/* 判定 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.attribute,
                                   maxWidth: COLUMN_WIDTHS.attribute,
@@ -1099,8 +1158,8 @@ export default function CharacterDetailPage() {
                                 {/* 属性 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.effect,
                                   maxWidth: COLUMN_WIDTHS.effect,
@@ -1113,8 +1172,8 @@ export default function CharacterDetailPage() {
                                 {/* 備考 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
-                                  padding: `${getScaledFontSize(8)}px ${getScaledFontSize(16)}px`, 
-                                  fontSize: `${getScaledFontSize(14)}px`, 
+                                  padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
+                                  fontSize: `${getTableFontSize()}px`, 
                                   fontWeight: 'bold', 
                                   width: COLUMN_WIDTHS.remarks,
                                   maxWidth: COLUMN_WIDTHS.remarks,
@@ -1262,12 +1321,13 @@ export default function CharacterDetailPage() {
                   alignItems: 'center', 
                   justifyContent: 'flex-start',
                   flexWrap: 'wrap',
-                  gap: '2px'
+                  gap: '2px',
+                  width: '100%'
                 }}>
                   <ResponsiveCommandDisplay 
                     command={selectedMove.command} 
                     size="lg"
-                    className="justify-start flex-wrap"
+                    className="w-full"
                     showFallback={true}
                   />
                 </div>

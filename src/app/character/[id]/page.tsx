@@ -1,4 +1,4 @@
-// src/app/character/[id]/page.tsx (コマンド列折り返し対応版)
+// src/app/character/[id]/page.tsx (画像表示対応版)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,11 +9,11 @@ import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
-// 列幅設定（元に戻す）
+// 列幅設定
 const COLUMN_WIDTHS = {
   no: '30px',
   move_name: '250px',
-  command: '320px',    // 元の幅に戻す
+  command: '320px',
   startup: '40px',
   active: '52px',
   hit: '48px',
@@ -81,16 +81,15 @@ export default function CharacterDetailPage() {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [textScale, setTextScale] = useState(1);
 
-  // 画面サイズ監視とテキストスケール計算（より積極的な調整）
+  // 画面サイズ監視とテキストスケール計算
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 768);
       
       if (width >= 768) {
-        // より積極的なスケール調整（コマンド列の折り返しを促進）
         if (width <= 800) {
-          setTextScale(0.55);  // より小さく
+          setTextScale(0.55);
         } else if (width <= 900) {
           setTextScale(0.65);
         } else if (width <= 1000) {
@@ -232,14 +231,14 @@ export default function CharacterDetailPage() {
     }
   };
 
-  // スケールされたフォントサイズを計算（統一サイズ）
+  // スケールされたフォントサイズを計算
   const getScaledFontSize = (baseSize: number) => {
-    return Math.max(baseSize * textScale, 8); // 最小サイズを8pxに設定
+    return Math.max(baseSize * textScale, 8);
   };
 
   // テーブル用の統一フォントサイズ
   const getTableFontSize = () => {
-    return getScaledFontSize(12); // テーブル内は全て12pxベース
+    return getScaledFontSize(12);
   };
 
   // カテゴリ選択処理
@@ -255,7 +254,7 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // 改良されたResponsiveCommandDisplayコンポーネント（直接処理版）
+  // ResponsiveCommandDisplayコンポーネント
   const ResponsiveCommandDisplay = ({ 
     command, 
     size = 'md', 
@@ -273,10 +272,8 @@ export default function CharacterDetailPage() {
       ) : null;
     }
 
-    // アイコン置換を試行
     const elements = parseCommandToElements(command);
     
-    // アイコン置換できなかった場合は強制折り返しテキスト表示
     if (elements.length === 0 || elements.every(el => el.type === 'text')) {
       return (
         <div style={{ 
@@ -295,7 +292,6 @@ export default function CharacterDetailPage() {
       );
     }
 
-    // アイコン置換された場合の表示
     const sizeClasses = {
       sm: 'h-4 w-4',
       md: 'h-6 w-6', 
@@ -442,7 +438,7 @@ export default function CharacterDetailPage() {
               <span style={{ flexShrink: 0, marginTop: '2px' }}>・</span>
               <TextWithIcons 
                 text={remark} 
-                size={textScale > 0.8 ? 'md' : 'sm'} // 他の列と同様のサイズ調整
+                size={textScale > 0.8 ? 'md' : 'sm'}
                 textClassName="text-gray-100"
                 className="flex items-center gap-1 flex-wrap"
                 showFallback={false}
@@ -574,7 +570,6 @@ export default function CharacterDetailPage() {
         e.currentTarget.style.background = 'transparent';
       }}
     >
-      {/* No */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
@@ -589,7 +584,6 @@ export default function CharacterDetailPage() {
         {move.move_num || index + 1}
       </td>
       
-      {/* 技名 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
@@ -601,7 +595,6 @@ export default function CharacterDetailPage() {
         {renderMoveName(move.move_name, move.move_name_kana)}
       </td>
       
-      {/* コマンド */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px ${getScaledFontSize(8)}px`, 
@@ -628,7 +621,6 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
-      {/* 発生 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
@@ -643,7 +635,6 @@ export default function CharacterDetailPage() {
         {move.startup_frame || '-'}
       </td>
       
-      {/* 持続 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px`, 
@@ -664,7 +655,6 @@ export default function CharacterDetailPage() {
         />
       </td>
       
-      {/* ヒット */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px`, 
@@ -685,7 +675,6 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
-      {/* ガード */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px`, 
@@ -706,7 +695,6 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
-      {/* 判定 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px`, 
@@ -719,7 +707,6 @@ export default function CharacterDetailPage() {
         {renderAttribute(move.attribute)}
       </td>
       
-      {/* 属性 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
@@ -743,7 +730,6 @@ export default function CharacterDetailPage() {
         </div>
       </td>
       
-      {/* 備考 */}
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
         padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
@@ -851,114 +837,233 @@ export default function CharacterDetailPage() {
       <div 
         style={{
           marginBottom: isMobile ? '24px' : '32px',
-          background: 'linear-gradient(to right, #450a0a, #111827, #450a0a)',
-          padding: isMobile ? '24px' : '32px',
-          borderRadius: '8px',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
-          border: '1px solid rgba(185, 28, 28, 0.3)',
-          backdropFilter: 'blur(4px)',
-          maxWidth: '1152px',
-          margin: `0 auto ${isMobile ? '24px' : '32px'} auto`
+          background: 'linear-gradient(135deg, rgba(127, 29, 29, 0.9), rgba(0, 0, 0, 0.95), rgba(127, 29, 29, 0.9))',
+          borderRadius: '0', // 角をなくしてフル幅に
+          boxShadow: '0 25px 50px rgba(0,0,0,0.7)',
+          border: '2px solid rgba(185, 28, 28, 0.5)',
+          backdropFilter: 'blur(8px)',
+          width: '100%', // フル幅
+          maxWidth: '100%',
+          margin: `0 0 ${isMobile ? '24px' : '32px'} 0`,
+          overflow: 'hidden'
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <h1 style={{ 
-            fontSize: isMobile ? '24px' : '36px', 
+        {/* 上部：キャラクター名（中央配置） */}
+        <div style={{
+          background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(127, 29, 29, 0.3))',
+          padding: isMobile ? '20px' : '30px 40px',
+          borderBottom: '2px solid rgba(185, 28, 28, 0.4)',
+          textAlign: 'center'
+        }}>
+          <div style={{ 
+            fontSize: isMobile ? '32px' : '48px', 
             fontWeight: 'bold', 
             color: '#fef2f2', 
-            marginBottom: '8px', 
-            textShadow: '2px 2px 8px rgba(0,0,0,0.8)' 
+            textShadow: '3px 3px 12px rgba(0,0,0,0.9)',
+            letterSpacing: '2px',
+            marginBottom: '8px'
           }}>
-            {renderCharacterName(character.character_name_jp, character.character_name_en)}
-          </h1>
-          <p style={{ fontSize: isMobile ? '16px' : '18px', color: '#fca5a5' }}>
-            <PlainText 
-              text={character.character_name_en} 
-              className="text-rose-300"
-              showFallback={false}
-            />
-          </p>
-          {renderNickname(character.nickname)}
-        </div>
-        
-        {/* 基本情報 */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: isMobile ? '16px' : '24px', 
-          marginBottom: '24px' 
-        }}>
-          <div 
-            style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              padding: '16px',
-              borderRadius: '8px',
-              boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(185, 28, 28, 0.2)',
-              backdropFilter: 'blur(4px)'
-            }}
-          >
-            <h3 style={{ fontWeight: '600', color: '#fca5a5', marginBottom: '8px' }}>基本情報</h3>
-            <p style={{ fontSize: '14px', color: '#d1d5db' }}>身長: {character.height || '未設定'}</p>
-            <p style={{ fontSize: '14px', color: '#d1d5db' }}>体重: {character.weight || '未設定'}</p>
-            <p style={{ fontSize: '14px', color: '#d1d5db' }}>国籍: {character.nationality || '未設定'}</p>
-            {character.martial_arts && (
-              <p style={{ fontSize: '14px', color: '#d1d5db' }}>
-                格闘技: <PlainText 
-                  text={character.martial_arts} 
-                  className="text-gray-300"
-                  showFallback={false}
-                />
-              </p>
-            )}
+            {character.character_name_jp || character.character_name_en}
           </div>
+          <div style={{ 
+            fontSize: isMobile ? '20px' : '28px', 
+            color: '#fca5a5',
+            fontStyle: 'italic',
+            letterSpacing: '1px',
+            marginBottom: '4px'
+          }}>
+            {character.character_name_en}
+          </div>
+          {character.nickname && (
+            <div style={{ 
+              fontSize: isMobile ? '18px' : '22px', 
+              color: '#f87171', 
+              fontWeight: '600',
+              marginTop: '8px'
+            }}>
+              {character.nickname}
+            </div>
+          )}
         </div>
-        
-        {/* キャラクター紹介 */}
-        {character.character_description && (
-          <div 
-            style={{
-              border: '1px solid rgba(185, 28, 28, 0.3)',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
-              background: 'rgba(0, 0, 0, 0.2)',
-              backdropFilter: 'blur(4px)'
-            }}
-          >
-            <button 
-              onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
-              style={{
-                width: '100%',
-                textAlign: 'left',
-                padding: '16px',
-                background: 'rgba(69, 10, 10, 0.5)',
-                border: 'none',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                borderBottom: '1px solid rgba(185, 28, 28, 0.2)'
-              }}
-            >
-              <h3 style={{ fontWeight: '600', color: '#fca5a5', margin: 0 }}>キャラクター紹介</h3>
-              <span style={{ 
-                transform: isDescriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
-                transition: 'transform 0.2s', 
-                color: '#f87171' 
+
+        {/* 下部：左側情報と右側画像 */}
+        <div style={{ 
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          height: isMobile ? 'auto' : '600px', // 高さを固定
+        }}>
+          {/* 左側：基本情報とキャラクター紹介 */}
+          <div style={{ 
+            flex: '1 1 60%',
+            padding: isMobile ? '24px' : '40px',
+            background: 'rgba(0, 0, 0, 0.4)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '32px',
+            minWidth: 0,
+            overflowY: 'auto'
+          }}>
+            {/* 基本情報セクション */}
+            <div>
+              <h3 style={{ 
+                fontWeight: '700', 
+                color: '#fca5a5', 
+                marginBottom: '20px', 
+                fontSize: isMobile ? '18px' : '22px',
+                borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
+                paddingBottom: '8px'
               }}>
-                ▼
-              </span>
-            </button>
-            
-            {isDescriptionOpen && (
-              <div style={{ padding: '24px', background: 'rgba(0, 0, 0, 0.3)' }}>
-                {renderDescription(character.character_description)}
+                基本情報
+              </h3>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', 
+                gap: '16px',
+                fontSize: isMobile ? '15px' : '18px'
+              }}>
+                <div style={{ color: '#e5e7eb' }}>
+                  <span style={{ color: '#9ca3af', marginRight: '12px' }}>身長:</span>
+                  <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.height || '未設定'}</span>
+                </div>
+                <div style={{ color: '#e5e7eb' }}>
+                  <span style={{ color: '#9ca3af', marginRight: '12px' }}>体重:</span>
+                  <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.weight || '未設定'}</span>
+                </div>
+                <div style={{ color: '#e5e7eb' }}>
+                  <span style={{ color: '#9ca3af', marginRight: '12px' }}>国籍:</span>
+                  <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.nationality || '未設定'}</span>
+                </div>
+                {character.martial_arts && (
+                  <div style={{ color: '#e5e7eb' }}>
+                    <span style={{ color: '#9ca3af', marginRight: '12px' }}>格闘技:</span>
+                    <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.martial_arts}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* キャラクター紹介セクション */}
+            {character.character_description && (
+              <div>
+                <button 
+                  onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '0',
+                    background: 'transparent',
+                    border: 'none',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    marginBottom: '20px'
+                  }}
+                >
+                  <h3 style={{ 
+                    fontWeight: '700', 
+                    color: '#fca5a5', 
+                    margin: 0,
+                    fontSize: isMobile ? '18px' : '22px',
+                    borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
+                    paddingBottom: '8px',
+                    flex: 1
+                  }}>
+                    キャラクター紹介
+                  </h3>
+                  <span style={{ 
+                    transform: isDescriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+                    transition: 'transform 0.2s', 
+                    color: '#f87171',
+                    fontSize: '20px',
+                    marginLeft: '16px'
+                  }}>
+                    ▼
+                  </span>
+                </button>
+                
+                {isDescriptionOpen && (
+                  <div style={{ 
+                    fontSize: isMobile ? '15px' : '17px',
+                    lineHeight: '1.8',
+                    color: '#e5e7eb',
+                    textAlign: 'justify'
+                  }}>
+                    {renderDescription(character.character_description)}
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
+
+          {/* 右側：キャラクター画像（全身表示） */}
+          <div style={{
+            flex: '0 0 40%',
+            minHeight: isMobile ? '400px' : '600px',
+            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(127, 29, 29, 0.3))',
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            order: isMobile ? -1 : 0, // モバイルでは画像を上に
+            borderLeft: isMobile ? 'none' : '2px solid rgba(185, 28, 28, 0.3)'
+          }}>
+            <img
+              src={`/character-pictures/${character.character_id}.png`}
+              alt={character.character_name_jp || character.character_name_en}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain', // 全身が映るように
+                objectPosition: 'center',
+                padding: '20px'
+              }}
+              onError={(e) => {
+                // 画像が見つからない場合はプレースホルダーを表示
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                
+                // プレースホルダー要素を作成
+                const placeholder = document.createElement('div');
+                placeholder.style.position = 'absolute';
+                placeholder.style.top = '0';
+                placeholder.style.left = '0';
+                placeholder.style.width = '100%';
+                placeholder.style.height = '100%';
+                placeholder.style.display = 'flex';
+                placeholder.style.flexDirection = 'column';
+                placeholder.style.alignItems = 'center';
+                placeholder.style.justifyContent = 'center';
+                placeholder.style.background = 'linear-gradient(135deg, rgba(127, 29, 29, 0.3), rgba(0, 0, 0, 0.5))';
+                placeholder.style.color = '#9ca3af';
+                placeholder.innerHTML = `
+                  <div style="font-size: 80px; margin-bottom: 16px;">🥊</div>
+                  <div style="font-size: 20px; text-align: center; padding: 0 24px; color: #fca5a5;">
+                    ${character.character_name_jp || character.character_name_en}
+                  </div>
+                  <div style="font-size: 16px; margin-top: 12px; color: #6b7280;">
+                    画像なし
+                  </div>
+                `;
+                target.parentNode?.appendChild(placeholder);
+              }}
+            />
+            
+            {/* グラデーションオーバーレイ（エッジをぼかす） */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: `
+                radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.3) 100%),
+                linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.3) 100%)
+              `,
+              pointerEvents: 'none'
+            }} />
+          </div>
+        </div>
       </div>
 
       {/* 技分類選択・技表示 */}
@@ -1043,7 +1148,6 @@ export default function CharacterDetailPage() {
                           }}>
                             <thead>
                               <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
-                                {/* No */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
@@ -1057,7 +1161,6 @@ export default function CharacterDetailPage() {
                                   No
                                 </th>
                                 
-                                {/* 技名 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
@@ -1071,7 +1174,6 @@ export default function CharacterDetailPage() {
                                   技名
                                 </th>
                                 
-                                {/* コマンド */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px ${getScaledFontSize(8)}px`, 
@@ -1085,7 +1187,6 @@ export default function CharacterDetailPage() {
                                   コマンド
                                 </th>
                                 
-                                {/* 発生 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px ${getScaledFontSize(3)}px`, 
@@ -1099,7 +1200,6 @@ export default function CharacterDetailPage() {
                                   発生
                                 </th>
                                 
-                                {/* 持続 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px`, 
@@ -1113,7 +1213,6 @@ export default function CharacterDetailPage() {
                                   持続
                                 </th>
                                 
-                                {/* ヒット */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px`, 
@@ -1127,7 +1226,6 @@ export default function CharacterDetailPage() {
                                   ヒット
                                 </th>
                                 
-                                {/* ガード */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px`, 
@@ -1141,7 +1239,6 @@ export default function CharacterDetailPage() {
                                   ガード
                                 </th>
                                 
-                                {/* 判定 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px`, 
@@ -1155,7 +1252,6 @@ export default function CharacterDetailPage() {
                                   判定
                                 </th>
                                 
-                                {/* 属性 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
@@ -1169,7 +1265,6 @@ export default function CharacterDetailPage() {
                                   属性
                                 </th>
                                 
-                                {/* 備考 */}
                                 <th style={{ 
                                   border: '1px solid rgb(185, 28, 28)', 
                                   padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 

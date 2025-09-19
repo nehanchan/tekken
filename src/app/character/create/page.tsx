@@ -1,4 +1,4 @@
-// src/app/character/create/page.tsx (キャラクターマスタ編集機能付き)
+// src/app/character/create/page.tsx (display_name対応版)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +10,7 @@ interface CharacterData {
   character_id: string;
   character_name_en: string;
   character_name_jp?: string | null;
+  display_name?: string | null;
   nickname?: string | null;
   nationality?: string | null;
   height?: string | null;
@@ -190,6 +191,7 @@ export default function CreateCharacterPage() {
         id: editedCharacter.id,
         character_name_jp: editedCharacter.character_name_jp,
         character_name_en: editedCharacter.character_name_en,
+        display_name: editedCharacter.display_name,
         nickname: editedCharacter.nickname,
         height: editedCharacter.height,
         weight: editedCharacter.weight,
@@ -522,6 +524,34 @@ export default function CreateCharacterPage() {
                 )}
               </div>
               
+              {/* 表示名 */}
+              <div>
+                <label style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '6px', display: 'block' }}>
+                  表示名:
+                </label>
+                {editMode ? (
+                  <input
+                    type="text"
+                    value={editedCharacter.display_name || ''}
+                    onChange={(e) => setEditedCharacter({ ...editedCharacter, display_name: e.target.value })}
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.6)',
+                      border: '1px solid rgba(185, 28, 28, 0.4)',
+                      color: '#ffffff',
+                      padding: '10px 15px',
+                      borderRadius: '4px',
+                      width: '100%',
+                      fontSize: '16px'
+                    }}
+                    placeholder="短縮表示用の名前（例: ハヤブサ、三島おやじ）"
+                  />
+                ) : (
+                  <div style={{ fontSize: '16px', color: '#e5e7eb', padding: '10px 0' }}>
+                    {selectedCharacter.display_name || '未設定'}
+                  </div>
+                )}
+              </div>
+              
               {/* ニックネーム */}
               <div>
                 <label style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '6px', display: 'block' }}>
@@ -631,7 +661,7 @@ export default function CreateCharacterPage() {
               </div>
               
               {/* 格闘技 */}
-              <div style={{ gridColumn: 'span 2' }}>
+              <div style={{ gridColumn: 'span 1' }}>
                 <label style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '6px', display: 'block' }}>
                   格闘技:
                 </label>

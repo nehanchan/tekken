@@ -68,6 +68,13 @@
               "isRequired": false,
               "attributes": []
             },
+            "display_name": {
+              "name": "display_name",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
             "nickname": {
               "name": "nickname",
               "isArray": false,

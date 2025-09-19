@@ -2,12 +2,14 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
+
   // キャラクターマスタ（height/weight文字列対応版）
   Character: a
     .model({
       character_id: a.string().required(),        // "001", "002" 形式
       character_name_en: a.string().required(),   // 英語キャラクター名 (64文字)
       character_name_jp: a.string(),              // 日本語キャラクター名 (64文字)
+      display_name: a.string(),                   // 表示名（優先表示用、64文字）
       nickname: a.string(),                       // ニックネーム・称号 (64文字)
       height: a.string(),                         // 身長（文字列）例: "180cm", "不明"
       weight: a.string(),                         // 体重（文字列）例: "75kg", "不明"
@@ -16,8 +18,7 @@ const schema = a.schema({
       character_description: a.string(),          // キャラクター説明 (1024文字)
       
       moves: a.hasMany('Move', 'character_id'),
-    })
-    .authorization((allow) => [
+    })    .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
       allow.guest().to(['read']),
       allow.authenticated().to(['create', 'read', 'update', 'delete']),

@@ -1,4 +1,4 @@
-// src/app/character/[id]/page.tsx (画像表示対応版)
+// src/app/character/[id]/page.tsx (文字サイズ統一版)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -241,6 +241,16 @@ export default function CharacterDetailPage() {
     return getScaledFontSize(12);
   };
 
+  // 見出し用フォントサイズ
+  const getHeadingFontSize = (level: 'h1' | 'h2' | 'h3') => {
+    const baseSizes = {
+      h1: 24,
+      h2: 20,
+      h3: 18
+    };
+    return getScaledFontSize(baseSizes[level]);
+  };
+
   // カテゴリ選択処理
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategories(prev => {
@@ -268,7 +278,10 @@ export default function CharacterDetailPage() {
   }) => {
     if (!command || command.trim() === '') {
       return showFallback ? (
-        <span className={`text-gray-400 ${className}`} style={{ fontSize: `${getTableFontSize()}px` }}>-</span>
+        <span className={`text-gray-400 ${className}`} style={{ 
+          fontSize: `${getTableFontSize()}px`,
+          fontWeight: '500'
+        }}>-</span>
       ) : null;
     }
 
@@ -278,6 +291,7 @@ export default function CharacterDetailPage() {
       return (
         <div style={{ 
           fontSize: `${getTableFontSize()}px`,
+          fontWeight: '500',
           lineHeight: '1.3',
           width: '100%',
           maxWidth: '100%',
@@ -285,7 +299,7 @@ export default function CharacterDetailPage() {
           overflowWrap: 'anywhere',
           whiteSpace: 'normal',
           hyphens: 'auto',
-          color: '#d1d5db'
+          color: '#ffffff'
         }} className={className}>
           {command}
         </div>
@@ -317,10 +331,11 @@ export default function CharacterDetailPage() {
               <span 
                 key={`text-${index}`} 
                 style={{
+                  fontWeight: '500',
                   wordBreak: 'break-all',
                   overflowWrap: 'anywhere',
                   whiteSpace: 'normal',
-                  color: '#d1d5db'
+                  color: '#ffffff'
                 }}
               >
                 {element.value}
@@ -838,11 +853,11 @@ export default function CharacterDetailPage() {
         style={{
           marginBottom: isMobile ? '24px' : '32px',
           background: 'linear-gradient(135deg, rgba(127, 29, 29, 0.9), rgba(0, 0, 0, 0.95), rgba(127, 29, 29, 0.9))',
-          borderRadius: '0', // 角をなくしてフル幅に
+          borderRadius: '0',
           boxShadow: '0 25px 50px rgba(0,0,0,0.7)',
           border: '2px solid rgba(185, 28, 28, 0.5)',
           backdropFilter: 'blur(8px)',
-          width: '100%', // フル幅
+          width: '100%',
           maxWidth: '100%',
           margin: `0 0 ${isMobile ? '24px' : '32px'} 0`,
           overflow: 'hidden'
@@ -890,7 +905,7 @@ export default function CharacterDetailPage() {
         <div style={{ 
           display: 'flex',
           flexDirection: isMobile ? 'column' : 'row',
-          height: isMobile ? 'auto' : '600px', // 高さを固定
+          height: isMobile ? 'auto' : '600px',
         }}>
           {/* 左側：基本情報とキャラクター紹介 */}
           <div style={{ 
@@ -909,7 +924,7 @@ export default function CharacterDetailPage() {
                 fontWeight: '700', 
                 color: '#fca5a5', 
                 marginBottom: '20px', 
-                fontSize: isMobile ? '18px' : '22px',
+                fontSize: `${getHeadingFontSize('h3')}px`,
                 borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
                 paddingBottom: '8px'
               }}>
@@ -919,7 +934,7 @@ export default function CharacterDetailPage() {
                 display: 'grid', 
                 gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', 
                 gap: '16px',
-                fontSize: isMobile ? '15px' : '18px'
+                fontSize: `${getTableFontSize()}px`
               }}>
                 <div style={{ color: '#e5e7eb' }}>
                   <span style={{ color: '#9ca3af', marginRight: '12px' }}>身長:</span>
@@ -964,7 +979,7 @@ export default function CharacterDetailPage() {
                     fontWeight: '700', 
                     color: '#fca5a5', 
                     margin: 0,
-                    fontSize: isMobile ? '18px' : '22px',
+                    fontSize: `${getHeadingFontSize('h3')}px`,
                     borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
                     paddingBottom: '8px',
                     flex: 1
@@ -984,7 +999,7 @@ export default function CharacterDetailPage() {
                 
                 {isDescriptionOpen && (
                   <div style={{ 
-                    fontSize: isMobile ? '15px' : '17px',
+                    fontSize: `${getTableFontSize()}px`,
                     lineHeight: '1.8',
                     color: '#e5e7eb',
                     textAlign: 'justify'
@@ -996,7 +1011,7 @@ export default function CharacterDetailPage() {
             )}
           </div>
 
-          {/* 右側：キャラクター画像（全身表示） */}
+          {/* 右側：キャラクター画像 */}
           <div style={{
             flex: '0 0 40%',
             minHeight: isMobile ? '400px' : '600px',
@@ -1005,7 +1020,7 @@ export default function CharacterDetailPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            order: isMobile ? -1 : 0, // モバイルでは画像を上に
+            order: isMobile ? -1 : 0,
             borderLeft: isMobile ? 'none' : '2px solid rgba(185, 28, 28, 0.3)'
           }}>
             <img
@@ -1014,16 +1029,14 @@ export default function CharacterDetailPage() {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain', // 全身が映るように
+                objectFit: 'contain',
                 objectPosition: 'center',
                 padding: '20px'
               }}
               onError={(e) => {
-                // 画像が見つからない場合はプレースホルダーを表示
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 
-                // プレースホルダー要素を作成
                 const placeholder = document.createElement('div');
                 placeholder.style.position = 'absolute';
                 placeholder.style.top = '0';
@@ -1049,7 +1062,6 @@ export default function CharacterDetailPage() {
               }}
             />
             
-            {/* グラデーションオーバーレイ（エッジをぼかす） */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -1069,7 +1081,7 @@ export default function CharacterDetailPage() {
       {/* 技分類選択・技表示 */}
       <div style={{ marginBottom: '16px' }}>
         <h2 style={{ 
-          fontSize: isMobile ? '20px' : '24px', 
+          fontSize: `${getHeadingFontSize('h2')}px`, 
           fontWeight: 'bold', 
           color: '#fef2f2', 
           marginBottom: isMobile ? '16px' : '24px', 
@@ -1116,7 +1128,7 @@ export default function CharacterDetailPage() {
                       fontWeight: '600', 
                       color: '#fef2f2', 
                       textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                      fontSize: isMobile ? '14px' : '16px'
+                      fontSize: `${getTableFontSize()}px`
                     }}>
                       {`${category.move_category} (${moves.length}個の技)`}
                     </span>

@@ -1,9 +1,23 @@
-// src/app/page.tsx (鉄拳スタイル キャラクター選択画面 + NEWS)
+// src/app/page.tsx (鉄拳スタイル キャラクター選択画面)
 'use client';
 
 import { useEffect, useState } from 'react';
 import { client } from '@/lib/client';
-import type { Character } from '@/types';
+
+// キャラクター型定義（display_nameを含む）
+interface Character {
+  id: string;
+  character_id: string;
+  character_name_en: string;
+  character_name_jp?: string | null;
+  display_name?: string | null;
+  nickname?: string | null;
+  height?: string | null;
+  weight?: string | null;
+  nationality?: string | null;
+  martial_arts?: string | null;
+  character_description?: string | null;
+}
 
 // ニュース型定義
 interface NewsItem {
@@ -31,7 +45,7 @@ export default function Home() {
       console.log('取得したキャラクターデータ:', data);
       
       // nullを除外してフィルタリング
-      const validCharacters = (data || []).filter(character => character !== null);
+      const validCharacters = (data || []).filter(character => character !== null) as Character[];
       
       // character_idでソート
       const sortedCharacters = validCharacters.sort((a, b) => {
@@ -67,6 +81,16 @@ export default function Home() {
     }
   };
 
+  // 表示名を取得する関数
+  const getDisplayName = (character: Character): string => {
+    // display_nameが存在する場合は優先的に使用
+    if (character.display_name) {
+      return character.display_name;
+    }
+    // なければ日本語名、それもなければ英語名
+    return character.character_name_jp || character.character_name_en;
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -98,43 +122,6 @@ export default function Home() {
         maxWidth: '1600px',
         margin: '0 auto'
       }}>
-        {/* タイトルセクション */}
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '50px'
-        }}>
-          <div style={{
-            display: 'inline-block',
-            position: 'relative'
-          }}>
-            {/* タイトル背景 */}
-            <div style={{
-              position: 'absolute',
-              top: '-10px',
-              left: '-40px',
-              right: '-40px',
-              bottom: '-10px',
-              border: '3px solid rgba(185, 28, 28, 0.6)',
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.95), rgba(127, 29, 29, 0.2))',
-              transform: 'skew(-10deg)',
-              borderRadius: '4px'
-            }} />
-            
-            <h1 style={{
-              position: 'relative',
-              fontSize: '48px',
-              fontWeight: 'bold',
-              color: '#ffffff',
-              letterSpacing: '8px',
-              textTransform: 'uppercase',
-              textShadow: '3px 3px 6px rgba(0,0,0,0.9)',
-              padding: '20px 60px'
-            }}>
-              CHARACTER
-            </h1>
-          </div>
-        </div>
-
         {/* NEWSセクション */}
         <div style={{
           maxWidth: '1200px',
@@ -329,7 +316,7 @@ export default function Home() {
             letterSpacing: '2px',
             textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
           }}>
-            キャラクター一覧
+            Character List
           </h2>
           
           <a 
@@ -394,7 +381,7 @@ export default function Home() {
                   transform: hoveredCharacter === character.id ? 'scale(1.05) translateY(-5px)' : 'scale(1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer',
-                  height: '100px', // 高さを固定
+                  height: '100px',
                   width: '100%'
                 }}
               >
@@ -408,7 +395,7 @@ export default function Home() {
                   borderColor: hoveredCharacter === character.id 
                     ? 'rgba(248, 113, 113, 0.6)' 
                     : 'rgba(185, 28, 28, 0.3)',
-                  height: '100%', // 高さ100%
+                  height: '100%',
                   clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)',
                   transition: 'all 0.3s',
                   boxShadow: hoveredCharacter === character.id 
@@ -441,7 +428,7 @@ export default function Home() {
                     textAlign: 'center',
                     padding: '0 40px'
                   }}>
-                    {/* 日本語名 */}
+                    {/* 表示名（display_name優先） */}
                     <div style={{
                       fontSize: '20px',
                       fontWeight: 'bold',
@@ -454,10 +441,10 @@ export default function Home() {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
                     }}>
-                      {character.character_name_jp || character.character_name_en}
+                      {getDisplayName(character)}
                     </div>
                     
-                    {/* 英語名 */}
+                    {/* 英語名（サブテキスト） */}
                     <div style={{
                       fontSize: '12px',
                       color: 'rgba(252, 165, 165, 0.8)',

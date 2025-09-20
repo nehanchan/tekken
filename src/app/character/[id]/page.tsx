@@ -1,4 +1,4 @@
-// src/app/character/[id]/page.tsx (文字サイズ統一版)
+// src/app/character/[id]/page.tsx (文字サイズ拡大版)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,18 +9,18 @@ import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
 
-// 列幅設定
+// 列幅設定（最適化版）
 const COLUMN_WIDTHS = {
-  no: '30px',
-  move_name: '250px',
-  command: '320px',
-  startup: '40px',
-  active: '52px',
-  hit: '48px',
-  guard: '48px',
-  attribute: '70px',
-  effect: '70px',
-  remarks: '400px'
+  no: '35px',         // 30px → 35px
+  move_name: '220px',  // 240px → 220px
+  command: '260px',    // 280px → 260px  
+  startup: '45px',     // 40px → 45px
+  active: '55px',      // 52px → 55px
+  hit: '50px',         // 48px → 50px
+  guard: '50px',       // 48px → 50px
+  attribute: '75px',   // 70px → 75px
+  effect: '75px',      // 70px → 75px
+  remarks: '520px'     // 500px → 520px
 };
 
 interface CharacterData {
@@ -81,7 +81,7 @@ export default function CharacterDetailPage() {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [textScale, setTextScale] = useState(1);
 
-  // 画面サイズ監視とテキストスケール計算
+  // 画面サイズ監視とテキストスケール計算（全体的にスケール値を上げる）
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
@@ -89,17 +89,17 @@ export default function CharacterDetailPage() {
       
       if (width >= 768) {
         if (width <= 800) {
-          setTextScale(0.55);
+          setTextScale(0.65);  // 0.55 → 0.65
         } else if (width <= 900) {
-          setTextScale(0.65);
+          setTextScale(0.75);  // 0.65 → 0.75
         } else if (width <= 1000) {
-          setTextScale(0.75);
+          setTextScale(0.85);  // 0.75 → 0.85
         } else if (width <= 1100) {
-          setTextScale(0.85);
+          setTextScale(0.95);  // 0.85 → 0.95
         } else if (width <= 1200) {
-          setTextScale(0.9);
+          setTextScale(1.0);   // 0.9 → 1.0
         } else {
-          setTextScale(1.0);
+          setTextScale(1.1);   // 1.0 → 1.1
         }
       } else {
         setTextScale(1);
@@ -236,17 +236,17 @@ export default function CharacterDetailPage() {
     return Math.max(baseSize * textScale, 8);
   };
 
-  // テーブル用の統一フォントサイズ
+  // テーブル用の統一フォントサイズ（12px → 14px に変更）
   const getTableFontSize = () => {
-    return getScaledFontSize(12);
+    return getScaledFontSize(14);  // 12px → 14px に変更
   };
 
-  // 見出し用フォントサイズ
+  // 見出し用フォントサイズ（各レベルを拡大）
   const getHeadingFontSize = (level: 'h1' | 'h2' | 'h3') => {
     const baseSizes = {
-      h1: 24,
-      h2: 20,
-      h3: 18
+      h1: 28,  // 24 → 28
+      h2: 24,  // 20 → 24
+      h3: 20   // 18 → 20
     };
     return getScaledFontSize(baseSizes[level]);
   };
@@ -292,11 +292,11 @@ export default function CharacterDetailPage() {
         <div style={{ 
           fontSize: `${getTableFontSize()}px`,
           fontWeight: '500',
-          lineHeight: '1.3',
+          lineHeight: '1.4',
           width: '100%',
           maxWidth: '100%',
-          wordBreak: 'break-all',
-          overflowWrap: 'anywhere',
+          wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+          overflowWrap: 'anywhere',  // 必要に応じて折り返し
           whiteSpace: 'normal',
           hyphens: 'auto',
           color: '#ffffff'
@@ -307,9 +307,9 @@ export default function CharacterDetailPage() {
     }
 
     const sizeClasses = {
-      sm: 'h-4 w-4',
-      md: 'h-6 w-6', 
-      lg: 'h-8 w-8'
+      sm: 'h-5 w-5',  // 少し大きく調整
+      md: 'h-7 w-7',  // 少し大きく調整
+      lg: 'h-9 w-9'   // 少し大きく調整
     };
 
     const iconSize = textScale > 0.8 ? 'md' : 'sm';
@@ -318,10 +318,10 @@ export default function CharacterDetailPage() {
       <div style={{ 
         display: 'flex',
         alignItems: 'center',
-        gap: `${Math.max(textScale * 2, 1)}px`,
+        gap: `${Math.max(textScale * 3, 2)}px`,  // ギャップも少し増やす
         flexWrap: 'wrap',
         fontSize: `${getTableFontSize()}px`,
-        lineHeight: '1.3',
+        lineHeight: '1.4',  // 行高も少し増やす
         width: '100%',
         maxWidth: '100%'
       }} className={className}>
@@ -332,10 +332,11 @@ export default function CharacterDetailPage() {
                 key={`text-${index}`} 
                 style={{
                   fontWeight: '500',
-                  wordBreak: 'break-all',
-                  overflowWrap: 'anywhere',
+                  wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+                  overflowWrap: 'anywhere',  // 必要に応じて折り返し
                   whiteSpace: 'normal',
-                  color: '#ffffff'
+                  color: '#ffffff',
+                  fontSize: `${getTableFontSize()}px`  // テキスト部分のサイズも明示的に指定
                 }}
               >
                 {element.value}
@@ -367,15 +368,17 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // 技名表示
+  // 技名表示（14pxベースに変更）
   const renderMoveName = (moveName: string, moveNameKana?: string | null) => {
     return (
-      <div>
+      <div style={{ wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
         <div style={{ 
           fontWeight: '500', 
-          fontSize: `${getTableFontSize()}px`, 
+          fontSize: `${getScaledFontSize(14)}px`,  // 技名を14pxベースに変更
           color: '#fef2f2',
-          lineHeight: '1.2'
+          lineHeight: '1.3',
+          wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+          overflowWrap: 'break-word'  // 長い単語の折り返し
         }}>
           <TextWithIcons 
             text={moveName} 
@@ -387,10 +390,12 @@ export default function CharacterDetailPage() {
         </div>
         {moveNameKana && !isMobile && (
           <div style={{ 
-            fontSize: `${Math.max(getTableFontSize() - 2, 8)}px`, 
+            fontSize: `${Math.max(getScaledFontSize(12), 10)}px`,  // かなは12pxベース
             color: '#fca5a5', 
             marginTop: '2px',
-            lineHeight: '1.2'
+            lineHeight: '1.3',
+            wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+            overflowWrap: 'break-word'  // 長い単語の折り返し
           }}>
             (<TextWithIcons 
               text={moveNameKana} 
@@ -430,7 +435,7 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // 備考表示
+  // 備考表示（14pxベースに変更）
   const renderRemarks = (remarks?: (string | null)[] | null) => {
     if (!remarks || remarks.length === 0) {
       return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
@@ -442,13 +447,15 @@ export default function CharacterDetailPage() {
           .filter((remark): remark is string => remark !== null && remark !== undefined)
           .map((remark, remarkIndex) => (
             <div key={remarkIndex} style={{ 
-              fontSize: `${getTableFontSize()}px`, 
-              lineHeight: '1.4', 
-              wordBreak: 'break-word', 
+              fontSize: `${getScaledFontSize(14)}px`,  // 備考も14pxベースに変更
+              lineHeight: '1.6',  // 1.4 → 1.6に変更
+              wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+              overflowWrap: 'break-word',  // 長い単語の折り返し
               color: '#fef2f2',
               display: 'flex',
               alignItems: 'flex-start',
-              gap: '4px'
+              gap: '6px',  // 4px → 6pxに変更
+              whiteSpace: 'normal'  // 通常の折り返しを許可
             }}>
               <span style={{ flexShrink: 0, marginTop: '2px' }}>・</span>
               <TextWithIcons 
@@ -605,7 +612,9 @@ export default function CharacterDetailPage() {
         fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.move_name,
         maxWidth: COLUMN_WIDTHS.move_name,
-        minWidth: COLUMN_WIDTHS.move_name
+        minWidth: COLUMN_WIDTHS.move_name,
+        wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+        overflowWrap: 'break-word'  // 長い単語の折り返し
       }}>
         {renderMoveName(move.move_name, move.move_name_kana)}
       </td>
@@ -617,8 +626,10 @@ export default function CharacterDetailPage() {
         width: COLUMN_WIDTHS.command,
         maxWidth: COLUMN_WIDTHS.command,
         minWidth: COLUMN_WIDTHS.command,
-        lineHeight: '1.3',
-        verticalAlign: 'middle'
+        lineHeight: '1.4',
+        verticalAlign: 'middle',
+        wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+        overflowWrap: 'break-word'  // 長い単語の折り返し
       }}>
         <div style={{ 
           display: 'flex', 
@@ -747,12 +758,15 @@ export default function CharacterDetailPage() {
       
       <td style={{ 
         border: '2px solid rgba(185, 28, 28, 0.3)', 
-        padding: `${getScaledFontSize(6)}px ${getScaledFontSize(12)}px`, 
+        padding: `${getScaledFontSize(8)}px ${getScaledFontSize(14)}px`,  // パディングを調整
         fontSize: `${getTableFontSize()}px`,
         width: COLUMN_WIDTHS.remarks,
         maxWidth: COLUMN_WIDTHS.remarks,
         minWidth: COLUMN_WIDTHS.remarks,
-        verticalAlign: 'top'
+        verticalAlign: 'top',
+        wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+        overflowWrap: 'break-word',  // 長い単語の折り返し
+        whiteSpace: 'normal'  // 通常の折り返しを許可
       }}>
         {renderRemarks(move.remarks)}
       </td>
@@ -934,24 +948,24 @@ export default function CharacterDetailPage() {
                 display: 'grid', 
                 gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', 
                 gap: '16px',
-                fontSize: `${getTableFontSize()}px`
+                fontSize: `${getScaledFontSize(15)}px`  // 基本情報は15pxベースに変更
               }}>
                 <div style={{ color: '#e5e7eb' }}>
-                  <span style={{ color: '#9ca3af', marginRight: '12px' }}>身長:</span>
-                  <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.height || '未設定'}</span>
+                  <span style={{ color: '#9ca3af', marginRight: '12px', fontSize: `${getScaledFontSize(14)}px` }}>身長:</span>
+                  <span style={{ fontWeight: '600', color: '#fef2f2', fontSize: `${getScaledFontSize(16)}px` }}>{character.height || '未設定'}</span>
                 </div>
                 <div style={{ color: '#e5e7eb' }}>
-                  <span style={{ color: '#9ca3af', marginRight: '12px' }}>体重:</span>
-                  <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.weight || '未設定'}</span>
+                  <span style={{ color: '#9ca3af', marginRight: '12px', fontSize: `${getScaledFontSize(14)}px` }}>体重:</span>
+                  <span style={{ fontWeight: '600', color: '#fef2f2', fontSize: `${getScaledFontSize(16)}px` }}>{character.weight || '未設定'}</span>
                 </div>
                 <div style={{ color: '#e5e7eb' }}>
-                  <span style={{ color: '#9ca3af', marginRight: '12px' }}>国籍:</span>
-                  <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.nationality || '未設定'}</span>
+                  <span style={{ color: '#9ca3af', marginRight: '12px', fontSize: `${getScaledFontSize(14)}px` }}>国籍:</span>
+                  <span style={{ fontWeight: '600', color: '#fef2f2', fontSize: `${getScaledFontSize(16)}px` }}>{character.nationality || '未設定'}</span>
                 </div>
                 {character.martial_arts && (
                   <div style={{ color: '#e5e7eb' }}>
-                    <span style={{ color: '#9ca3af', marginRight: '12px' }}>格闘技:</span>
-                    <span style={{ fontWeight: '600', color: '#fef2f2' }}>{character.martial_arts}</span>
+                    <span style={{ color: '#9ca3af', marginRight: '12px', fontSize: `${getScaledFontSize(14)}px` }}>格闘技:</span>
+                    <span style={{ fontWeight: '600', color: '#fef2f2', fontSize: `${getScaledFontSize(16)}px` }}>{character.martial_arts}</span>
                   </div>
                 )}
               </div>
@@ -999,7 +1013,7 @@ export default function CharacterDetailPage() {
                 
                 {isDescriptionOpen && (
                   <div style={{ 
-                    fontSize: `${getTableFontSize()}px`,
+                    fontSize: `${getScaledFontSize(15)}px`,  // 14px → 15px に変更
                     lineHeight: '1.8',
                     color: '#e5e7eb',
                     textAlign: 'justify'
@@ -1150,12 +1164,12 @@ export default function CharacterDetailPage() {
                         </div>
                       ) : (
                         /* デスクトップ表示: テーブル形式 */
-                        <div style={{ position: 'relative', overflowX: 'auto' }}>
+                        <div style={{ position: 'relative', overflowX: 'auto', padding: '0 2px' }}>
                           <table style={{ 
                             width: '100%', 
                             borderCollapse: 'collapse', 
                             border: '1px solid rgb(185, 28, 28)', 
-                            minWidth: 'max-content',
+                            minWidth: '1400px',  // max-content → 1400px に変更
                             tableLayout: 'fixed'
                           }}>
                             <thead>
@@ -1578,7 +1592,10 @@ export default function CharacterDetailPage() {
                   background: 'rgba(0, 0, 0, 0.4)',
                   padding: '16px',
                   borderRadius: '6px',
-                  border: '1px solid rgba(185, 28, 28, 0.2)'
+                  border: '1px solid rgba(185, 28, 28, 0.2)',
+                  wordBreak: 'keep-all',  // 日本語の単語を適切に保持
+                  overflowWrap: 'break-word',  // 長い単語の折り返し
+                  whiteSpace: 'normal'  // 通常の折り返しを許可
                 }}>
                   {renderRemarks(selectedMove.remarks)}
                 </div>

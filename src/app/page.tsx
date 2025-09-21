@@ -1,10 +1,9 @@
-// src/app/page.tsx (鉄拳スタイル キャラクター選択画面)
 'use client';
 
 import { useEffect, useState } from 'react';
 import { client } from '@/lib/client';
 
-// キャラクター型定義（display_nameを含む）
+// キャラクター型定義
 interface Character {
   id: string;
   character_id: string;
@@ -31,23 +30,46 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [hoveredCharacter, setHoveredCharacter] = useState<string | null>(null);
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [screenScale, setScreenScale] = useState(1);
 
   useEffect(() => {
     fetchCharacters();
     loadNews();
+    checkScreenSize();
+    
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  // 画面サイズのチェックとスケール計算
+  const checkScreenSize = () => {
+    const width = window.innerWidth;
+    setIsMobile(width < 768);
+    
+    // デスクトップでのスケール計算
+    if (width >= 1400) {
+      setScreenScale(1);
+    } else if (width >= 1200) {
+      setScreenScale(0.9);
+    } else if (width >= 1000) {
+      setScreenScale(0.8);
+    } else if (width >= 768) {
+      setScreenScale(0.7);
+    } else {
+      // モバイルサイズ
+      setScreenScale(1);
+    }
+  };
 
   const fetchCharacters = async () => {
     try {
       const { data } = await client.models.Character.list({ 
         authMode: 'apiKey' 
       });
-      console.log('取得したキャラクターデータ:', data);
       
-      // nullを除外してフィルタリング
       const validCharacters = (data || []).filter(character => character !== null) as Character[];
       
-      // character_idでソート
       const sortedCharacters = validCharacters.sort((a, b) => {
         const idA = String(a.character_id).padStart(3, '0');
         const idB = String(b.character_id).padStart(3, '0');
@@ -62,13 +84,11 @@ export default function Home() {
     }
   };
 
-  // ニュースをローカルストレージから読み込み
   const loadNews = () => {
     const savedNews = localStorage.getItem('tekkenNews');
     if (savedNews) {
       setNewsItems(JSON.parse(savedNews));
     } else {
-      // デフォルトニュース
       const defaultNews: NewsItem[] = [
         { date: '2024.06.09', tag: '新着', content: '風間仁 のコマンドリストを追加' },
         { date: '2024.07.15', tag: '新着', content: 'アリサ・ボスコノビッチ のコマンドリストを追加' },
@@ -81,29 +101,297 @@ export default function Home() {
     }
   };
 
-  // 表示名を取得する関数
   const getDisplayName = (character: Character): string => {
-    // display_nameが存在する場合は優先的に使用
     if (character.display_name) {
       return character.display_name;
     }
-    // なければ日本語名、それもなければ英語名
     return character.character_name_jp || character.character_name_en;
+  };
+
+  // モバイル用ボタンコンポーネント
+  const MobileCharacterButton = ({ character }: { character: Character }) => {
+    return (
+      <a
+        href={`/character/${character.character_id}`}
+        style={{
+          position: 'relative',
+          display: 'block',
+          textDecoration: 'none',
+          width: '100%',
+          height: '120px',
+          cursor: 'pointer'
+        }}
+      >
+        <div style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
+          borderRadius: '2px'
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+            padding: '2px',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.5)'
+          }}>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}>
+                {/* モバイル用画像: /character-faces-mobile/[character_id].png */}
+                {/* フォールバック: /character-faces/[character_id].png */}
+                <img
+                  src={`/character-faces-mobile/${character.character_id}.png`}
+                  alt={getDisplayName(character)}
+                  style={{
+                    width: 'auto',
+                    height: '100%',
+                    maxWidth: '130%',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                    opacity: 0.85,
+                    filter: 'brightness(0.9) contrast(1.0)'
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    // モバイル用画像がない場合は通常の画像にフォールバック
+                    if (!target.dataset.fallbackAttempted) {
+                      target.dataset.fallbackAttempted = 'true';
+                      target.src = `/character-faces/${character.character_id}.png`;
+                    } else {
+                      // 両方とも失敗した場合は非表示
+                      target.style.display = 'none';
+                    }
+                  }}
+                />
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0',
+                background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.8) 100%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                bottom: '4px',
+                left: '0',
+                right: '0',
+                padding: '0 8px',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  color: '#ffffff',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.9)',
+                  lineHeight: '1.2',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {getDisplayName(character)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    );
+  };
+
+  // デスクトップ用ボタンコンポーネント
+  const DesktopCharacterButton = ({ character }: { character: Character }) => {
+    const isHovered = hoveredCharacter === character.id;
+
+    return (
+      <a
+        href={`/character/${character.character_id}`}
+        onMouseEnter={() => setHoveredCharacter(character.id)}
+        onMouseLeave={() => setHoveredCharacter(null)}
+        style={{
+          position: 'relative',
+          display: 'block',
+          textDecoration: 'none',
+          width: `${240 * screenScale}px`,
+          height: `${170 * screenScale}px`,
+          transform: isHovered ? 'scale(1.05) translateY(-3px)' : 'scale(1)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          cursor: 'pointer'
+        }}
+      >
+        <div style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          transform: 'skewX(-15deg)',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            background: isHovered
+              ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+              : 'linear-gradient(135deg, #dc2626, #991b1b)',
+            padding: `${3 * screenScale}px`,
+            boxShadow: isHovered
+              ? '0 0 20px rgba(220, 38, 38, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.5)'
+              : '0 5px 15px rgba(0, 0, 0, 0.7), inset 0 0 10px rgba(0, 0, 0, 0.5)'
+          }}>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}>
+                {/* デスクトップ用画像: /character-faces/[character_id].png */}
+                <img
+                  src={`/character-faces/${character.character_id}.png`}
+                  alt={getDisplayName(character)}
+                  style={{
+                    width: 'auto',
+                    height: '100%',
+                    maxWidth: '150%',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                    transform: 'skewX(15deg)',
+                    opacity: isHovered ? 0.9 : 0.7,
+                    transition: 'opacity 0.3s',
+                    filter: isHovered
+                      ? 'brightness(1.1) contrast(1.1)'
+                      : 'brightness(0.8) contrast(1.0)'
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0',
+                background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.9) 100%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                bottom: `${10 * screenScale}px`,
+                left: '0',
+                right: '0',
+                padding: `0 ${20 * screenScale}px`,
+                transform: 'skewX(15deg)',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  fontSize: `${16 * screenScale}px`,
+                  fontWeight: 'bold',
+                  color: '#ffffff',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.8)',
+                  letterSpacing: '0.5px',
+                  lineHeight: '1.2',
+                  marginBottom: `${3 * screenScale}px`,
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {getDisplayName(character)}
+                </div>
+                <div style={{
+                  fontSize: `${11 * screenScale}px`,
+                  color: 'rgba(252, 165, 165, 0.9)',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                  letterSpacing: '0.3px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {character.character_name_en}
+                </div>
+              </div>
+              {isHovered && (
+                <>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-50%',
+                    left: '-50%',
+                    width: '200%',
+                    height: '200%',
+                    background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
+                    animation: 'shimmer 0.8s ease-out',
+                    pointerEvents: 'none'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    right: '0',
+                    bottom: '0',
+                    boxShadow: 'inset 0 0 30px rgba(220, 38, 38, 0.3)',
+                    pointerEvents: 'none'
+                  }} />
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </a>
+    );
   };
 
   return (
     <div style={{
       minHeight: '100vh',
       background: `
-        radial-gradient(circle at 20% 50%, rgba(127, 29, 29, 0.3), transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(185, 28, 28, 0.2), transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(220, 38, 38, 0.1), transparent 50%),
-        linear-gradient(135deg, #000000 0%, #1a0505 50%, #000000 100%)
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        url('/backgrounds/background.jpg')
       `,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundRepeat: 'no-repeat',
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* 背景のパーティクル効果 */}
       <div style={{
         position: 'absolute',
         top: 0,
@@ -114,7 +402,6 @@ export default function Home() {
         pointerEvents: 'none'
       }} />
 
-      {/* メインコンテナ */}
       <div style={{
         position: 'relative',
         zIndex: 1,
@@ -128,7 +415,6 @@ export default function Home() {
           margin: '0 auto 60px',
           padding: '0 20px'
         }}>
-          {/* NEWSタイトル */}
           <div style={{
             textAlign: 'center',
             marginBottom: '30px'
@@ -163,7 +449,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* NEWSリスト */}
           <div style={{
             background: 'rgba(0, 0, 0, 0.85)',
             border: '2px solid rgba(185, 28, 28, 0.3)',
@@ -192,7 +477,6 @@ export default function Home() {
                   e.currentTarget.style.paddingLeft = '0';
                 }}
               >
-                {/* 日付 */}
                 <div style={{
                   fontSize: '16px',
                   color: '#9ca3af',
@@ -203,7 +487,6 @@ export default function Home() {
                   {news.date}
                 </div>
                 
-                {/* タグ */}
                 <div style={{
                   background: 'linear-gradient(135deg, #dc2626, #991b1b)',
                   color: '#ffffff',
@@ -218,7 +501,6 @@ export default function Home() {
                   {news.tag}
                 </div>
                 
-                {/* コンテンツ */}
                 <div style={{
                   fontSize: '16px',
                   color: '#e5e7eb',
@@ -231,14 +513,12 @@ export default function Home() {
             ))}
           </div>
 
-          {/* 編集ボタン */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             marginTop: '15px'
           }}>
-            {/* キャラクター編集ボタン */}
             <a 
               href="/character/create"
               style={{
@@ -254,21 +534,10 @@ export default function Home() {
                 fontSize: '13px',
                 transition: 'all 0.2s'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.3)';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
-                e.currentTarget.style.color = '#6b7280';
-                e.currentTarget.style.borderColor = 'rgba(185, 28, 28, 0.2)';
-              }}
             >
               🎮 キャラクター編集
             </a>
 
-            {/* ニュース編集ボタン */}
             <a 
               href="/news-editor"
               style={{
@@ -283,16 +552,6 @@ export default function Home() {
                 textDecoration: 'none',
                 fontSize: '13px',
                 transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(127, 29, 29, 0.5)';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.borderColor = 'rgba(185, 28, 28, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
-                e.currentTarget.style.color = '#6b7280';
-                e.currentTarget.style.borderColor = 'rgba(185, 28, 28, 0.2)';
               }}
             >
               ✏️ ニュースを編集
@@ -335,14 +594,6 @@ export default function Home() {
               boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
               transition: 'all 0.2s'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 15px rgba(0,0,0,0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
-            }}
           >
             🎮 キャラクター技表を編集
           </a>
@@ -361,121 +612,24 @@ export default function Home() {
         ) : characters.length > 0 ? (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, 320px)',
-            gap: '20px',
-            padding: '0 20px',
+            gridTemplateColumns: isMobile 
+              ? 'repeat(4, 1fr)'
+              : `repeat(auto-fill, ${240 * screenScale}px)`,
+            gap: isMobile ? '4px' : `${15 * screenScale}px`,
+            padding: isMobile ? '10px 4px' : '20px',
             justifyContent: 'center',
             maxWidth: '1400px',
             margin: '0 auto'
           }}>
-            {characters.map((character, index) => (
-              <a
-                key={character.id}
-                href={`/character/${character.character_id}`}
-                onMouseEnter={() => setHoveredCharacter(character.id)}
-                onMouseLeave={() => setHoveredCharacter(null)}
-                style={{
-                  position: 'relative',
-                  display: 'block',
-                  textDecoration: 'none',
-                  transform: hoveredCharacter === character.id ? 'scale(1.05) translateY(-5px)' : 'scale(1)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  cursor: 'pointer',
-                  height: '100px',
-                  width: '100%'
-                }}
-              >
-                {/* ボタン背景 */}
-                <div style={{
-                  position: 'relative',
-                  background: hoveredCharacter === character.id 
-                    ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.7), rgba(127, 29, 29, 0.7))'
-                    : 'linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(127, 29, 29, 0.2))',
-                  border: '2px solid',
-                  borderColor: hoveredCharacter === character.id 
-                    ? 'rgba(248, 113, 113, 0.6)' 
-                    : 'rgba(185, 28, 28, 0.3)',
-                  height: '100%',
-                  clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)',
-                  transition: 'all 0.3s',
-                  boxShadow: hoveredCharacter === character.id 
-                    ? '0 10px 30px rgba(220, 38, 38, 0.3)'
-                    : '0 5px 15px rgba(0, 0, 0, 0.7)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {/* 内部の斜線装飾 */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '0',
-                    left: '0',
-                    width: '100%',
-                    height: '100%',
-                    background: `repeating-linear-gradient(
-                      45deg,
-                      transparent,
-                      transparent 10px,
-                      rgba(185, 28, 28, 0.03) 10px,
-                      rgba(185, 28, 28, 0.03) 11px
-                    )`,
-                    pointerEvents: 'none'
-                  }} />
-                  
-                  {/* キャラクター情報 */}
-                  <div style={{
-                    position: 'relative',
-                    textAlign: 'center',
-                    padding: '0 40px'
-                  }}>
-                    {/* 表示名（display_name優先） */}
-                    <div style={{
-                      fontSize: '20px',
-                      fontWeight: 'bold',
-                      color: '#ffffff',
-                      marginBottom: '6px',
-                      textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
-                      letterSpacing: '1px',
-                      lineHeight: '1.2',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
-                      {getDisplayName(character)}
-                    </div>
-                    
-                    {/* 英語名（サブテキスト） */}
-                    <div style={{
-                      fontSize: '12px',
-                      color: 'rgba(252, 165, 165, 0.8)',
-                      textTransform: 'capitalize',
-                      letterSpacing: '0.5px',
-                      lineHeight: '1.2',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
-                      {character.character_name_en}
-                    </div>
-                  </div>
-                  
-                  {/* ホバー時の光る効果 */}
-                  {hoveredCharacter === character.id && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '-2px',
-                      left: '-2px',
-                      right: '-2px',
-                      bottom: '-2px',
-                      background: 'linear-gradient(45deg, transparent 30%, rgba(248, 113, 113, 0.3) 50%, transparent 70%)',
-                      backgroundSize: '200% 200%',
-                      animation: 'shimmer 1s infinite',
-                      pointerEvents: 'none'
-                    }} />
-                  )}
-                </div>
-              </a>
-            ))}
+            {isMobile ? (
+              characters.map((character) => (
+                <MobileCharacterButton key={character.id} character={character} />
+              ))
+            ) : (
+              characters.map((character) => (
+                <DesktopCharacterButton key={character.id} character={character} />
+              ))
+            )}
           </div>
         ) : (
           <div style={{
@@ -492,7 +646,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* 管理者リンク（右下固定） */}
+        {/* 管理者リンク */}
         <div style={{
           position: 'fixed',
           bottom: '30px',
@@ -519,16 +673,6 @@ export default function Home() {
               transition: 'all 0.2s',
               backdropFilter: 'blur(10px)'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.5)';
-              e.currentTarget.style.color = '#ffffff';
-              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
-              e.currentTarget.style.color = '#6b7280';
-              e.currentTarget.style.borderColor = 'rgba(185, 28, 28, 0.2)';
-            }}
           >
             🎮 キャラクター編集
           </a>
@@ -549,27 +693,25 @@ export default function Home() {
               transition: 'all 0.2s',
               backdropFilter: 'blur(10px)'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(127, 29, 29, 0.6)';
-              e.currentTarget.style.color = '#ffffff';
-              e.currentTarget.style.borderColor = 'rgba(185, 28, 28, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
-              e.currentTarget.style.color = '#6b7280';
-              e.currentTarget.style.borderColor = 'rgba(185, 28, 28, 0.2)';
-            }}
           >
             ⚙️ 管理画面
           </a>
         </div>
       </div>
 
-      {/* アニメーションスタイル */}
       <style jsx>{`
         @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
+          0% { 
+            transform: translateX(0) translateY(0); 
+            opacity: 0;
+          }
+          50% { 
+            opacity: 1;
+          }
+          100% { 
+            transform: translateX(100%) translateY(100%); 
+            opacity: 0;
+          }
         }
       `}</style>
     </div>

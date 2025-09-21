@@ -264,27 +264,27 @@ export default function CharacterDetailPage() {
     });
   };
 
-  // ResponsiveCommandDisplayコンポーネント
-  const ResponsiveCommandDisplay = ({ 
-    command, 
-    size = 'md', 
-    className = '', 
-    showFallback = true 
-  }: {
-    command?: string | null;
-    size?: 'sm' | 'md' | 'lg';
-    className?: string;
-    showFallback?: boolean;
-  }) => {
-    if (!command || command.trim() === '') {
-      return showFallback ? (
-        <span className={`text-gray-400 ${className}`} style={{ 
-          fontSize: `${getTableFontSize()}px`,
-          fontWeight: '500'
-        }}>-</span>
-      ) : null;
-    }
-
+// 1. ResponsiveCommandDisplay コンポーネント内
+const ResponsiveCommandDisplay = ({ 
+  command, 
+  size = 'md', 
+  className = '', 
+  showFallback = true 
+}: {
+  command?: string | null;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+  showFallback?: boolean;
+}) => {
+  if (!command || command.trim() === '') {
+    return showFallback ? (
+      <span className={`${className}`} style={{ 
+        fontSize: `${getTableFontSize()}px`,
+        fontWeight: '500',
+        color: '#ffffff'  // ← text-gray-400 から白色に変更
+      }}>-</span>
+    ) : null;
+  }
     const elements = parseCommandToElements(command);
     
     if (elements.length === 0 || elements.every(el => el.type === 'text')) {
@@ -410,12 +410,11 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // 属性表示
-  const renderAttribute = (attribute: string | null | undefined) => {
-    if (!attribute) {
-      return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
-    }
-
+// 2. renderAttribute 関数
+const renderAttribute = (attribute: string | null | undefined) => {
+  if (!attribute) {
+    return <span style={{ color: '#ffffff' }}>-</span>;  // ← rgba(248, 113, 113, 0.6) から白色に変更
+  }
     const color = (attribute === 'D' || attribute === '浮') ? '#4ade80' : '#ffffff';
     
     return (
@@ -435,12 +434,11 @@ export default function CharacterDetailPage() {
     );
   };
 
-  // 備考表示（14pxベースに変更）
-  const renderRemarks = (remarks?: (string | null)[] | null) => {
-    if (!remarks || remarks.length === 0) {
-      return <span style={{ color: 'rgba(248, 113, 113, 0.6)' }}>-</span>;
-    }
-
+// 3. renderRemarks 関数
+const renderRemarks = (remarks?: (string | null)[] | null) => {
+  if (!remarks || remarks.length === 0) {
+    return <span style={{ color: '#ffffff' }}>-</span>;  // ← rgba(248, 113, 113, 0.6) から白色に変更
+  }
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: `${Math.max(textScale * 6, 4)}px` }}>
         {remarks
@@ -915,24 +913,24 @@ export default function CharacterDetailPage() {
           )}
         </div>
 
-        {/* 下部：左側情報と右側画像 */}
-        <div style={{ 
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          height: isMobile ? 'auto' : '600px',
-        }}>
-          {/* 左側：基本情報とキャラクター紹介 */}
-          <div style={{ 
-            flex: '1 1 60%',
-            padding: isMobile ? '24px' : '40px',
-            background: 'rgba(0, 0, 0, 0.4)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '32px',
-            minWidth: 0,
-            overflowY: 'auto'
-          }}>
-            {/* 基本情報セクション */}
+{/* 下部：左側情報と右側画像 */}
+<div style={{ 
+  display: 'flex',
+  flexDirection: isMobile ? 'column' : 'row',
+  minHeight: isMobile ? 'auto' : '600px',  // ← 最小高さを設定
+}}>
+  {/* 左側：基本情報とキャラクター紹介 */}
+  <div style={{ 
+    flex: '1 1 60%',
+    padding: isMobile ? '24px' : '40px',
+    background: 'rgba(0, 0, 0, 0.4)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '32px',
+    minWidth: 0,
+    // overflowY を削除して自動拡大を許可
+  }}>
+                {/* 基本情報セクション */}
             <div>
               <h3 style={{ 
                 fontWeight: '700', 
@@ -971,73 +969,73 @@ export default function CharacterDetailPage() {
               </div>
             </div>
 
-            {/* キャラクター紹介セクション */}
-            {character.character_description && (
-              <div>
-                <button 
-                  onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
-                  style={{
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '0',
-                    background: 'transparent',
-                    border: 'none',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    marginBottom: '20px'
-                  }}
-                >
-                  <h3 style={{ 
-                    fontWeight: '700', 
-                    color: '#fca5a5', 
-                    margin: 0,
-                    fontSize: `${getHeadingFontSize('h3')}px`,
-                    borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
-                    paddingBottom: '8px',
-                    flex: 1
-                  }}>
-                    キャラクター紹介
-                  </h3>
-                  <span style={{ 
-                    transform: isDescriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
-                    transition: 'transform 0.2s', 
-                    color: '#f87171',
-                    fontSize: '20px',
-                    marginLeft: '16px'
-                  }}>
-                    ▼
-                  </span>
-                </button>
-                
-                {isDescriptionOpen && (
-                  <div style={{ 
-                    fontSize: `${getScaledFontSize(15)}px`,  // 14px → 15px に変更
-                    lineHeight: '1.8',
-                    color: '#e5e7eb',
-                    textAlign: 'justify'
-                  }}>
-                    {renderDescription(character.character_description)}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* 右側：キャラクター画像 */}
-          <div style={{
-            flex: '0 0 40%',
-            minHeight: isMobile ? '400px' : '600px',
-            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(127, 29, 29, 0.3))',
-            position: 'relative',
+ {/* キャラクター紹介セクション */}
+    {character.character_description && (
+      <div>
+        <button 
+          onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: '0',
+            background: 'transparent',
+            border: 'none',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            justifyContent: 'center',
-            order: isMobile ? -1 : 0,
-            borderLeft: isMobile ? 'none' : '2px solid rgba(185, 28, 28, 0.3)'
+            cursor: 'pointer',
+            marginBottom: '20px'
+          }}
+        >
+          <h3 style={{ 
+            fontWeight: '700', 
+            color: '#fca5a5', 
+            margin: 0,
+            fontSize: `${getHeadingFontSize('h3')}px`,
+            borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
+            paddingBottom: '8px',
+            flex: 1
           }}>
-            <img
+            キャラクター紹介
+          </h3>
+          <span style={{ 
+            transform: isDescriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+            transition: 'transform 0.2s', 
+            color: '#f87171',
+            fontSize: '20px',
+            marginLeft: '16px'
+          }}>
+            ▼
+          </span>
+        </button>
+        
+        {isDescriptionOpen && (
+          <div style={{ 
+            fontSize: `${getScaledFontSize(15)}px`,
+            lineHeight: '1.8',
+            color: '#e5e7eb',
+            textAlign: 'justify'
+          }}>
+            {renderDescription(character.character_description)}
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+
+  {/* 右側：キャラクター画像 */}
+  <div style={{
+    flex: '0 0 40%',
+    height: isMobile ? '400px' : '600px',  // ← 固定高さに戻す
+    background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(127, 29, 29, 0.3))',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    order: isMobile ? -1 : 0,
+    borderLeft: isMobile ? 'none' : '2px solid rgba(185, 28, 28, 0.3)'
+  }}>       
+       <img
               src={`/character-pictures/${character.character_id}.png`}
               alt={character.character_name_jp || character.character_name_en}
               style={{
@@ -1122,39 +1120,45 @@ export default function CharacterDetailPage() {
                     backdropFilter: 'blur(4px)'
                   }}
                 >
-                  <button 
-                    onClick={() => handleCategorySelect(category.id)}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '16px',
-                      background: 'linear-gradient(to right, rgba(127, 29, 29, 0.7), rgba(69, 10, 10, 0.7))',
-                      border: 'none',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      borderBottom: '1px solid rgba(220, 38, 38, 0.3)'
-                    }}
-                  >
-                    <span style={{ 
-                      fontWeight: '600', 
-                      color: '#fef2f2', 
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                      fontSize: `${getTableFontSize()}px`
-                    }}>
-                      {`${category.move_category} (${moves.length}個の技)`}
-                    </span>
-                    <span style={{ 
-                      transform: isSelected ? 'rotate(180deg)' : 'rotate(0deg)', 
-                      transition: 'transform 0.2s', 
-                      color: '#f87171' 
-                    }}>
-                      ▼
-                    </span>
-                  </button>
-                  
+<button 
+  onClick={() => handleCategorySelect(category.id)}
+  style={{
+    width: '100%',
+    textAlign: 'left',
+    padding: '16px',
+    background: 'linear-gradient(to right, rgba(127, 29, 29, 0.7), rgba(69, 10, 10, 0.7))',
+    border: 'none',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    borderBottom: '1px solid rgba(220, 38, 38, 0.3)'
+  }}
+>
+  <span style={{ 
+    fontWeight: '600', 
+    color: '#fef2f2', 
+    textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+    fontSize: `${getTableFontSize()}px`
+  }}>
+    {/* ここを変更：TextWithIconsを使用してアイコン置換を有効化 */}
+    <TextWithIcons 
+      text={`${category.move_category} (${moves.length}個の技)`}
+      size={textScale > 0.8 ? 'md' : 'sm'}
+      textClassName="text-red-50 font-semibold"
+      showFallback={false}
+      enableIconReplacement={true}
+    />
+  </span>
+  <span style={{ 
+    transform: isSelected ? 'rotate(180deg)' : 'rotate(0deg)', 
+    transition: 'transform 0.2s', 
+    color: '#f87171' 
+  }}>
+    ▼
+  </span>
+</button>                  
                   {isSelected && (
                     <div style={{ background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(69, 10, 10, 0.6))' }}>
                       {/* モバイル表示: カード形式 */}
@@ -1164,14 +1168,14 @@ export default function CharacterDetailPage() {
                         </div>
                       ) : (
                         /* デスクトップ表示: テーブル形式 */
-                        <div style={{ position: 'relative', overflowX: 'auto', padding: '0 2px' }}>
-                          <table style={{ 
-                            width: '100%', 
-                            borderCollapse: 'collapse', 
-                            border: '1px solid rgb(185, 28, 28)', 
-                            minWidth: '1400px',  // max-content → 1400px に変更
-                            tableLayout: 'fixed'
-                          }}>
+                        <div style={{ position: 'relative', overflowX: 'auto', padding: '0' }}>  {/* padding: '0 2px' → '0' に変更 */}
+  <table style={{ 
+    width: '100%', 
+    borderCollapse: 'collapse', 
+    border: '2px solid rgba(185, 28, 28, 0.3)',  // 1px → 2px に統一（見栄えのため）
+    minWidth: '1400px',
+    tableLayout: 'fixed'
+  }}>
                             <thead>
                               <tr style={{ background: 'linear-gradient(to right, #7f1d1d, #b91c1c, #7f1d1d)' }}>
                                 <th style={{ 

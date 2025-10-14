@@ -30,8 +30,8 @@ function convertParentheses(text: string): string {
 }
 
 /**
- * コマンド文字列を文字列とアイコンの配列に変換する
- * @param command コマンド文字列（例: "相手に接近してlprp"）またはnull/undefined
+ * コマンド文字列を文字列とアイコンの配列に変換する（大文字小文字対応版）
+ * @param command コマンド文字列（例: "相手に接近してLPRP"、"lprp"、"LPRP"）またはnull/undefined
  * @returns 要素配列（例: [{type: 'text', value: '相手に接近して'}, {type: 'icon', value: 'lp'}, {type: 'icon', value: 'rp'}]）
  */
 export function parseCommandToElements(command: string | null | undefined): CommandElement[] {
@@ -50,9 +50,11 @@ export function parseCommandToElements(command: string | null | undefined): Comm
     for (const iconLength of [3, 2]) {
       if (i + iconLength <= command.length) {
         const substring = command.substring(i, i + iconLength);
+        const substringLower = substring.toLowerCase();
+        const substringUpper = substring.toUpperCase();
         
-        // コマンドアイコンまたはエフェクトアイコンのいずれかに含まれているかチェック
-        if (COMMAND_ICONS.includes(substring) || EFFECT_ICONS.includes(substring)) {
+        // コマンドアイコンのチェック（小文字で比較）
+        if (COMMAND_ICONS.includes(substringLower)) {
           // アイコンが見つかった場合
           
           // 蓄積された文字列があれば追加（半角括弧を全角に変換）
@@ -64,12 +66,35 @@ export function parseCommandToElements(command: string | null | undefined): Comm
             currentText = '';
           }
           
-          // アイコンを追加
-          const iconType = EFFECT_ICONS.includes(substring) ? 'effect' : 'command';
+          // コマンドアイコンを追加（小文字で統一）
           elements.push({
             type: 'icon',
-            value: substring,
-            iconType: iconType
+            value: substringLower,
+            iconType: 'command'
+          });
+          
+          i += iconLength;
+          matched = true;
+          break;
+        }
+        // エフェクトアイコンのチェック（大文字で比較）
+        else if (EFFECT_ICONS.includes(substringUpper)) {
+          // アイコンが見つかった場合
+          
+          // 蓄積された文字列があれば追加（半角括弧を全角に変換）
+          if (currentText.length > 0) {
+            elements.push({
+              type: 'text',
+              value: convertParentheses(currentText)
+            });
+            currentText = '';
+          }
+          
+          // エフェクトアイコンを追加（大文字で統一）
+          elements.push({
+            type: 'icon',
+            value: substringUpper,
+            iconType: 'effect'
           });
           
           i += iconLength;
@@ -99,7 +124,7 @@ export function parseCommandToElements(command: string | null | undefined): Comm
 
 /**
  * コマンド文字列をアイコン配列に変換する（後方互換性のため残す）
- * @param command コマンド文字列（例: "fontcrfcrp"）またはnull/undefined
+ * @param command コマンド文字列（例: "fontcrfcrp"、"FONTCRFCRP"）またはnull/undefined
  * @returns アイコンファイル名の配列（例: ["fo", "nt", "cr", "fc", "rp"]）
  */
 export function parseCommandToIcons(command: string | null | undefined): string[] {
@@ -111,15 +136,18 @@ export function parseCommandToIcons(command: string | null | undefined): string[
 
 /**
  * アイコンファイルのパスを取得
- * @param iconName アイコン名
+ * @param iconName アイコン名（大文字小文字どちらでも可）
  * @param iconType アイコンタイプ（'command' | 'effect'）
  * @returns アイコンファイルのパス
  */
 export function getIconPath(iconName: string, iconType?: string): string {
-  if (iconType === 'effect' || EFFECT_ICONS.includes(iconName)) {
-    return `/effect-icons/${iconName}.png`;
+  const iconNameUpper = iconName.toUpperCase();
+  const iconNameLower = iconName.toLowerCase();
+  
+  if (iconType === 'effect' || EFFECT_ICONS.includes(iconNameUpper)) {
+    return `/effect-icons/${iconNameUpper}.png`;
   }
-  return `/command-icons/${iconName}.png`;
+  return `/command-icons/${iconNameLower}.png`;
 }
 
 /**
@@ -145,13 +173,9 @@ export function isIconOnlyCommand(command: string | null | undefined): boolean {
   if (!command) return false;
   
   const elements = parseCommandToElements(command);
-  const reconstructed = elements
-    .filter(el => el.type === 'icon')
-    .map(el => el.value)
-    .join('');
   
-  // 完全にアイコンのみで再構築できた場合
-  return reconstructed === command;
+  // 全ての要素がアイコンの場合のみtrue
+  return elements.length > 0 && elements.every(el => el.type === 'icon');
 }
 
 /**
@@ -197,6 +221,12 @@ export function getUnavailableIcons(command: string | null | undefined): string[
   if (!command) return [];
   
   const icons = parseCommandToIcons(command);
-  const allIcons = [...COMMAND_ICONS, ...EFFECT_ICONS];
-  return icons.filter(icon => !allIcons.includes(icon));
+  const allIconsLower = COMMAND_ICONS.map(icon => icon.toLowerCase());
+  const allIconsUpper = EFFECT_ICONS.map(icon => icon.toUpperCase());
+  
+  return icons.filter(icon => {
+    const iconLower = icon.toLowerCase();
+    const iconUpper = icon.toUpperCase();
+    return !allIconsLower.includes(iconLower) && !allIconsUpper.includes(iconUpper);
+  });
 }

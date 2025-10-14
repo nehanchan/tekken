@@ -16,6 +16,8 @@ const CATEGORIES = [
   'しゃがめる連携',
   '割れない連携',
   '潜る連携',
+  'ファジー',
+  '立ち回り',
   'その他'
 ];
 
@@ -68,7 +70,7 @@ export default function MemoPage() {
       return;
     }
     if (!title.trim()) {
-      alert('タイトルを入力してください');
+      alert('メモを入力してください');
       return;
     }
 
@@ -80,27 +82,46 @@ export default function MemoPage() {
         ? (selectedChar.display_name || selectedChar.character_name_jp || selectedChar.character_name_en)
         : selectedCharacter;
 
-      await client.models.Memo.create({
+      // メモデータを作成（空配列やnullの適切な処理）
+      const memoData = {
         character_id: selectedCharacter,
-        character_name: characterName,
-        categories: selectedCategories,
-        title: title,
-        content: content,
-        importance: importance
+        character_name: characterName || selectedCharacter,
+        categories: selectedCategories.length > 0 ? selectedCategories : undefined,
+        title: title.trim(),
+        content: content.trim() || undefined,
+        importance: importance > 0 ? importance : undefined
+      };
+
+      console.log('メモ保存データ:', memoData);
+
+      const result = await client.models.Memo.create(memoData, {
+        authMode: 'apiKey'
       });
 
-      alert('メモを保存しました！');
-      
-      // フォームをリセット
-      setSelectedCharacter('');
-      setSelectedCategories([]);
-      setTitle('');
-      setContent('');
-      setImportance(0);
+      console.log('保存結果:', result);
+
+      if (result.data) {
+        alert('メモを保存しました！');
+        
+        // フォームをリセット
+        setSelectedCharacter('');
+        setSelectedCategories([]);
+        setTitle('');
+        setContent('');
+        setImportance(0);
+      } else {
+        throw new Error('データの保存に失敗しました');
+      }
       
     } catch (error) {
-      console.error('保存エラー:', error);
-      alert('保存に失敗しました。もう一度お試しください。');
+      console.error('保存エラー詳細:', error);
+      
+      // エラーの詳細情報を表示
+      if (error instanceof Error) {
+        alert(`保存に失敗しました: ${error.message}`);
+      } else {
+        alert('保存に失敗しました。もう一度お試しください。');
+      }
     } finally {
       setLoading(false);
     }
@@ -304,7 +325,7 @@ export default function MemoPage() {
               </div>
             </div>
 
-            {/* タイトル入力 */}
+            {/* メモ入力 */}
             <div style={{ marginBottom: '30px' }}>
               <label style={{
                 display: 'block',
@@ -314,7 +335,7 @@ export default function MemoPage() {
                 marginBottom: '12px',
                 letterSpacing: '1px'
               }}>
-                タイトル
+                メモ <span style={{ color: '#f87171', fontSize: '14px' }}>*必須</span>
               </label>
               <input
                 type="text"
@@ -334,7 +355,7 @@ export default function MemoPage() {
               />
             </div>
 
-            {/* 本文入力 */}
+            {/* 補足入力 */}
             <div style={{ marginBottom: '30px' }}>
               <label style={{
                 display: 'block',
@@ -344,12 +365,12 @@ export default function MemoPage() {
                 marginBottom: '12px',
                 letterSpacing: '1px'
               }}>
-                本文
+                補足 <span style={{ color: '#9ca3af', fontSize: '14px' }}>任意</span>
               </label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="詳細な説明やメモを入力してください"
+                placeholder="詳細な説明や補足情報を入力してください（任意）"
                 rows={10}
                 style={{
                   width: '100%',
@@ -400,6 +421,29 @@ export default function MemoPage() {
                     ★
                   </button>
                 ))}
+                <button
+                  onClick={() => setImportance(0)}
+                  style={{
+                    marginLeft: '16px',
+                    padding: '8px 16px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    background: 'rgba(107, 114, 128, 0.3)',
+                    border: '2px solid rgba(107, 114, 128, 0.5)',
+                    borderRadius: '6px',
+                    color: '#ffffff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(107, 114, 128, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(107, 114, 128, 0.3)';
+                  }}
+                >
+                  クリア
+                </button>
               </div>
             </div>
 

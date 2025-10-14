@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { client } from '@/lib/client';
+import { TextWithIcons } from '@/components/CommandDisplay';
 
 interface Memo {
   id: string;
@@ -52,8 +53,10 @@ export default function MemoListPage() {
       );
       setMemos(sorted);
       setFilteredMemos(sorted);
+      console.log('メモ取得成功:', sorted.length, '件');
     } catch (error) {
       console.error('メモ取得エラー:', error);
+      alert('メモの取得に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -63,12 +66,27 @@ export default function MemoListPage() {
     if (!confirm('このメモを削除しますか？')) return;
 
     try {
-      await client.models.Memo.delete({ id: memoId });
-      alert('メモを削除しました');
-      fetchMemos();
+      const result = await client.models.Memo.delete({ 
+        id: memoId 
+      }, {
+        authMode: 'apiKey'
+      });
+      
+      console.log('削除結果:', result);
+      
+      if (result.data || !result.errors) {
+        alert('メモを削除しました');
+        fetchMemos();
+      } else {
+        throw new Error('削除に失敗しました');
+      }
     } catch (error) {
       console.error('削除エラー:', error);
-      alert('削除に失敗しました');
+      if (error instanceof Error) {
+        alert(`削除に失敗しました: ${error.message}`);
+      } else {
+        alert('削除に失敗しました');
+      }
     }
   };
 
@@ -291,9 +309,11 @@ export default function MemoListPage() {
           </div>
         ) : (
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))',
-            gap: '20px'
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            maxWidth: '1000px',
+            margin: '0 auto'
           }}>
             {filteredMemos.map(memo => (
               <div
@@ -328,83 +348,164 @@ export default function MemoListPage() {
 
                 <div style={{
                   position: 'relative',
-                  padding: '20px'
+                  padding: isMobile ? '16px' : '20px 24px',
+                  display: 'flex',
+                  gap: isMobile ? '12px' : '20px',
+                  alignItems: 'flex-start'
                 }}>
+                  {/* 最左：キャラクター画像 */}
                   <div style={{
+                    width: isMobile ? '80px' : '100px',
+                    height: isMobile ? '80px' : '100px',
+                    flexShrink: 0,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderRadius: '6px',
+                    background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+                    border: '2px solid rgba(185, 28, 28, 0.4)',
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '12px'
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img
+                      src={`/character-faces/${memo.character_id}.png`}
+                      alt={memo.character_name || memo.character_id}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        imageRendering: 'crisp-edges'
+                      }}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (!target.dataset.fallbackAttempted) {
+                          target.dataset.fallbackAttempted = 'true';
+                          target.src = `/character-faces-mobile/${memo.character_id}.png`;
+                        } else {
+                          // 両方とも失敗した場合はプレースホルダーを表示
+                          target.style.display = 'none';
+                          const placeholder = document.createElement('div');
+                          placeholder.style.width = '100%';
+                          placeholder.style.height = '100%';
+                          placeholder.style.display = 'flex';
+                          placeholder.style.alignItems = 'center';
+                          placeholder.style.justifyContent = 'center';
+                          placeholder.style.fontSize = isMobile ? '32px' : '40px';
+                          placeholder.textContent = '🥊';
+                          target.parentNode?.appendChild(placeholder);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* 左側：キャラクター名と重要度 */}
+                  <div style={{
+                    minWidth: isMobile ? '80px' : '120px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
                   }}>
                     <div style={{
-                      fontSize: '14px',
+                      fontSize: isMobile ? '13px' : '14px',
                       color: '#60a5fa',
-                      fontWeight: '600'
+                      fontWeight: '600',
+                      whiteSpace: 'nowrap'
                     }}>
                       {memo.character_name || memo.character_id}
                     </div>
                     {renderStars(memo.importance)}
                   </div>
 
-                  <h3 style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    color: '#fef2f2',
-                    marginBottom: '12px',
-                    lineHeight: '1.4'
-                  }}>
-                    {memo.title}
-                  </h3>
-
-                  {memo.categories && memo.categories.length > 0 && (
-                    <div style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '6px',
-                      marginBottom: '12px'
+                  {/* 中央：メモ内容 */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{
+                      fontSize: isMobile ? '16px' : '18px',
+                      fontWeight: 'bold',
+                      color: '#fef2f2',
+                      marginBottom: '8px',
+                      lineHeight: '1.4'
                     }}>
-                      {memo.categories.filter(c => c !== null).map((category, idx) => (
-                        <span
-                          key={idx}
-                          style={{
-                            fontSize: '12px',
-                            padding: '4px 10px',
-                            background: 'rgba(185, 28, 28, 0.3)',
-                            border: '1px solid rgba(248, 113, 113, 0.5)',
-                            borderRadius: '4px',
-                            color: '#fca5a5'
-                          }}
-                        >
-                          {category}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                      <TextWithIcons 
+                        text={memo.title}
+                        size="md"
+                        textClassName="text-red-50 font-bold"
+                        showFallback={false}
+                        enableIconReplacement={true}
+                      />
+                    </h3>
 
-                  {memo.content && (
-                    <p style={{
-                      fontSize: '14px',
-                      color: '#d1d5db',
-                      lineHeight: '1.6',
-                      marginBottom: '12px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical'
-                    }}>
-                      {memo.content}
-                    </p>
-                  )}
+                    {memo.categories && memo.categories.length > 0 && (
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '6px',
+                        marginBottom: '8px'
+                      }}>
+                        {memo.categories.filter(c => c !== null).map((category, idx) => (
+                          <span
+                            key={idx}
+                            style={{
+                              fontSize: '11px',
+                              padding: '3px 8px',
+                              background: 'rgba(185, 28, 28, 0.3)',
+                              border: '1px solid rgba(248, 113, 113, 0.5)',
+                              borderRadius: '4px',
+                              color: '#fca5a5'
+                            }}
+                          >
+                            {category}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
+                    {memo.content && !isMobile && (
+                      <div style={{ marginTop: '8px' }}>
+                        <div style={{
+                          fontSize: '11px',
+                          color: '#9ca3af',
+                          marginBottom: '4px'
+                        }}>
+                          補足:
+                        </div>
+                        <div style={{
+                          fontSize: '13px',
+                          color: '#d1d5db',
+                          lineHeight: '1.5',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical'
+                        }}>
+                          <TextWithIcons 
+                            text={memo.content}
+                            size="md"
+                            textClassName="text-gray-300"
+                            showFallback={false}
+                            enableIconReplacement={true}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 右側：日付 */}
                   <div style={{
-                    fontSize: '12px',
-                    color: '#6b7280',
-                    marginTop: '12px',
-                    paddingTop: '12px',
-                    borderTop: '1px solid rgba(185, 28, 28, 0.2)'
+                    minWidth: isMobile ? '60px' : '100px',
+                    textAlign: 'right'
                   }}>
-                    {new Date(memo.createdAt).toLocaleDateString('ja-JP')}
+                    <div style={{
+                      fontSize: '12px',
+                      color: '#6b7280'
+                    }}>
+                      {new Date(memo.createdAt).toLocaleDateString('ja-JP', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                      }).replace(/\//g, '/')}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -508,7 +609,13 @@ export default function MemoListPage() {
                 marginBottom: '20px',
                 lineHeight: '1.4'
               }}>
-                {selectedMemo.title}
+                <TextWithIcons 
+                  text={selectedMemo.title}
+                  size="lg"
+                  textClassName="text-red-50 font-bold"
+                  showFallback={false}
+                  enableIconReplacement={true}
+                />
               </h2>
 
               {selectedMemo.categories && selectedMemo.categories.length > 0 && (
@@ -537,15 +644,34 @@ export default function MemoListPage() {
               )}
 
               {selectedMemo.content && (
-                <div style={{
-                  fontSize: '16px',
-                  color: '#e5e7eb',
-                  lineHeight: '1.8',
-                  marginBottom: '20px',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word'
-                }}>
-                  {selectedMemo.content}
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    color: '#fca5a5',
+                    marginBottom: '8px'
+                  }}>
+                    補足
+                  </div>
+                  <div style={{
+                    fontSize: '16px',
+                    color: '#e5e7eb',
+                    lineHeight: '1.8',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    padding: '12px',
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(185, 28, 28, 0.2)'
+                  }}>
+                    <TextWithIcons 
+                      text={selectedMemo.content}
+                      size="lg"
+                      textClassName="text-gray-200"
+                      showFallback={false}
+                      enableIconReplacement={true}
+                    />
+                  </div>
                 </div>
               )}
 

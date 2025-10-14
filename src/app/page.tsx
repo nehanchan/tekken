@@ -42,12 +42,10 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // 画面サイズのチェックとスケール計算
   const checkScreenSize = () => {
     const width = window.innerWidth;
     setIsMobile(width < 768);
     
-    // デスクトップでのスケール計算
     if (width >= 1400) {
       setScreenScale(1);
     } else if (width >= 1200) {
@@ -57,7 +55,6 @@ export default function Home() {
     } else if (width >= 768) {
       setScreenScale(0.7);
     } else {
-      // モバイルサイズ
       setScreenScale(1);
     }
   };
@@ -108,7 +105,6 @@ export default function Home() {
     return character.character_name_jp || character.character_name_en;
   };
 
-  // モバイル用ボタンコンポーネント
   const MobileCharacterButton = ({ character }: { character: Character }) => {
     return (
       <a
@@ -157,8 +153,6 @@ export default function Home() {
                 justifyContent: 'center',
                 overflow: 'hidden'
               }}>
-                {/* モバイル用画像: /character-faces-mobile/[character_id].png */}
-                {/* フォールバック: /character-faces/[character_id].png */}
                 <img
                   src={`/character-faces-mobile/${character.character_id}.png`}
                   alt={getDisplayName(character)}
@@ -173,12 +167,10 @@ export default function Home() {
                   }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    // モバイル用画像がない場合は通常の画像にフォールバック
                     if (!target.dataset.fallbackAttempted) {
                       target.dataset.fallbackAttempted = 'true';
                       target.src = `/character-faces/${character.character_id}.png`;
                     } else {
-                      // 両方とも失敗した場合は非表示
                       target.style.display = 'none';
                     }
                   }}
@@ -221,7 +213,6 @@ export default function Home() {
     );
   };
 
-  // デスクトップ用ボタンコンポーネント
   const DesktopCharacterButton = ({ character }: { character: Character }) => {
     const isHovered = hoveredCharacter === character.id;
 
@@ -280,7 +271,6 @@ export default function Home() {
                 justifyContent: 'center',
                 overflow: 'hidden'
               }}>
-                {/* デスクトップ用画像: /character-faces/[character_id].png */}
                 <img
                   src={`/character-faces/${character.character_id}.png`}
                   alt={getDisplayName(character)}
@@ -349,27 +339,16 @@ export default function Home() {
                 </div>
               </div>
               {isHovered && (
-                <>
-                  <div style={{
-                    position: 'absolute',
-                    top: '-50%',
-                    left: '-50%',
-                    width: '200%',
-                    height: '200%',
-                    background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
-                    animation: 'shimmer 0.8s ease-out',
-                    pointerEvents: 'none'
-                  }} />
-                  <div style={{
-                    position: 'absolute',
-                    top: '0',
-                    left: '0',
-                    right: '0',
-                    bottom: '0',
-                    boxShadow: 'inset 0 0 30px rgba(220, 38, 38, 0.3)',
-                    pointerEvents: 'none'
-                  }} />
-                </>
+                <div style={{
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  right: '0',
+                  bottom: '0',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  boxShadow: 'inset 0 0 40px rgba(220, 38, 38, 0.5), 0 0 20px rgba(220, 38, 38, 0.3)',
+                  pointerEvents: 'none'
+                }} />
               )}
             </div>
           </div>
@@ -382,7 +361,7 @@ export default function Home() {
     <div style={{
       minHeight: '100vh',
       background: `
-        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
         url('/backgrounds/background.jpg')
       `,
       backgroundSize: 'cover',
@@ -404,316 +383,269 @@ export default function Home() {
 
       <div style={{
         position: 'relative',
-        zIndex: 1,
-        padding: '40px 20px',
-        maxWidth: '1600px',
-        margin: '0 auto'
+        zIndex: 1
       }}>
-        {/* NEWSセクション */}
+        {/* ロゴセクション */}
         <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto 60px',
-          padding: '0 20px'
+          width: '100%',
+          background: `
+            linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+            url('/backgrounds/background-title1.jpg')
+          `,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          padding: isMobile ? '40px 20px' : '60px 20px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: '0'
         }}>
+          <img 
+            src="/backgrounds/TEKKEN8_LOGO.png"
+            alt="TEKKEN 8"
+            style={{
+              maxWidth: isMobile ? '80%' : '600px',
+              width: '100%',
+              height: 'auto',
+              filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8))'
+            }}
+          />
+        </div>
+
+        <div style={{
+          padding: '40px 20px',
+          maxWidth: '1600px',
+          margin: '0 auto'
+        }}>
+          {/* NEWSセクション */}
           <div style={{
-            textAlign: 'center',
-            marginBottom: '30px'
+            maxWidth: '1200px',
+            margin: '0 auto 60px',
+            padding: '0 20px'
           }}>
             <div style={{
-              display: 'inline-block',
+              textAlign: 'center',
+              marginBottom: '30px'
+            }}>
+              <div style={{
+                display: 'inline-block',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  left: '-30px',
+                  right: '-30px',
+                  bottom: '-5px',
+                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                  padding: '3px',
+                  borderRadius: '2px',
+                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.7)'
+                }}>
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(135deg, rgba(0,0,0,0.95), rgba(127, 29, 29, 0.15))',
+                    borderRadius: '1px'
+                  }} />
+                </div>
+                
+                <h2 style={{
+                  position: 'relative',
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: '#ffffff',
+                  letterSpacing: '4px',
+                  textTransform: 'uppercase',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
+                  padding: '10px 40px'
+                }}>
+                  NEWS
+                </h2>
+              </div>
+            </div>
+
+            <div style={{
               position: 'relative'
             }}>
               <div style={{
                 position: 'absolute',
-                top: '-5px',
-                left: '-30px',
-                right: '-30px',
-                bottom: '-5px',
-                border: '2px solid rgba(185, 28, 28, 0.5)',
-                background: 'linear-gradient(135deg, rgba(0,0,0,0.95), rgba(127, 29, 29, 0.15))',
-                borderRadius: '2px'
-              }} />
-              
-              <h2 style={{
-                position: 'relative',
-                fontSize: '32px',
-                fontWeight: 'bold',
-                color: '#ffffff',
-                letterSpacing: '4px',
-                textTransform: 'uppercase',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
-                padding: '10px 40px'
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0',
+                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                padding: '3px',
+                borderRadius: '4px',
+                boxShadow: '0 5px 15px rgba(0, 0, 0, 0.7)'
               }}>
-                NEWS
-              </h2>
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  background: 'rgba(0, 0, 0, 0.85)',
+                  borderRadius: '2px'
+                }} />
+              </div>
+              
+              <div style={{
+                position: 'relative',
+                padding: '20px 30px'
+              }}>
+                {newsItems.map((news, index) => (
+                  <div 
+                    key={index}
+                    style={{
+                      padding: '15px 0',
+                      borderBottom: index < newsItems.length - 1 ? '1px solid rgba(185, 28, 28, 0.2)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '20px',
+                      transition: 'all 0.2s',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(185, 28, 28, 0.1)';
+                      e.currentTarget.style.paddingLeft = '10px';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.paddingLeft = '0';
+                    }}
+                  >
+                    <div style={{
+                      fontSize: '16px',
+                      color: '#9ca3af',
+                      minWidth: '110px',
+                      fontFamily: 'monospace',
+                      letterSpacing: '1px'
+                    }}>
+                      {news.date}
+                    </div>
+                    
+                    <div style={{
+                      background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                      color: '#ffffff',
+                      padding: '2px 10px',
+                      fontSize: '13px',
+                      fontWeight: 'bold',
+                      borderRadius: '2px',
+                      minWidth: '50px',
+                      textAlign: 'center',
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+                    }}>
+                      {news.tag}
+                    </div>
+                    
+                    <div style={{
+                      fontSize: '16px',
+                      color: '#e5e7eb',
+                      flex: 1,
+                      letterSpacing: '0.5px'
+                    }}>
+                      {news.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
+          {/* キャラクターセクションヘッダー */}
           <div style={{
-            background: 'rgba(0, 0, 0, 0.85)',
-            border: '2px solid rgba(185, 28, 28, 0.3)',
-            borderRadius: '4px',
-            padding: '20px 30px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
-          }}>
-            {newsItems.map((news, index) => (
-              <div 
-                key={index}
-                style={{
-                  padding: '15px 0',
-                  borderBottom: index < newsItems.length - 1 ? '1px solid rgba(185, 28, 28, 0.2)' : 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '20px',
-                  transition: 'all 0.2s',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(185, 28, 28, 0.1)';
-                  e.currentTarget.style.paddingLeft = '10px';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.paddingLeft = '0';
-                }}
-              >
-                <div style={{
-                  fontSize: '16px',
-                  color: '#9ca3af',
-                  minWidth: '110px',
-                  fontFamily: 'monospace',
-                  letterSpacing: '1px'
-                }}>
-                  {news.date}
-                </div>
-                
-                <div style={{
-                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
-                  color: '#ffffff',
-                  padding: '2px 10px',
-                  fontSize: '13px',
-                  fontWeight: 'bold',
-                  borderRadius: '2px',
-                  minWidth: '50px',
-                  textAlign: 'center',
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
-                }}>
-                  {news.tag}
-                </div>
-                
-                <div style={{
-                  fontSize: '16px',
-                  color: '#e5e7eb',
-                  flex: 1,
-                  letterSpacing: '0.5px'
-                }}>
-                  {news.content}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '15px'
-          }}>
-            <a 
-              href="/character/create"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'rgba(0, 0, 0, 0.8)',
-                color: '#6b7280',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                border: '1px solid rgba(185, 28, 28, 0.2)',
-                textDecoration: 'none',
-                fontSize: '13px',
-                transition: 'all 0.2s'
-              }}
-            >
-              🎮 キャラクター編集
-            </a>
-
-            <a 
-              href="/news-editor"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'rgba(0, 0, 0, 0.8)',
-                color: '#6b7280',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                border: '1px solid rgba(185, 28, 28, 0.2)',
-                textDecoration: 'none',
-                fontSize: '13px',
-                transition: 'all 0.2s'
-              }}
-            >
-              ✏️ ニュースを編集
-            </a>
-          </div>
-        </div>
-
-        {/* キャラクターセクションヘッダー */}
-        <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto 20px',
-          padding: '0 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <h2 style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#fca5a5',
-            letterSpacing: '2px',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
-          }}>
-            Character List
-          </h2>
-          
-          <a 
-            href="/character/create"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-              color: '#ffffff',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
-              transition: 'all 0.2s'
-            }}
-          >
-            🎮 キャラクター技表を編集
-          </a>
-        </div>
-
-        {/* キャラクターグリッド */}
-        {loading ? (
-          <div style={{
-            textAlign: 'center',
-            fontSize: '24px',
-            color: '#fca5a5',
-            marginTop: '100px'
-          }}>
-            Loading...
-          </div>
-        ) : characters.length > 0 ? (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile 
-              ? 'repeat(4, 1fr)'
-              : `repeat(auto-fill, ${240 * screenScale}px)`,
-            gap: isMobile ? '4px' : `${15 * screenScale}px`,
-            padding: isMobile ? '10px 4px' : '20px',
-            justifyContent: 'center',
             maxWidth: '1400px',
-            margin: '0 auto'
+            margin: '0 auto 40px',
+            padding: '0 20px'
           }}>
-            {isMobile ? (
-              characters.map((character) => (
-                <MobileCharacterButton key={character.id} character={character} />
-              ))
-            ) : (
-              characters.map((character) => (
-                <DesktopCharacterButton key={character.id} character={character} />
-              ))
-            )}
-          </div>
-        ) : (
-          <div style={{
-            textAlign: 'center',
-            padding: '100px 20px'
-          }}>
-            <p style={{
-              fontSize: '24px',
-              color: '#9ca3af',
-              marginBottom: '20px'
+            <div style={{
+              textAlign: 'center'
             }}>
-              キャラクターデータがありません
-            </p>
+              <div style={{
+                display: 'inline-block',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  left: '-30px',
+                  right: '-30px',
+                  bottom: '-5px',
+                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                  padding: '3px',
+                  borderRadius: '2px',
+                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.7)'
+                }}>
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(135deg, rgba(0,0,0,0.95), rgba(127, 29, 29, 0.15))',
+                    borderRadius: '1px'
+                  }} />
+                </div>
+                
+                <h2 style={{
+                  position: 'relative',
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: '#ffffff',
+                  letterSpacing: '4px',
+                  textTransform: 'uppercase',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
+                  padding: '10px 40px'
+                }}>
+                  CHARACTER LIST
+                </h2>
+              </div>
+            </div>
           </div>
-        )}
 
-        {/* 管理者リンク */}
-        <div style={{
-          position: 'fixed',
-          bottom: '30px',
-          right: '30px',
-          zIndex: 100,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-          alignItems: 'flex-end'
-        }}>
-          <a 
-            href="/character/create"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'rgba(0, 0, 0, 0.9)',
-              color: '#6b7280',
-              padding: '12px 20px',
-              borderRadius: '6px',
-              border: '1px solid rgba(185, 28, 28, 0.2)',
-              textDecoration: 'none',
-              fontSize: '14px',
-              transition: 'all 0.2s',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            🎮 キャラクター編集
-          </a>
-          
-          <a 
-            href="/admin/effects"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'rgba(0, 0, 0, 0.9)',
-              color: '#6b7280',
-              padding: '12px 20px',
-              borderRadius: '6px',
-              border: '1px solid rgba(185, 28, 28, 0.2)',
-              textDecoration: 'none',
-              fontSize: '14px',
-              transition: 'all 0.2s',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            ⚙️ 管理画面
-          </a>
+          {/* キャラクターグリッド */}
+          {loading ? (
+            <div style={{
+              textAlign: 'center',
+              fontSize: '24px',
+              color: '#fca5a5',
+              marginTop: '100px'
+            }}>
+              Loading...
+            </div>
+          ) : characters.length > 0 ? (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile 
+                ? 'repeat(4, 1fr)'
+                : `repeat(auto-fill, ${240 * screenScale}px)`,
+              gap: isMobile ? '4px' : `${15 * screenScale}px`,
+              padding: isMobile ? '10px 4px' : '20px',
+              justifyContent: 'center',
+              maxWidth: '1400px',
+              margin: '0 auto'
+            }}>
+              {isMobile ? (
+                characters.map((character) => (
+                  <MobileCharacterButton key={character.id} character={character} />
+                ))
+              ) : (
+                characters.map((character) => (
+                  <DesktopCharacterButton key={character.id} character={character} />
+                ))
+              )}
+            </div>
+          ) : (
+            <div style={{
+              textAlign: 'center',
+              padding: '100px 20px'
+            }}>
+              <p style={{
+                fontSize: '24px',
+                color: '#9ca3af',
+                marginBottom: '20px'
+              }}>
+                キャラクターデータがありません
+              </p>
+            </div>
+          )}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { 
-            transform: translateX(0) translateY(0); 
-            opacity: 0;
-          }
-          50% { 
-            opacity: 1;
-          }
-          100% { 
-            transform: translateX(100%) translateY(100%); 
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 }

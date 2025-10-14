@@ -826,17 +826,38 @@ const renderRemarks = (remarks?: (string | null)[] | null) => {
     );
   }
 
+
   // メイン表示
   return (
     <div 
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(to bottom right, #111827, #7f1d1d, #000000)',
+        background: `
+          linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+          url('/backgrounds/background.jpg')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
         padding: isMobile ? '16px' : '24px',
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
       }}
-    >
+    >      
+         {/* パターンオーバーレイ */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23991b1b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
       
+      <div style={{ position: 'relative', zIndex: 1 }}></div>
       {/* ヘッダー */}
       <div style={{ marginBottom: isMobile ? '16px' : '24px' }}>
         <nav style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '16px' }}>
@@ -847,17 +868,7 @@ const renderRemarks = (remarks?: (string | null)[] | null) => {
           </span>
         </nav>
         
-        {/* デバッグ表示: 現在のテキストスケール */}
-        {!isMobile && (
-          <div style={{ 
-            fontSize: '12px', 
-            color: '#6b7280', 
-            textAlign: 'right',
-            marginBottom: '8px'
-          }}>
-            スケール: {textScale.toFixed(2)} | 画面幅: {typeof window !== 'undefined' ? window.innerWidth : 0}px
-          </div>
-        )}
+
       </div>
 
       {/* キャラクター情報表示 */}

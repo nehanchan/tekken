@@ -6,19 +6,20 @@ const schema = a.schema({
   // キャラクターマスタ（height/weight文字列対応版）
   Character: a
     .model({
-      character_id: a.string().required(),        // "001", "002" 形式
-      character_name_en: a.string().required(),   // 英語キャラクター名 (64文字)
-      character_name_jp: a.string(),              // 日本語キャラクター名 (64文字)
-      display_name: a.string(),                   // 表示名（優先表示用、64文字）
-      nickname: a.string(),                       // ニックネーム・称号 (64文字)
-      height: a.string(),                         // 身長（文字列）例: "180cm", "不明"
-      weight: a.string(),                         // 体重（文字列）例: "75kg", "不明"
-      nationality: a.string(),                    // 国籍 (32文字)
-      martial_arts: a.string(),                   // 格闘技・流派 (32文字)
-      character_description: a.string(),          // キャラクター説明 (1024文字)
+      character_id: a.string().required(),
+      character_name_en: a.string().required(),
+      character_name_jp: a.string(),
+      display_name: a.string(),
+      nickname: a.string(),
+      height: a.string(),
+      weight: a.string(),
+      nationality: a.string(),
+      martial_arts: a.string(),
+      character_description: a.string(),
       
       moves: a.hasMany('Move', 'character_id'),
-    })    .authorization((allow) => [
+    })
+    .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
       allow.guest().to(['read']),
       allow.authenticated().to(['create', 'read', 'update', 'delete']),
@@ -27,8 +28,8 @@ const schema = a.schema({
   // 技分類マスタ（更新版）
   MoveCategory: a
     .model({
-      move_category_id: a.string().required(),    // カテゴリID（必須）
-      move_category: a.string().required(),       // 技分類名（必須）
+      move_category_id: a.string().required(),
+      move_category: a.string().required(),
       
       moves: a.hasMany('Move', 'move_category_id'),
     })
@@ -42,8 +43,8 @@ const schema = a.schema({
   Effect: a
     .model({
       effect_id: a.id(),
-      image_path: a.string().required(),   // 画像パス (256文字)
-      effect_description: a.string().required(), // 効果説明 (1024文字)
+      image_path: a.string().required(),
+      effect_description: a.string().required(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
@@ -54,26 +55,40 @@ const schema = a.schema({
   // 技マスタ
   Move: a
     .model({
-      move_id: a.string().required(),              // No
-      move_num: a.integer(),        
-      character_id: a.string().required(),        // characterId → character_id に変更
-      move_category_id: a.string(),               // categoryId → move_category_id に変更
-      move_name: a.string().required(),                // 技名
-      move_name_kana: a.string(),               
-      command: a.string(),                        // コマンド（追加）
-      // damage: a.integer(),                        // ダメージ（追加）
-      startup_frame: a.integer(),                  // 発生F
-      active_frame: a.string(),                    // 持続F 
-      hit_frame: a.string(),                       // ヒット時硬直差
-      block_frame: a.string(),                     // ガード時硬直差
-      attribute: a.string(),                      // 属性
-      // judgment: a.string(),                       // 判定（追加）
+      move_id: a.string().required(),
+      move_num: a.integer(),
+      character_id: a.string().required(),
+      move_category_id: a.string(),
+      move_name: a.string().required(),
+      move_name_kana: a.string(),
+      command: a.string(),
+      startup_frame: a.integer(),
+      active_frame: a.string(),
+      hit_frame: a.string(),
+      block_frame: a.string(),
+      attribute: a.string(),
       
-      effects: a.string().array(),         
-      remarks: a.string().array(),                  // 備考
+      effects: a.string().array(),
+      remarks: a.string().array(),
       
       character: a.belongsTo('Character', 'character_id'),
       category: a.belongsTo('MoveCategory', 'move_category_id'),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
+      allow.guest().to(['read']),
+      allow.authenticated().to(['create', 'read', 'update', 'delete']),
+    ]),
+
+  // メモ（新規追加）
+  Memo: a
+    .model({
+      character_id: a.string().required(),
+      character_name: a.string(),
+      categories: a.string().array(),
+      title: a.string().required(),
+      content: a.string(),
+      importance: a.integer(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
@@ -87,7 +102,7 @@ const schema = a.schema({
       title: a.string().required(),
       content: a.string().required(),
       author: a.string().required(),
-      character_id: a.string(),  // characterId → character_id に変更
+      character_id: a.string(),
       likes: a.integer().default(0),
     })
     .authorization((allow) => [

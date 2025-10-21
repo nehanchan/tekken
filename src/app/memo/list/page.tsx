@@ -20,6 +20,8 @@ export default function MemoListPage() {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [filteredMemos, setFilteredMemos] = useState<Memo[]>([]);
   const [selectedCharacter, setSelectedCharacter] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc' | 'date'>('date');
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
@@ -36,12 +38,34 @@ export default function MemoListPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedCharacter === 'all') {
-      setFilteredMemos(memos);
-    } else {
-      setFilteredMemos(memos.filter(memo => memo.character_id === selectedCharacter));
+    let result = [...memos];
+    
+    // キャラクターで絞り込み
+    if (selectedCharacter !== 'all') {
+      result = result.filter(memo => memo.character_id === selectedCharacter);
     }
-  }, [selectedCharacter, memos]);
+    
+    // 分類で絞り込み
+    if (selectedCategory !== 'all') {
+      result = result.filter(memo => 
+        memo.categories && memo.categories.includes(selectedCategory)
+      );
+    }
+    
+    // ソート
+    if (sortOrder === 'desc') {
+      // 重要度降順（高い順）
+      result.sort((a, b) => (b.importance || 0) - (a.importance || 0));
+    } else if (sortOrder === 'asc') {
+      // 重要度昇順（低い順）
+      result.sort((a, b) => (a.importance || 0) - (b.importance || 0));
+    } else {
+      // 日付順（新しい順）
+      result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+    
+    setFilteredMemos(result);
+  }, [selectedCharacter, selectedCategory, sortOrder, memos]);
 
   const fetchMemos = async () => {
     setLoading(true);
@@ -90,28 +114,17 @@ export default function MemoListPage() {
     }
   };
 
-  const renderStars = (importance: number | null | undefined) => {
-    const stars = importance || 0;
-    return (
-      <div style={{ display: 'flex', gap: '2px' }}>
-        {[1, 2, 3, 4, 5].map(star => (
-          <span
-            key={star}
-            style={{
-              fontSize: '16px',
-              color: star <= stars ? '#fbbf24' : '#4b5563'
-            }}
-          >
-            ★
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   const uniqueCharacters = Array.from(
     new Set(memos.map(memo => memo.character_id))
   );
+
+  const uniqueCategories = Array.from(
+    new Set(
+      memos.flatMap(memo => 
+        memo.categories ? memo.categories.filter((c): c is string => c !== null) : []
+      )
+    )
+  ).sort();
 
   return (
     <div style={{
@@ -187,77 +200,227 @@ export default function MemoListPage() {
           </div>
         </div>
 
-        {/* フィルター＆ボタン */}
+        {/* フィルター＆ソート＆ボタン */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '30px',
-          flexWrap: 'wrap',
-          gap: '20px'
+          flexDirection: 'column',
+          gap: '15px',
+          marginBottom: '30px'
         }}>
-          <select
-            value={selectedCharacter}
-            onChange={(e) => setSelectedCharacter(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              fontSize: '14px',
-              background: 'rgba(0, 0, 0, 0.6)',
-              border: '2px solid rgba(185, 28, 28, 0.4)',
-              borderRadius: '6px',
-              color: '#ffffff',
-              cursor: 'pointer',
-              outline: 'none',
-              minWidth: '200px'
-            }}
-          >
-            <option value="all">全キャラクター ({memos.length})</option>
-            {uniqueCharacters.map(charId => {
-              const memo = memos.find(m => m.character_id === charId);
-              const count = memos.filter(m => m.character_id === charId).length;
-              return (
-                <option key={charId} value={charId}>
-                  {memo?.character_name || charId} ({count})
-                </option>
-              );
-            })}
-          </select>
+          {/* 上段：フィルター */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '10px',
+            alignItems: 'center'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <label style={{
+                fontSize: '12px',
+                color: '#fca5a5',
+                fontWeight: '600',
+                whiteSpace: 'nowrap'
+              }}>
+                キャラクター:
+              </label>
+              <select
+                value={selectedCharacter}
+                onChange={(e) => setSelectedCharacter(e.target.value)}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  border: '2px solid rgba(185, 28, 28, 0.4)',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '180px'
+                }}
+              >
+                <option value="all">全て ({memos.length})</option>
+                {uniqueCharacters.map(charId => {
+                  const memo = memos.find(m => m.character_id === charId);
+                  const count = memos.filter(m => m.character_id === charId).length;
+                  return (
+                    <option key={charId} value={charId}>
+                      {memo?.character_name || charId} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <a
-              href="/memo"
-              style={{
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
-                border: 'none',
-                borderRadius: '6px',
-                color: '#ffffff',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}
-            >
-              ＋ 新規作成
-            </a>
-            <a
-              href="/"
-              style={{
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                background: 'rgba(107, 114, 128, 0.3)',
-                border: '2px solid rgba(107, 114, 128, 0.5)',
-                borderRadius: '6px',
-                color: '#ffffff',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}
-            >
-              トップへ
-            </a>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <label style={{
+                fontSize: '12px',
+                color: '#fca5a5',
+                fontWeight: '600',
+                whiteSpace: 'nowrap'
+              }}>
+                分類:
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  border: '2px solid rgba(185, 28, 28, 0.4)',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '150px'
+                }}
+              >
+                <option value="all">全て</option>
+                {uniqueCategories.map(category => {
+                  const count = memos.filter(m => 
+                    m.categories && m.categories.includes(category)
+                  ).length;
+                  return (
+                    <option key={category} value={category}>
+                      {category} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <label style={{
+                fontSize: '12px',
+                color: '#fca5a5',
+                fontWeight: '600',
+                whiteSpace: 'nowrap'
+              }}>
+                並び順:
+              </label>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as 'desc' | 'asc' | 'date')}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  border: '2px solid rgba(185, 28, 28, 0.4)',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '150px'
+                }}
+              >
+                <option value="date">日付順（新しい順）</option>
+                <option value="desc">重要度順（高い順）</option>
+                <option value="asc">重要度順（低い順）</option>
+              </select>
+            </div>
+
+            {/* クリアボタン */}
+            {(selectedCharacter !== 'all' || selectedCategory !== 'all' || sortOrder !== 'date') && (
+              <button
+                onClick={() => {
+                  setSelectedCharacter('all');
+                  setSelectedCategory('all');
+                  setSortOrder('date');
+                }}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  fontWeight: 'bold',
+                  background: 'rgba(239, 68, 68, 0.3)',
+                  border: '2px solid rgba(239, 68, 68, 0.5)',
+                  borderRadius: '6px',
+                  color: '#fca5a5',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                ✕ クリア
+              </button>
+            )}
+          </div>
+
+          {/* 下段：ボタンと検索結果件数 */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '10px'
+          }}>
+            <div style={{
+              fontSize: '13px',
+              color: '#9ca3af'
+            }}>
+              {filteredMemos.length > 0 && (
+                <>
+                  {memos.length !== filteredMemos.length && (
+                    <span style={{ color: '#60a5fa', fontWeight: '600' }}>
+                      {filteredMemos.length}件
+                    </span>
+                  )}
+                  {memos.length !== filteredMemos.length && (
+                    <span> / 全{memos.length}件</span>
+                  )}
+                  {memos.length === filteredMemos.length && (
+                    <span>全{memos.length}件</span>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <a
+                href="/memo"
+                style={{
+                  padding: '10px 20px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                ＋ 新規作成
+              </a>
+              <a
+                href="/"
+                style={{
+                  padding: '10px 20px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  background: 'rgba(107, 114, 128, 0.3)',
+                  border: '2px solid rgba(107, 114, 128, 0.5)',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                トップへ
+              </a>
+            </div>
           </div>
         </div>
 
@@ -303,7 +466,35 @@ export default function MemoListPage() {
                 color: '#9ca3af',
                 fontSize: '16px'
               }}>
-                メモがありません
+                {memos.length === 0 ? (
+                  'メモがありません'
+                ) : (
+                  <>
+                    <div style={{ marginBottom: '10px' }}>
+                      条件に一致するメモがありません
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSelectedCharacter('all');
+                        setSelectedCategory('all');
+                        setSortOrder('date');
+                      }}
+                      style={{
+                        marginTop: '10px',
+                        padding: '8px 16px',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        background: 'rgba(239, 68, 68, 0.3)',
+                        border: '2px solid rgba(239, 68, 68, 0.5)',
+                        borderRadius: '6px',
+                        color: '#fca5a5',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      フィルターをクリア
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -311,7 +502,7 @@ export default function MemoListPage() {
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
+            gap: '4px',
             maxWidth: '1000px',
             margin: '0 auto'
           }}>
@@ -334,35 +525,37 @@ export default function MemoListPage() {
                   right: '0',
                   bottom: '0',
                   background: 'linear-gradient(135deg, #dc2626, #991b1b)',
-                  padding: '2px',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)'
+                  padding: '1px',
+                  borderRadius: '4px',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.5)'
                 }}>
                   <div style={{
                     width: '100%',
                     height: '100%',
                     background: 'rgba(0, 0, 0, 0.85)',
-                    borderRadius: '6px'
+                    borderRadius: '3px'
                   }} />
                 </div>
 
                 <div style={{
                   position: 'relative',
-                  padding: isMobile ? '16px' : '20px 24px',
+                  padding: isMobile ? '6px' : '8px',
                   display: 'flex',
-                  gap: isMobile ? '12px' : '20px',
-                  alignItems: 'flex-start'
+                  gap: isMobile ? '6px' : '10px',
+                  alignItems: 'center'
                 }}>
-                  {/* 最左：キャラクター画像 */}
+                  {/* キャラクター画像（固定幅） */}
                   <div style={{
-                    width: isMobile ? '80px' : '100px',
-                    height: isMobile ? '80px' : '100px',
+                    width: isMobile ? '32px' : '40px',
+                    minWidth: isMobile ? '32px' : '40px',
+                    maxWidth: isMobile ? '32px' : '40px',
+                    height: isMobile ? '32px' : '40px',
                     flexShrink: 0,
                     position: 'relative',
                     overflow: 'hidden',
-                    borderRadius: '6px',
+                    borderRadius: '3px',
                     background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
-                    border: '2px solid rgba(185, 28, 28, 0.4)',
+                    border: '1px solid rgba(185, 28, 28, 0.4)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -383,7 +576,6 @@ export default function MemoListPage() {
                           target.dataset.fallbackAttempted = 'true';
                           target.src = `/character-faces-mobile/${memo.character_id}.png`;
                         } else {
-                          // 両方とも失敗した場合はプレースホルダーを表示
                           target.style.display = 'none';
                           const placeholder = document.createElement('div');
                           placeholder.style.width = '100%';
@@ -391,7 +583,7 @@ export default function MemoListPage() {
                           placeholder.style.display = 'flex';
                           placeholder.style.alignItems = 'center';
                           placeholder.style.justifyContent = 'center';
-                          placeholder.style.fontSize = isMobile ? '32px' : '40px';
+                          placeholder.style.fontSize = isMobile ? '20px' : '24px';
                           placeholder.textContent = '🥊';
                           target.parentNode?.appendChild(placeholder);
                         }
@@ -399,32 +591,105 @@ export default function MemoListPage() {
                     />
                   </div>
 
-                  {/* 左側：キャラクター名と重要度 */}
+                  {/* キャラクター名と重要度（固定幅） */}
                   <div style={{
-                    minWidth: isMobile ? '80px' : '120px',
+                    width: isMobile ? '60px' : '80px',
+                    minWidth: isMobile ? '60px' : '80px',
+                    maxWidth: isMobile ? '60px' : '80px',
+                    flexShrink: 0,
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '8px'
+                    gap: '2px'
                   }}>
                     <div style={{
-                      fontSize: isMobile ? '13px' : '14px',
+                      fontSize: isMobile ? '10px' : '11px',
                       color: '#60a5fa',
                       fontWeight: '600',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      lineHeight: '1.2',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
                     }}>
                       {memo.character_name || memo.character_id}
                     </div>
-                    {renderStars(memo.importance)}
+                    <div style={{ display: 'flex', gap: '1px' }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <span
+                          key={star}
+                          style={{
+                            fontSize: '9px',
+                            color: star <= (memo.importance || 0) ? '#fbbf24' : '#4b5563',
+                            lineHeight: '1'
+                          }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* 中央：メモ内容 */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{
-                      fontSize: isMobile ? '16px' : '18px',
+                  {/* 分類タグ（固定幅・デスクトップのみ） */}
+                  {!isMobile && (
+                    <div style={{
+                      width: '100px',
+                      minWidth: '100px',
+                      maxWidth: '100px',
+                      flexShrink: 0,
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '3px',
+                      alignContent: 'flex-start'
+                    }}>
+                      {memo.categories && memo.categories.length > 0 ? (
+                        <>
+                          {memo.categories.filter(c => c !== null).slice(0, 2).map((category, idx) => (
+                            <span
+                              key={idx}
+                              style={{
+                                fontSize: '8px',
+                                padding: '1px 4px',
+                                background: 'rgba(185, 28, 28, 0.3)',
+                                border: '1px solid rgba(248, 113, 113, 0.5)',
+                                borderRadius: '2px',
+                                color: '#fca5a5',
+                                whiteSpace: 'nowrap',
+                                lineHeight: '1.2'
+                              }}
+                            >
+                              {category}
+                            </span>
+                          ))}
+                          {memo.categories.length > 2 && (
+                            <span style={{
+                              fontSize: '8px',
+                              color: '#6b7280'
+                            }}>
+                              +{memo.categories.length - 2}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span style={{ fontSize: '8px', color: '#4b5563' }}>-</span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 件名（左・固定幅） */}
+                  <div style={{
+                    width: isMobile ? 'auto' : '280px',
+                    minWidth: isMobile ? '0' : '280px',
+                    maxWidth: isMobile ? 'none' : '280px',
+                    flex: isMobile ? 1 : '0 0 280px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      fontSize: isMobile ? '11px' : '12px',
                       fontWeight: 'bold',
                       color: '#fef2f2',
-                      marginBottom: '8px',
-                      lineHeight: '1.4'
+                      lineHeight: '1.3',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
                     }}>
                       <TextWithIcons 
                         text={memo.title}
@@ -433,75 +698,50 @@ export default function MemoListPage() {
                         showFallback={false}
                         enableIconReplacement={true}
                       />
-                    </h3>
-
-                    {memo.categories && memo.categories.length > 0 && (
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '6px',
-                        marginBottom: '8px'
-                      }}>
-                        {memo.categories.filter(c => c !== null).map((category, idx) => (
-                          <span
-                            key={idx}
-                            style={{
-                              fontSize: '11px',
-                              padding: '3px 8px',
-                              background: 'rgba(185, 28, 28, 0.3)',
-                              border: '1px solid rgba(248, 113, 113, 0.5)',
-                              borderRadius: '4px',
-                              color: '#fca5a5'
-                            }}
-                          >
-                            {category}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {memo.content && !isMobile && (
-                      <div style={{ marginTop: '8px' }}>
-                        <div style={{
-                          fontSize: '11px',
-                          color: '#9ca3af',
-                          marginBottom: '4px'
-                        }}>
-                          補足:
-                        </div>
-                        <div style={{
-                          fontSize: '13px',
-                          color: '#d1d5db',
-                          lineHeight: '1.5',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical'
-                        }}>
-                          <TextWithIcons 
-                            text={memo.content}
-                            size="md"
-                            textClassName="text-gray-300"
-                            showFallback={false}
-                            enableIconReplacement={true}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    </div>
                   </div>
 
-                  {/* 右側：日付 */}
+                  {/* 補足（右・可変幅・デスクトップのみ） */}
+                  {memo.content && !isMobile && (
+                    <div style={{
+                      flex: '1 1 auto',
+                      minWidth: 0,
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        fontSize: '10px',
+                        color: '#9ca3af',
+                        lineHeight: '1.3',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        <TextWithIcons 
+                          text={memo.content}
+                          size="md"
+                          textClassName="text-gray-400"
+                          showFallback={false}
+                          enableIconReplacement={true}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 日付（固定幅） */}
                   <div style={{
-                    minWidth: isMobile ? '60px' : '100px',
+                    width: isMobile ? '50px' : '60px',
+                    minWidth: isMobile ? '50px' : '60px',
+                    maxWidth: isMobile ? '50px' : '60px',
+                    flexShrink: 0,
                     textAlign: 'right'
                   }}>
                     <div style={{
-                      fontSize: '12px',
-                      color: '#6b7280'
+                      fontSize: '9px',
+                      color: '#6b7280',
+                      lineHeight: '1.2'
                     }}>
                       {new Date(memo.createdAt).toLocaleDateString('ja-JP', {
-                        year: 'numeric',
+                        year: '2-digit',
                         month: '2-digit',
                         day: '2-digit'
                       }).replace(/\//g, '/')}
@@ -599,7 +839,19 @@ export default function MemoListPage() {
                 }}>
                   {selectedMemo.character_name || selectedMemo.character_id}
                 </div>
-                {renderStars(selectedMemo.importance)}
+                <div style={{ display: 'flex', gap: '2px' }}>
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <span
+                      key={star}
+                      style={{
+                        fontSize: '16px',
+                        color: star <= (selectedMemo.importance || 0) ? '#fbbf24' : '#4b5563'
+                      }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <h2 style={{

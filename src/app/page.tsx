@@ -1,3 +1,5 @@
+// src/app/page.tsx
+// このファイルの内容を全て以下に置き換えてください
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -32,6 +34,7 @@ export default function Home() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [screenScale, setScreenScale] = useState(1);
+  const [menuOpen, setMenuOpen] = useState(false); // ← 追加
 
   useEffect(() => {
     fetchCharacters();
@@ -371,6 +374,177 @@ export default function Home() {
       position: 'relative',
       overflow: 'hidden'
     }}>
+      {/* ========== ここから追加 ========== */}
+      
+      {/* ハンバーガーメニューボタン */}
+      <button
+        onClick={() => setMenuOpen(true)}
+        style={{
+          position: 'fixed',
+          top: '20px',
+          left: '20px',
+          zIndex: 999,
+          width: '50px',
+          height: '50px',
+          background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+          border: '2px solid rgba(185, 28, 28, 0.5)',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '6px',
+          boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)';
+          e.currentTarget.style.boxShadow = '0 6px 15px rgba(0,0,0,0.6)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+        }}
+      >
+        <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
+        <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
+        <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
+      </button>
+
+      {/* オーバーレイ */}
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 1000,
+            backdropFilter: 'blur(4px)'
+          }}
+        />
+      )}
+
+      {/* サイドメニュー */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: menuOpen ? 0 : '-300px',
+          width: '300px',
+          height: '100vh',
+          background: 'linear-gradient(to bottom, #000000, #1a0505, #000000)',
+          boxShadow: menuOpen ? '4px 0 20px rgba(0,0,0,0.5)' : 'none',
+          zIndex: 1001,
+          transition: 'left 0.3s ease-in-out',
+          overflowY: 'auto'
+        }}
+      >
+        {/* メニューヘッダー */}
+        <div style={{
+          padding: '20px',
+          borderBottom: '2px solid rgba(185, 28, 28, 0.3)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h2 style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#fef2f2',
+            letterSpacing: '2px',
+            textTransform: 'uppercase'
+          }}>
+            MENU
+          </h2>
+          <button
+            onClick={() => setMenuOpen(false)}
+            style={{
+              width: '32px',
+              height: '32px',
+              background: 'rgba(185, 28, 28, 0.3)',
+              border: '1px solid rgba(185, 28, 28, 0.5)',
+              borderRadius: '50%',
+              color: '#fca5a5',
+              cursor: 'pointer',
+              fontSize: '18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        {/* メニュー項目 */}
+        <nav style={{ padding: '20px 0' }}>
+          {[
+            { label: 'TOP', href: '/', icon: '🏠' },
+            { label: 'キャラクター', href: '/', icon: '👊' },
+            { label: '対策メモ', href: '/memo/list', icon: '📝' },
+            { label: 'コンボ', href: '/coming-soon?type=combo', icon: '⚡' },
+            { label: 'カスタマイズ', href: '/coming-soon?type=customize', icon: '⚙️' }
+          ].map((item, index) => (
+            <a
+              key={index}
+              href={item.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '15px',
+                padding: '15px 30px',
+                color: '#e5e7eb',
+                textDecoration: 'none',
+                fontSize: '16px',
+                fontWeight: '600',
+                borderLeft: '4px solid transparent',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(185, 28, 28, 0.2)';
+                e.currentTarget.style.borderLeftColor = '#dc2626';
+                e.currentTarget.style.color = '#fef2f2';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.borderLeftColor = 'transparent';
+                e.currentTarget.style.color = '#e5e7eb';
+              }}
+            >
+              <span style={{ fontSize: '24px' }}>{item.icon}</span>
+              <span style={{ letterSpacing: '1px' }}>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+
+        {/* メニューフッター */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '20px',
+          borderTop: '2px solid rgba(185, 28, 28, 0.3)',
+          background: 'rgba(0, 0, 0, 0.5)'
+        }}>
+          <div style={{
+            fontSize: '12px',
+            color: '#6b7280',
+            textAlign: 'center'
+          }}>
+            TEKKEN 8 Database
+          </div>
+        </div>
+      </div>
+
+      {/* ========== ここまで追加 ========== */}
+
       <div style={{
         position: 'absolute',
         top: 0,
@@ -378,7 +552,8 @@ export default function Home() {
         width: '100%',
         height: '100%',
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23991b1b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        zIndex: 0
       }} />
 
       <div style={{

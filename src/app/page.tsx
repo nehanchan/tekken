@@ -1,5 +1,4 @@
-// src/app/page.tsx
-// このファイルの内容を全て以下に置き換えてください
+// ...existing code...
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -34,7 +33,7 @@ export default function Home() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [screenScale, setScreenScale] = useState(1);
-  const [menuOpen, setMenuOpen] = useState(false); // ← 追加
+  const [menuOpen, setMenuOpen] = useState(true); // 初期値を true に
 
   useEffect(() => {
     fetchCharacters();
@@ -363,26 +362,16 @@ export default function Home() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: `
-        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
-        url('/backgrounds/background.jpg')
-      `,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-      backgroundRepeat: 'no-repeat',
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* ========== ここから追加 ========== */}
-      
       {/* ハンバーガーメニューボタン */}
       <button
-        onClick={() => setMenuOpen(true)}
+        onClick={() => setMenuOpen(!menuOpen)}  // トグルに変更
         style={{
           position: 'fixed',
           top: '20px',
-          left: '20px',
+          left: menuOpen ? '320px' : '20px',  // メニューが開いている時は位置を調整
           zIndex: 999,
           width: '50px',
           height: '50px',
@@ -396,7 +385,7 @@ export default function Home() {
           justifyContent: 'center',
           gap: '6px',
           boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
-          transition: 'all 0.2s'
+          transition: 'all 0.3s ease-in-out'  // アニメーション追加
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.05)';
@@ -411,8 +400,7 @@ export default function Home() {
         <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
         <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
       </button>
-
-      {/* オーバーレイ */}
+      {/* オーバーレイ
       {menuOpen && (
         <div
           onClick={() => setMenuOpen(false)}
@@ -427,7 +415,7 @@ export default function Home() {
             backdropFilter: 'blur(4px)'
           }}
         />
-      )}
+      )} */}
 
       {/* サイドメニュー */}
       <div
@@ -439,7 +427,7 @@ export default function Home() {
           height: '100vh',
           background: 'linear-gradient(to bottom, #000000, #1a0505, #000000)',
           boxShadow: menuOpen ? '4px 0 20px rgba(0,0,0,0.5)' : 'none',
-          zIndex: 1001,
+          zIndex: 998,  // ハンバーガーボタンより下に
           transition: 'left 0.3s ease-in-out',
           overflowY: 'auto'
         }}
@@ -480,7 +468,6 @@ export default function Home() {
             ×
           </button>
         </div>
-
         {/* メニュー項目 */}
         <nav style={{ padding: '20px 0' }}>
           {[
@@ -545,48 +532,64 @@ export default function Home() {
 
       {/* ========== ここまで追加 ========== */}
 
+      {/* メインコンテンツ - メニューが開いている時は右に移動 */} 
       <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23991b1b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        pointerEvents: 'none',
-        zIndex: 0
-      }} />
-
-      <div style={{
+        minHeight: '100vh',
+        background: `
+          linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
+          url('/backgrounds/background.jpg')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
         position: 'relative',
-        zIndex: 1
+        marginLeft: menuOpen ? '300px' : '0',  // メニューが開いている時は右に移動
+        transition: 'margin-left 0.3s ease-in-out',  // スムーズなアニメーション
+        width: menuOpen ? 'calc(100% - 300px)' : '100%',  // 幅を調整
       }}>
-        {/* ロゴセクション */}
         <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
           width: '100%',
-          background: `
-            linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-            url('/backgrounds/background-title1.jpg')
-          `,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          padding: isMobile ? '40px 20px' : '60px 20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: '0'
-        }}>
-          <img 
-            src="/backgrounds/TEKKEN8_LOGO.png"
-            alt="TEKKEN 8"
-            style={{
-              maxWidth: isMobile ? '80%' : '600px',
-              width: '100%',
-              height: 'auto',
-              filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8))'
-            }}
-          />
-        </div>
+          height: '100%',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23991b1b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
 
+        <div style={{
+          position: 'relative',
+          zIndex: 1
+        }}>    
+    
+          {/* ロゴセクション */}
+          <div style={{
+            width: '100%',
+            background: `
+              linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+              url('/backgrounds/background-title1.jpg')
+            `,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            padding: isMobile ? '40px 20px' : '60px 20px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '0'
+          }}>
+            <img 
+              src="/backgrounds/TEKKEN8_LOGO.png"
+              alt="TEKKEN 8"
+              style={{
+                maxWidth: isMobile ? '80%' : '600px',
+                width: '100%',
+                height: 'auto',
+                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8))'
+              }}
+            />
+          </div>
         <div style={{
           padding: '40px 20px',
           maxWidth: '1600px',
@@ -822,5 +825,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

@@ -504,7 +504,6 @@ export default function Home() {
                 e.currentTarget.style.color = '#e5e7eb';
               }}
             >
-              <span style={{ fontSize: '24px' }}>{item.icon}</span>
               <span style={{ letterSpacing: '1px' }}>{item.label}</span>
             </a>
           ))}

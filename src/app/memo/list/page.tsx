@@ -27,6 +27,9 @@ export default function MemoListPage() {
   const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // ハンバーガーメニューの状態
+  const [editMode, setEditMode] = useState(false); // 編集モードの状態
+  const [editedMemo, setEditedMemo] = useState<Partial<Memo>>({});
+  const [availableCharacters, setAvailableCharacters] = useState<{id: string; name: string}[]>([]);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -35,8 +38,23 @@ export default function MemoListPage() {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     fetchMemos();
+    fetchCharacters();
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  const fetchCharacters = async () => {
+    try {
+      const { data } = await client.models.Character.list({ authMode: 'apiKey' });
+      const validCharacters = (data || []).filter(c => c !== null);
+      const characters = validCharacters.map((c: any) => ({
+        id: c.character_id,
+        name: c.display_name || c.character_name_jp || c.character_name_en || c.character_id
+      }));
+      setAvailableCharacters(characters);
+    } catch (error) {
+      console.error('キャラクター取得エラー:', error);
+    }
+  };
 
   useEffect(() => {
     let result = [...memos];
@@ -114,6 +132,64 @@ export default function MemoListPage() {
       }
     }
   };
+
+  const handleEdit = () => {
+    if (selectedMemo) {
+      setEditMode(true);
+      setEditedMemo({
+        ...selectedMemo
+      });
+    }
+  };
+
+  const handleSave = async () => {
+    if (!editedMemo.id) return;
+
+    try {
+      const result = await client.models.Memo.update({
+        id: editedMemo.id,
+        character_id: editedMemo.character_id,
+        character_name: editedMemo.character_name,
+        categories: editedMemo.categories,
+        title: editedMemo.title,
+        content: editedMemo.content,
+        importance: editedMemo.importance
+      }, {
+        authMode: 'apiKey'
+      });
+
+      if (result.data) {
+        alert('メモを更新しました');
+        setEditMode(false);
+        fetchMemos();
+        setShowDetail(false);
+      } else {
+        throw new Error('更新に失敗しました');
+      }
+    } catch (error) {
+      console.error('更新エラー:', error);
+      if (error instanceof Error) {
+        alert(`更新に失敗しました: ${error.message}`);
+      } else {
+        alert('更新に失敗しました');
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setEditedMemo({});
+  };
+
+  const CATEGORIES = [
+    '確定反撃',
+    'しゃがめる連携',
+    '割れない連携',
+    '潜る連携',
+    'ファジー',
+    '立ち回り',
+    'その他'
+  ];
 
   const uniqueCharacters = Array.from(
     new Set(memos.map(memo => memo.character_id))
@@ -263,7 +339,6 @@ export default function MemoListPage() {
                 }
               }}
             >
-              <span style={{ fontSize: '24px' }}>{item.icon}</span>
               <span style={{ letterSpacing: '1px' }}>{item.label}</span>
             </a>
           ))}
@@ -974,197 +1049,413 @@ export default function MemoListPage() {
                   ×
                 </button>
 
-                <div style={{
-                  display: 'flex',
-                  gap: '20px',
-                  marginBottom: '25px',
-                  alignItems: 'flex-start'
-                }}>
-                  {/* キャラクター画像 */}
-                  <div style={{
-                    width: '80px',
-                    height: '80px',
-                    flexShrink: 0,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    borderRadius: '6px',
-                    background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
-                    border: '2px solid rgba(185, 28, 28, 0.4)',
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    justifyContent: 'center'
-                  }}>
-                    <img
-                      src={`/character-faces/${selectedMemo.character_id}.png`}
-                      alt={selectedMemo.character_name || selectedMemo.character_id}
-                      style={{
-                        width: '120%',
-                        height: 'auto',
-                        minHeight: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'center bottom',
-                        imageRendering: 'crisp-edges'
-                      }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        if (!target.dataset.fallbackAttempted) {
-                          target.dataset.fallbackAttempted = 'true';
-                          target.src = `/character-faces-mobile/${selectedMemo.character_id}.png`;
-                        } else {
-                          target.style.display = 'none';
-                          const placeholder = document.createElement('div');
-                          placeholder.style.width = '100%';
-                          placeholder.style.height = '100%';
-                          placeholder.style.display = 'flex';
-                          placeholder.style.alignItems = 'center';
-                          placeholder.style.justifyContent = 'center';
-                          placeholder.style.fontSize = '40px';
-                          placeholder.textContent = '🥊';
-                          target.parentNode?.appendChild(placeholder);
-                        }
-                      }}
-                    />
-                  </div>
-
-                  <div style={{ flex: 1 }}>
+                {!editMode ? (
+                  <>
+                    {/* 閲覧モード */}
                     <div style={{
-                      fontSize: '18px',
-                      color: '#60a5fa',
-                      fontWeight: '600',
-                      marginBottom: '10px'
+                      display: 'flex',
+                      gap: '20px',
+                      marginBottom: '25px',
+                      alignItems: 'flex-start'
                     }}>
-                      {selectedMemo.character_name || selectedMemo.character_id}
-                    </div>
-                    <div style={{ display: 'flex', gap: '3px' }}>
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <span
-                          key={star}
+                      {/* キャラクター画像 */}
+                      <div style={{
+                        width: '80px',
+                        height: '80px',
+                        flexShrink: 0,
+                        position: 'relative',
+                        overflow: 'hidden',
+                        borderRadius: '6px',
+                        background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+                        border: '2px solid rgba(185, 28, 28, 0.4)',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        justifyContent: 'center'
+                      }}>
+                        <img
+                          src={`/character-faces/${selectedMemo.character_id}.png`}
+                          alt={selectedMemo.character_name || selectedMemo.character_id}
                           style={{
-                            fontSize: '20px',
-                            color: star <= (selectedMemo.importance || 0) ? '#fbbf24' : '#4b5563'
+                            width: '120%',
+                            height: 'auto',
+                            minHeight: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'center bottom',
+                            imageRendering: 'crisp-edges'
                           }}
-                        >
-                          ★
-                        </span>
-                      ))}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (!target.dataset.fallbackAttempted) {
+                              target.dataset.fallbackAttempted = 'true';
+                              target.src = `/character-faces-mobile/${selectedMemo.character_id}.png`;
+                            } else {
+                              target.style.display = 'none';
+                              const placeholder = document.createElement('div');
+                              placeholder.style.width = '100%';
+                              placeholder.style.height = '100%';
+                              placeholder.style.display = 'flex';
+                              placeholder.style.alignItems = 'center';
+                              placeholder.style.justifyContent = 'center';
+                              placeholder.style.fontSize = '40px';
+                              placeholder.textContent = '🥊';
+                              target.parentNode?.appendChild(placeholder);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <div style={{
+                          fontSize: '18px',
+                          color: '#60a5fa',
+                          fontWeight: '600',
+                          marginBottom: '10px'
+                        }}>
+                          {selectedMemo.character_name || selectedMemo.character_id}
+                        </div>
+                        <div style={{ display: 'flex', gap: '3px' }}>
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <span
+                              key={star}
+                              style={{
+                                fontSize: '20px',
+                                color: star <= (selectedMemo.importance || 0) ? '#fbbf24' : '#4b5563'
+                              }}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <h2 style={{
-                  fontSize: '28px',
-                  fontWeight: 'bold',
-                  color: '#fef2f2',
-                  marginBottom: '25px',
-                  lineHeight: '1.5'
-                }}>
-                  <TextWithIcons 
-                    text={selectedMemo.title}
-                    size="lg"
-                    textClassName="text-red-50 font-bold"
-                    showFallback={false}
-                    enableIconReplacement={true}
-                  />
-                </h2>
+                    {/* 分類を上に配置（位置変更） */}
+                    {selectedMemo.categories && selectedMemo.categories.length > 0 && (
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '10px',
+                        marginBottom: '25px'
+                      }}>
+                        {selectedMemo.categories.filter(c => c !== null).map((category, idx) => (
+                          <span
+                            key={idx}
+                            style={{
+                              fontSize: '15px',
+                              padding: '8px 16px',
+                              background: 'rgba(185, 28, 28, 0.3)',
+                              border: '1px solid rgba(248, 113, 113, 0.5)',
+                              borderRadius: '6px',
+                              color: '#fca5a5'
+                            }}
+                          >
+                            {category}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                {selectedMemo.categories && selectedMemo.categories.length > 0 && (
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '10px',
-                    marginBottom: '25px'
-                  }}>
-                    {selectedMemo.categories.filter(c => c !== null).map((category, idx) => (
-                      <span
-                        key={idx}
-                        style={{
-                          fontSize: '15px',
-                          padding: '8px 16px',
-                          background: 'rgba(185, 28, 28, 0.3)',
-                          border: '1px solid rgba(248, 113, 113, 0.5)',
-                          borderRadius: '6px',
-                          color: '#fca5a5'
-                        }}
-                      >
-                        {category}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {selectedMemo.content && (
-                  <div style={{ marginBottom: '25px' }}>
-                    <div style={{
-                      fontSize: '16px',
+                    {/* 件名を下に配置（位置変更） */}
+                    <h2 style={{
+                      fontSize: '28px',
                       fontWeight: 'bold',
-                      color: '#fca5a5',
-                      marginBottom: '12px'
-                    }}>
-                      補足
-                    </div>
-                    <div style={{
-                      fontSize: '18px',
-                      color: '#e5e7eb',
-                      lineHeight: '1.9',
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                      padding: '16px',
-                      background: 'rgba(0, 0, 0, 0.3)',
-                      borderRadius: '6px',
-                      border: '1px solid rgba(185, 28, 28, 0.2)'
+                      color: '#fef2f2',
+                      marginBottom: '25px',
+                      lineHeight: '1.5'
                     }}>
                       <TextWithIcons 
-                        text={selectedMemo.content}
+                        text={selectedMemo.title}
                         size="lg"
-                        textClassName="text-gray-200"
+                        textClassName="text-red-50 font-bold"
                         showFallback={false}
                         enableIconReplacement={true}
                       />
-                    </div>
-                  </div>
-                )}
+                    </h2>
 
-                <div style={{
-                  display: 'flex',
-                  gap: '15px',
-                  justifyContent: 'flex-end',
-                  paddingTop: '25px',
-                  borderTop: '1px solid rgba(185, 28, 28, 0.3)'
-                }}>
-                  <button
-                    onClick={() => {
-                      handleDelete(selectedMemo.id);
-                      setShowDetail(false);
-                    }}
-                    style={{
-                      padding: '12px 30px',
-                      fontSize: '16px',
+                    {selectedMemo.content && (
+                      <div style={{ marginBottom: '25px' }}>
+                        <div style={{
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          color: '#fca5a5',
+                          marginBottom: '12px'
+                        }}>
+                          補足
+                        </div>
+                        <div style={{
+                          fontSize: '18px',
+                          color: '#e5e7eb',
+                          lineHeight: '1.9',
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                          padding: '16px',
+                          background: 'rgba(0, 0, 0, 0.3)',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(185, 28, 28, 0.2)'
+                        }}>
+                          <TextWithIcons 
+                            text={selectedMemo.content}
+                            size="lg"
+                            textClassName="text-gray-200"
+                            showFallback={false}
+                            enableIconReplacement={true}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{
+                      display: 'flex',
+                      gap: '15px',
+                      justifyContent: 'flex-end',
+                      paddingTop: '25px',
+                      borderTop: '1px solid rgba(185, 28, 28, 0.3)'
+                    }}>
+                      <button
+                        onClick={() => handleEdit()}
+                        style={{
+                          padding: '12px 30px',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          background: 'rgba(59, 130, 246, 0.3)',
+                          border: '2px solid rgba(59, 130, 246, 0.5)',
+                          borderRadius: '6px',
+                          color: '#93c5fd',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(59, 130, 246, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(59, 130, 246, 0.3)';
+                        }}
+                      >
+                        編集
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleDelete(selectedMemo.id);
+                          setShowDetail(false);
+                        }}
+                        style={{
+                          padding: '12px 30px',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          background: 'rgba(239, 68, 68, 0.3)',
+                          border: '2px solid rgba(239, 68, 68, 0.5)',
+                          borderRadius: '6px',
+                          color: '#fca5a5',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        削除
+                      </button>
+                      <button
+                        onClick={() => setShowDetail(false)}
+                        style={{
+                          padding: '12px 30px',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                          border: 'none',
+                          borderRadius: '6px',
+                          color: '#ffffff',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        閉じる
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* 編集モード */}
+                    <h3 style={{
+                      fontSize: '24px',
                       fontWeight: 'bold',
-                      background: 'rgba(239, 68, 68, 0.3)',
-                      border: '2px solid rgba(239, 68, 68, 0.5)',
-                      borderRadius: '6px',
                       color: '#fca5a5',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    削除
-                  </button>
-                  <button
-                    onClick={() => setShowDetail(false)}
-                    style={{
-                      padding: '12px 30px',
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                      background: 'linear-gradient(135deg, #dc2626, #991b1b)',
-                      border: 'none',
-                      borderRadius: '6px',
-                      color: '#ffffff',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    閉じる
-                  </button>
-                </div>
+                      marginBottom: '25px'
+                    }}>
+                      メモを編集
+                    </h3>
+
+                    {/* 分類を上に配置（位置変更） */}
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{
+                        fontSize: '14px',
+                        color: '#d1d5db',
+                        fontWeight: 'bold',
+                        display: 'block',
+                        marginBottom: '10px'
+                      }}>
+                        分類
+                      </label>
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '8px'
+                      }}>
+                        {CATEGORIES.map(category => (
+                          <label
+                            key={category}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '8px 12px',
+                              background: editedMemo.categories?.includes(category)
+                                ? 'rgba(248, 113, 113, 0.3)'
+                                : 'rgba(107, 114, 128, 0.2)',
+                              border: editedMemo.categories?.includes(category)
+                                ? '1px solid rgba(248, 113, 113, 0.6)'
+                                : '1px solid rgba(107, 114, 128, 0.3)',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={editedMemo.categories?.includes(category) || false}
+                              onChange={(e) => {
+                                const newCategories = e.target.checked
+                                  ? [...(editedMemo.categories || []), category]
+                                  : (editedMemo.categories || []).filter(c => c !== category);
+                                setEditedMemo({
+                                  ...editedMemo,
+                                  categories: newCategories
+                                });
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            />
+                            <span style={{ color: '#d1d5db', fontSize: '14px' }}>
+                              {category}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 件名を下に配置（位置変更） */}
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{
+                        fontSize: '14px',
+                        color: '#d1d5db',
+                        fontWeight: 'bold',
+                        display: 'block',
+                        marginBottom: '8px'
+                      }}>
+                        件名
+                      </label>
+                      <input
+                        type="text"
+                        value={editedMemo.title || ''}
+                        onChange={(e) => setEditedMemo({
+                          ...editedMemo,
+                          title: e.target.value
+                        })}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          background: '#1f2937',
+                          border: '1px solid rgba(248, 113, 113, 0.3)',
+                          borderRadius: '6px',
+                          color: '#ffffff',
+                          fontSize: '14px',
+                          boxSizing: 'border-box'
+                        }}
+                        placeholder="メモのタイトルを入力"
+                      />
+                    </div>
+
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{
+                        fontSize: '14px',
+                        color: '#d1d5db',
+                        fontWeight: 'bold',
+                        display: 'block',
+                        marginBottom: '8px'
+                      }}>
+                        補足
+                      </label>
+                      <textarea
+                        value={editedMemo.content || ''}
+                        onChange={(e) => setEditedMemo({
+                          ...editedMemo,
+                          content: e.target.value
+                        })}
+                        style={{
+                          width: '100%',
+                          minHeight: '150px',
+                          padding: '12px',
+                          background: '#1f2937',
+                          border: '1px solid rgba(248, 113, 113, 0.3)',
+                          borderRadius: '6px',
+                          color: '#ffffff',
+                          fontSize: '14px',
+                          fontFamily: 'inherit',
+                          boxSizing: 'border-box',
+                          resize: 'vertical'
+                        }}
+                        placeholder="メモの内容を入力"
+                      />
+                    </div>
+
+                    <div style={{
+                      display: 'flex',
+                      gap: '15px',
+                      justifyContent: 'flex-end',
+                      paddingTop: '25px',
+                      borderTop: '1px solid rgba(185, 28, 28, 0.3)'
+                    }}>
+                      <button
+                        onClick={handleSave}
+                        style={{
+                          padding: '12px 30px',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                          border: 'none',
+                          borderRadius: '6px',
+                          color: '#ffffff',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.opacity = '0.8';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.opacity = '1';
+                        }}
+                      >
+                        保存
+                      </button>
+                      <button
+                        onClick={handleCancel}
+                        style={{
+                          padding: '12px 30px',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          background: 'rgba(107, 114, 128, 0.3)',
+                          border: '2px solid rgba(107, 114, 128, 0.5)',
+                          borderRadius: '6px',
+                          color: '#d1d5db',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(107, 114, 128, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(107, 114, 128, 0.3)';
+                        }}
+                      >
+                        キャンセル
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

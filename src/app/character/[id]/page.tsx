@@ -8,6 +8,7 @@ import CommandDisplay, { TextWithIcons, PlainText } from '@/components/CommandDi
 import { parseCommandToElements, getIconPath } from '@/utils/commandIcons';
 import FrameAdvantage from '@/components/FrameAdvantage';
 import EffectDisplay from '@/components/EffectDisplay';
+import Footer from '@/components/Footer';
 
 // 列幅設定（最適化版）
 const COLUMN_WIDTHS = {
@@ -829,22 +830,23 @@ const renderRemarks = (remarks?: (string | null)[] | null) => {
 
   // メイン表示
   return (
-    <div 
-      style={{
-        minHeight: '100vh',
-        background: `
-          linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-          url('/backgrounds/background.jpg')
-        `,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
-        padding: isMobile ? '16px' : '24px',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >      
+    <div style={{ overflowX: 'hidden', width: '100%' }}>
+      <div 
+        style={{
+          minHeight: '100vh',
+          background: `
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+            url('/backgrounds/background.jpg')
+          `,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+          backgroundRepeat: 'no-repeat',
+          padding: isMobile ? '16px' : '24px',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >      
          {/* パターンオーバーレイ */}
       <div style={{
         position: 'absolute',
@@ -1648,9 +1650,16 @@ const renderRemarks = (remarks?: (string | null)[] | null) => {
                 閉じる
               </button>
             </div>
+
           </div>
+          
         </div>
+        
       )}
+      </div>
+
+      {/* フッター */}
+      <Footer isMobile={isMobile} />
     </div>
   );
 }

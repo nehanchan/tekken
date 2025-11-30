@@ -110,7 +110,26 @@ const schema = a.schema({
       allow.guest().to(['read']),
       allow.owner().to(['create', 'read', 'update', 'delete']),
     ]),
-});
+
+  // コンボ（ここに移動）
+  Combo: a
+    .model({
+      character_id: a.string().required(),
+      character_name: a.string(),
+      title: a.string().required(),
+      moves: a.string().array(), // 技IDの配列
+      display_mode: a.string(), // 'icon' または 'name'
+      damage: a.string(),
+      difficulty: a.integer(), // 1-5
+      notes: a.string(),
+      tags: a.string().array(), // タグ（壁コンボ、空中始動など）
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
+      allow.guest().to(['read']),
+      allow.authenticated().to(['create', 'read', 'update', 'delete']),
+    ]),
+});  // ← この閉じ括弧の「前」にComboを入れる
 
 export type Schema = ClientSchema<typeof schema>;
 

@@ -31,7 +31,7 @@ export default function Footer({ isMobile = false, className = '' }: FooterProps
             textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'
           }}
         >
-          権利表記「TEKKEN™8 & ©Bandai Namco Entertainment Inc.」を記載してください。
+          TEKKEN™8 & ©Bandai Namco Entertainment Inc.
         </p>
       </div>
     </footer>

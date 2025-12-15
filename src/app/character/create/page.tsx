@@ -181,45 +181,58 @@ export default function CreateCharacterPage() {
   };
 
   const handleSave = async () => {
-    if (!selectedCharacter || !editedCharacter.id) return;
+  if (!selectedCharacter || !editedCharacter.id) return;
+  
+  try {
+    setLoading(true);
     
-    try {
-      setLoading(true);
-      
-      // データベースの更新
-      await client.models.Character.update({
-        id: editedCharacter.id,
-        character_name_jp: editedCharacter.character_name_jp,
-        character_name_en: editedCharacter.character_name_en,
-        display_name: editedCharacter.display_name,
-        nickname: editedCharacter.nickname,
-        height: editedCharacter.height,
-        weight: editedCharacter.weight,
-        nationality: editedCharacter.nationality,
-        martial_arts: editedCharacter.martial_arts,
-        character_description: editedCharacter.character_description
-      });
-      
-      // ローカルの状態を更新
-      const updatedCharacters = characters.map(char => 
-        char.id === editedCharacter.id 
-          ? { ...char, ...editedCharacter } as CharacterData
-          : char
-      );
-      setCharacters(updatedCharacters);
-      setSelectedCharacter({ ...selectedCharacter, ...editedCharacter });
-      setEditMode(false);
-      setSaveSuccess(true);
-      
-      setTimeout(() => setSaveSuccess(false), 3000);
-      
-    } catch (error) {
-      console.error('保存エラー:', error);
-      alert('保存に失敗しました');
-    } finally {
-      setLoading(false);
+    // データベースの更新（authMode追加）
+    const result = await client.models.Character.update({
+      id: editedCharacter.id,
+      character_name_jp: editedCharacter.character_name_jp || null,
+      character_name_en: editedCharacter.character_name_en || undefined,      display_name: editedCharacter.display_name || null,
+      nickname: editedCharacter.nickname || null,
+      height: editedCharacter.height || null,
+      weight: editedCharacter.weight || null,
+      nationality: editedCharacter.nationality || null,
+      martial_arts: editedCharacter.martial_arts || null,
+      character_description: editedCharacter.character_description || null
+    }, {
+      authMode: 'apiKey'  // ← これを追加
+    });
+    
+    console.log('更新結果:', result);
+    
+    // エラーチェック
+    if (result.errors && result.errors.length > 0) {
+      throw new Error(result.errors[0].message);
     }
-  };
+    
+    // ローカルの状態を更新
+    const updatedCharacters = characters.map(char => 
+      char.id === editedCharacter.id 
+        ? { ...char, ...editedCharacter } as CharacterData
+        : char
+    );
+    setCharacters(updatedCharacters);
+    setSelectedCharacter({ ...selectedCharacter, ...editedCharacter });
+    setEditMode(false);
+    setSaveSuccess(true);
+    
+    setTimeout(() => setSaveSuccess(false), 3000);
+    
+  } catch (error) {
+    console.error('保存エラー詳細:', error);
+    // より詳細なエラーメッセージ表示
+    if (error instanceof Error) {
+      alert(`保存に失敗しました: ${error.message}`);
+    } else {
+      alert('保存に失敗しました。コンソールを確認してください。');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleCancel = () => {
     setEditMode(false);

@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { client } from '@/lib/client';
+import Footer from '@/components/Footer';
 
 // キャラクター型定義
 interface Character {
@@ -471,11 +472,11 @@ export default function Home() {
         {/* メニュー項目 */}
         <nav style={{ padding: '20px 0' }}>
           {[
-            { label: 'TOP', href: '/', icon: '🏠' },
-            { label: 'キャラクター', href: '/', icon: '👊' },
-            { label: '対策メモ', href: '/memo/list', icon: '📝' },
-            { label: 'コンボ', href: '/coming-soon?type=combo', icon: '⚡' },
-            { label: 'カスタマイズ', href: '/coming-soon?type=customize', icon: '⚙️' }
+            { label: 'TOP', href: '/' },
+            { label: 'キャラクター', href: '/' },
+            { label: '対策メモ', href: '/memo/list'},
+            { label: 'コンボ', href: '/coming-soon?type=combo'},
+            { label: 'カスタマイズ', href: '/coming-soon?type=customize'}
           ].map((item, index) => (
             <a
               key={index}
@@ -504,7 +505,7 @@ export default function Home() {
                 e.currentTarget.style.color = '#e5e7eb';
               }}
             >
-              <span style={{ fontSize: '24px' }}>{item.icon}</span>
+
               <span style={{ letterSpacing: '1px' }}>{item.label}</span>
             </a>
           ))}

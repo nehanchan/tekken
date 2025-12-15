@@ -195,7 +195,7 @@ export default function ComingSoonPage() {
                   e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
                 }}
               >
-                🏠 トップページへ
+                トップページへ
               </a>
 
               <a

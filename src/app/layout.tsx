@@ -2,6 +2,7 @@
 
 import { Inter } from 'next/font/google';
 import './globals.css';
+import Footer from '@/components/Footer';
 
 // Amplify設定の初期化
 import '@/lib/amplify';
@@ -15,10 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
+        <main className="flex-grow">
           {children}
-        </div>
+        </main>
+        <Footer />
       </body>
     </html>
   );

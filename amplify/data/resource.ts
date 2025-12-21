@@ -96,6 +96,46 @@ const schema = a.schema({
       allow.authenticated().to(['create', 'read', 'update', 'delete']),
     ]),
 
+  // コンボ
+  Combo: a
+    .model({
+      character_id: a.string().required(),
+      character_name: a.string(),
+      title: a.string().required(),
+      description: a.string(),
+      difficulty: a.integer(), // 1~5
+      damage: a.integer(),
+      importance: a.integer(), // 1~5
+      nodes: a.string().required(), // JSON文字列としてツリー構造を保存
+      display_mode: a.string(), // 'move_name' | 'command'
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(['create', 'read', 'update', 'delete']),
+      allow.guest().to(['read']),
+      allow.authenticated().to(['create', 'read', 'update', 'delete']),
+    ]),
+
+// nodesフィールドに保存するJSON構造（オブジェクト形式）:
+// {
+//   "rootId": "node_xxxxx",
+//   "nodes": {
+//     "node_xxxxx": {
+//       "id": "node_xxxxx",
+//       "type": "move" | "freetext",
+//       "moveId": "move_id_optional",
+//       "moveName": "技名_optional",
+//       "command": "コマンド_optional",
+//       "freeText": "自由入力_optional",
+//       "backgroundColor": "#ffffff",
+//       "children": ["node_yyyyy", "node_zzzzz"]
+//     },
+//     "node_yyyyy": {
+//       "id": "node_yyyyy",
+//       ...
+//     }
+//   }
+// }
+
   // 掲示板
   Post: a
     .model({

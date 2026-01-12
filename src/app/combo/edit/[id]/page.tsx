@@ -1,8 +1,8 @@
-// src/app/combo/create/page.tsx
+// src/app/combo/edit/[id]/page.tsx
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { client } from '@/lib/client';
 import { TextWithIcons } from '@/components/CommandDisplay';
 
@@ -120,8 +120,11 @@ const COMMAND_ICONS = {
   ]
 };
 
-export default function ComboCreatePage() {
+export default function ComboEditPage() {
+  const params = useParams();
   const router = useRouter();
+  const comboId = params.id as string;
+
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacterId, setSelectedCharacterId] = useState('');
   const [moves, setMoves] = useState<Move[]>([]);
@@ -151,9 +154,11 @@ export default function ComboCreatePage() {
   const popupRef = useRef<HTMLDivElement>(null);
   
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     fetchCharacters();
+    loadComboData();
   }, []);
 
   useEffect(() => {
@@ -220,6 +225,59 @@ export default function ComboCreatePage() {
       setShowMoveDropdown(false);
     }
   }, [selectedCommandIcons, moves, searchMode]);
+
+  const loadComboData = async () => {
+    setInitialLoading(true);
+    try {
+      const { data } = await client.models.Combo.get({ id: comboId }, { authMode: 'apiKey' });
+      
+      if (!data) {
+        alert('コンボが見つかりませんでした');
+        router.push('/combo/list');
+        return;
+      }
+
+      setSelectedCharacterId(data.character_id);
+      setTitle(data.title || '');
+      setDescription(data.description || '');
+      setCategory(data.category || '');
+      setDifficulty(data.difficulty || 0);
+      setDamage(data.damage ? String(data.damage) : '');
+      setImportance(data.importance || 0);
+      setDisplayMode((data.display_mode as 'move_name' | 'command') || 'move_name');
+
+      if (data.nodes) {
+        try {
+          const treeData = JSON.parse(data.nodes);
+          const nodesMap = new Map<string, ComboNode>();
+          
+          Object.entries(treeData.nodes).forEach(([nodeId, nodeData]: [string, any]) => {
+            nodesMap.set(nodeId, {
+              id: nodeData.id,
+              type: nodeData.type,
+              moveId: nodeData.moveId,
+              moveName: nodeData.moveName,
+              command: nodeData.command,
+              freeText: nodeData.freeText,
+              backgroundColor: nodeData.backgroundColor,
+              children: nodeData.children
+            });
+          });
+          
+          setNodes(nodesMap);
+          setRootNodeIds(treeData.rootIds);
+        } catch (error) {
+          console.error('ノードデータの復元エラー:', error);
+        }
+      }
+    } catch (error) {
+      console.error('❌ コンボデータ取得エラー:', error);
+      alert('コンボデータの取得に失敗しました');
+      router.push('/combo/list');
+    } finally {
+      setInitialLoading(false);
+    }
+  };
 
   const fetchCharacters = async () => {
     try {
@@ -449,7 +507,7 @@ export default function ComboCreatePage() {
     const baseColor = node.backgroundColor || BACKGROUND_COLORS.blue;
     const rgbMatch = baseColor.match(/^#([A-Fa-f0-9]{6})$/);
     let backgroundColor = 'rgba(59, 130, 246, 0.5)';
-    let borderColor = 'rgba(59, 130, 246, 0.5)';
+    let borderColor = 'rgba(59, 130, 246, 0.4)';
     
     if (rgbMatch) {
       const hex = rgbMatch[1];
@@ -556,7 +614,8 @@ export default function ComboCreatePage() {
         nodes: nodesObject 
       };
       
-      await client.models.Combo.create({
+      await client.models.Combo.update({
+        id: comboId,
         character_id: selectedCharacterId,
         character_name: characterName,
         title: title.trim() || undefined,
@@ -569,7 +628,7 @@ export default function ComboCreatePage() {
         display_mode: displayMode
       }, { authMode: 'apiKey' });
       
-      alert('コンボを保存しました!');
+      alert('コンボを更新しました!');
       router.push('/combo/list');
     } catch (error) {
       console.error('保存エラー:', error);
@@ -585,11 +644,19 @@ export default function ComboCreatePage() {
 
   const popupNode = popupNodeId ? nodes.get(popupNodeId) : null;
 
+  if (initialLoading) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #000000 0%, #1a0505 50%, #000000 100%)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#ffffff', fontSize: '18px' }}>読み込み中...</div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #000000 0%, #1a0505 50%, #000000 100%)', padding: '20px' }}>
       <div style={{ maxWidth: '1600px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff', letterSpacing: '2px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>コンボ作成</h1>
+          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff', letterSpacing: '2px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>コンボ編集</h1>
           <div style={{ display: 'flex', gap: '10px' }}>
             <a href="/combo/list" style={{ padding: '10px 20px', background: 'rgba(59, 130, 246, 0.3)', border: '2px solid rgba(59, 130, 246, 0.5)', borderRadius: '6px', color: '#60a5fa', textDecoration: 'none', fontWeight: 'bold' }}>一覧</a>
             <a href="/" style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #dc2626, #991b1b)', border: 'none', borderRadius: '6px', color: '#ffffff', textDecoration: 'none', fontWeight: 'bold' }}>トップ</a>
@@ -647,7 +714,7 @@ export default function ComboCreatePage() {
               </div>
             </div>
             <hr style={{ border: '1px solid rgba(185, 28, 28, 0.3)', margin: '20px 0' }} />
-            <button onClick={saveCombo} disabled={loading} style={{ width: '100%', padding: '14px', background: loading ? 'rgba(107, 114, 128, 0.3)' : 'linear-gradient(135deg, #dc2626, #991b1b)', border: 'none', borderRadius: '6px', color: '#ffffff', fontSize: '16px', fontWeight: 'bold', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>{loading ? '保存中...' : '保存'}</button>
+            <button onClick={saveCombo} disabled={loading} style={{ width: '100%', padding: '14px', background: loading ? 'rgba(107, 114, 128, 0.3)' : 'linear-gradient(135deg, #dc2626, #991b1b)', border: 'none', borderRadius: '6px', color: '#ffffff', fontSize: '16px', fontWeight: 'bold', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>{loading ? '保存中...' : '更新'}</button>
           </div>
           
           {/* 右パネル */}
@@ -788,7 +855,7 @@ export default function ComboCreatePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
               {Object.entries(BACKGROUND_COLORS).map(([colorName, colorHex]) => {
                 const rgbMatch = colorHex.match(/^#([A-Fa-f0-9]{6})$/);
-                let displayColor = 'rgba(59, 130, 246, 0.3)';
+                let displayColor = 'rgba(59, 130, 246, 0.5)';
                 if (rgbMatch) {
                   const hex = rgbMatch[1];
                   const r = parseInt(hex.substr(0, 2), 16);

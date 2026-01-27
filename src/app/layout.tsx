@@ -1,13 +1,7 @@
-'use client';
+import { Amplify } from 'aws-amplify';
+import config from '../../amplify_outputs.json';
 
-import { Inter } from 'next/font/google';
-import './globals.css';
-import Footer from '@/components/Footer';
-
-// Amplify設定の初期化
-import '@/lib/amplify';
-
-const inter = Inter({ subsets: ['latin'] });
+Amplify.configure(config);
 
 export default function RootLayout({
   children,
@@ -16,11 +10,44 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+      <head>
+        <style>{`
+          /* グローバルリセット */
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
+          /* html, body の余白を完全に削除 */
+          html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow-x: hidden;
+          }
+          
+          /* body のフォント設定 */
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+              'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+              sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          
+          /* #__next の余白も削除（Next.jsのルート要素） */
+          #__next {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+          }
+        `}</style>
+      </head>
+      <body>
+        {children}
       </body>
     </html>
   );

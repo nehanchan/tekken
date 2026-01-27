@@ -52,7 +52,7 @@ I18n.putVocabularies({
 
 I18n.setLanguage('ja');
 
-export function AuthWrapper({ children }: { children: React.ReactNode }) {
+export default function ComboLayout({ children }: { children: React.ReactNode }) {
   return (
     <Authenticator
       formFields={{
@@ -119,7 +119,7 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
               fontWeight: 'bold',
               color: '#dc2626'
             }}>
-              TEKKEN 8 データベース
+              TEKKEN 8 データベース - コンボ機能
             </div>
           );
         },
@@ -131,7 +131,8 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
               fontSize: '12px',
               color: '#9ca3af'
             }}>
-              <p>※パスワードを忘れた場合は「パスワードを忘れた方」から</p>
+              <p>※コンボ機能を使用するにはログインが必要です</p>
+              <p>パスワードを忘れた場合は「パスワードを忘れた方」から</p>
               <p>リセット用のコードをメールで受け取れます</p>
             </div>
           );

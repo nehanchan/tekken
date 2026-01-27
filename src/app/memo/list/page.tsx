@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { client } from '@/lib/client';
 import { TextWithIcons } from '@/components/CommandDisplay';
+import LogoutButton from '@/components/LogoutButton';
 
 interface Memo {
   id: string;
@@ -26,7 +27,7 @@ export default function MemoListPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
   const [showDetail, setShowDetail] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -71,7 +72,7 @@ export default function MemoListPage() {
   const fetchMemos = async () => {
     setLoading(true);
     try {
-      const { data } = await client.models.Memo.list({ authMode: 'apiKey' });
+      const { data } = await client.models.Memo.list({ authMode: 'userPool' });
       const validMemos = (data || []).filter(m => m !== null) as Memo[];
       const sorted = validMemos.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -94,7 +95,7 @@ export default function MemoListPage() {
       const result = await client.models.Memo.delete({ 
         id: memoId 
       }, {
-        authMode: 'apiKey'
+        authMode: 'userPool'
       });
       
       console.log('削除結果:', result);
@@ -227,7 +228,7 @@ export default function MemoListPage() {
             { label: 'TOP', href: '/' },
             { label: 'キャラクター', href: '/' },
             { label: '対策メモ', href: '/memo/list' },
-            { label: 'コンボ', href: '/coming-soon?type=combo' },
+            { label: 'コンボ', href: '/combo/list' },
             { label: 'カスタマイズ', href: '/coming-soon?type=customize' }
           ].map((item, index) => (
             <a
@@ -317,9 +318,13 @@ export default function MemoListPage() {
         }}>
           {/* ヘッダー */}
           <div style={{
-            textAlign: 'center',
-            marginBottom: '40px'
+            marginBottom: '40px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative'
           }}>
+            {/* タイトル */}
             <div style={{
               display: 'inline-block',
               position: 'relative'
@@ -356,7 +361,30 @@ export default function MemoListPage() {
                 メモ一覧
               </h1>
             </div>
+
+            {/* ログアウトボタン（右上固定） */}
+            {!isMobile && (
+              <div style={{
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)'
+              }}>
+                <LogoutButton />
+              </div>
+            )}
           </div>
+
+          {/* モバイル用ログアウトボタン */}
+          {isMobile && (
+            <div style={{
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'flex-end'
+            }}>
+              <LogoutButton />
+            </div>
+          )}
 
           {/* フィルター＆ソート＆ボタン */}
           <div style={{
@@ -704,15 +732,15 @@ export default function MemoListPage() {
                   }}>
                     {/* キャラクター画像（固定幅） */}
                     <div style={{
-                      width: isMobile ? '32px' : '40px',
-                      minWidth: isMobile ? '32px' : '40px',
-                      maxWidth: isMobile ? '32px' : '40px',
-                      height: isMobile ? '32px' : '40px',
+                      width: isMobile ? '32px' : '50px',
+                      minWidth: isMobile ? '32px' : '50px',
+                      maxWidth: isMobile ? '32px' : '50px',
+                      height: isMobile ? '32px' : '50px',
                       flexShrink: 0,
                       position: 'relative',
                       overflow: 'hidden',
                       borderRadius: '3px',
-                      background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+                      background: 'transparent',
                       border: '1px solid rgba(185, 28, 28, 0.4)',
                       display: 'flex',
                       alignItems: 'center',
@@ -724,8 +752,8 @@ export default function MemoListPage() {
                         style={{
                           width: '100%',
                           height: '100%',
-                          objectFit: 'contain',
-                          objectPosition: 'center',
+                          objectFit: 'cover',
+                          objectPosition: 'center bottom',
                           imageRendering: 'crisp-edges'
                         }}
                         onError={(e) => {
@@ -1104,6 +1132,23 @@ export default function MemoListPage() {
                 gap: '10px',
                 justifyContent: 'flex-end'
               }}>
+                <a
+                  href={`/memo/edit/${selectedMemo.id}`}
+                  style={{
+                    padding: '10px 24px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    background: 'rgba(59, 130, 246, 0.3)',
+                    border: '2px solid rgba(59, 130, 246, 0.5)',
+                    borderRadius: '6px',
+                    color: '#60a5fa',
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    display: 'inline-block'
+                  }}
+                >
+                  編集
+                </a>
                 <button
                   onClick={() => {
                     handleDelete(selectedMemo.id);

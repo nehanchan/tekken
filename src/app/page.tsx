@@ -1,4 +1,3 @@
-// ...existing code...
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -30,11 +29,12 @@ interface NewsItem {
 export default function Home() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
   const [hoveredCharacter, setHoveredCharacter] = useState<string | null>(null);
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [screenScale, setScreenScale] = useState(1);
-  const [menuOpen, setMenuOpen] = useState(true); // 初期値を true に
+  const [menuOpen, setMenuOpen] = useState(true);
 
   useEffect(() => {
     fetchCharacters();
@@ -64,6 +64,9 @@ export default function Home() {
 
   const fetchCharacters = async () => {
     try {
+      setLoading(true);
+      setError('');
+      
       const { data } = await client.models.Character.list({ 
         authMode: 'apiKey' 
       });
@@ -79,6 +82,7 @@ export default function Home() {
       setCharacters(sortedCharacters);
     } catch (error) {
       console.error('Error fetching characters:', error);
+      setError('キャラクターの取得に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -90,11 +94,7 @@ export default function Home() {
       setNewsItems(JSON.parse(savedNews));
     } else {
       const defaultNews: NewsItem[] = [
-        { date: '2024.06.09', tag: '新着', content: '風間仁 のコマンドリストを追加' },
-        { date: '2024.07.15', tag: '新着', content: 'アリサ・ボスコノビッチ のコマンドリストを追加' },
-        { date: '2024.10.01', tag: '新着', content: '新キャラクター 三島平八 参戦!' },
-        { date: '2024.12.17', tag: '新着', content: '新キャラクター クライヴ・ロズフィールド 参戦' },
-        { date: '2025.04.15', tag: '新着', content: '鉄拳8 SEASON2開幕！' },
+        { date: '2025.11.30', tag: '新着', content: '鉄拳攻略サイト公開開始！　メモ・コンボメーカー機能を今後実装予定です' },
       ];
       setNewsItems(defaultNews);
       localStorage.setItem('tekkenNews', JSON.stringify(defaultNews));
@@ -368,11 +368,11 @@ export default function Home() {
     }}>
       {/* ハンバーガーメニューボタン */}
       <button
-        onClick={() => setMenuOpen(!menuOpen)}  // トグルに変更
+        onClick={() => setMenuOpen(!menuOpen)}
         style={{
           position: 'fixed',
           top: '20px',
-          left: menuOpen ? '320px' : '20px',  // メニューが開いている時は位置を調整
+          left: menuOpen ? '320px' : '20px',
           zIndex: 999,
           width: '50px',
           height: '50px',
@@ -386,7 +386,7 @@ export default function Home() {
           justifyContent: 'center',
           gap: '6px',
           boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
-          transition: 'all 0.3s ease-in-out'  // アニメーション追加
+          transition: 'all 0.3s ease-in-out'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.05)';
@@ -401,22 +401,6 @@ export default function Home() {
         <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
         <div style={{ width: '30px', height: '3px', background: '#ffffff', borderRadius: '2px' }} />
       </button>
-      {/* オーバーレイ
-      {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.7)',
-            zIndex: 1000,
-            backdropFilter: 'blur(4px)'
-          }}
-        />
-      )} */}
 
       {/* サイドメニュー */}
       <div
@@ -428,7 +412,7 @@ export default function Home() {
           height: '100vh',
           background: 'linear-gradient(to bottom, #000000, #1a0505, #000000)',
           boxShadow: menuOpen ? '4px 0 20px rgba(0,0,0,0.5)' : 'none',
-          zIndex: 998,  // ハンバーガーボタンより下に
+          zIndex: 998,
           transition: 'left 0.3s ease-in-out',
           overflowY: 'auto'
         }}
@@ -469,13 +453,14 @@ export default function Home() {
             ×
           </button>
         </div>
+
         {/* メニュー項目 */}
         <nav style={{ padding: '20px 0' }}>
           {[
             { label: 'TOP', href: '/' },
             { label: 'キャラクター', href: '/' },
             { label: '対策メモ', href: '/memo/list'},
-            { label: 'コンボ', href: '/coming-soon?type=combo'},
+            { label: 'コンボ', href: '/combo/list'},
             { label: 'カスタマイズ', href: '/coming-soon?type=customize'}
           ].map((item, index) => (
             <a
@@ -505,7 +490,6 @@ export default function Home() {
                 e.currentTarget.style.color = '#e5e7eb';
               }}
             >
-
               <span style={{ letterSpacing: '1px' }}>{item.label}</span>
             </a>
           ))}
@@ -531,12 +515,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ========== ここまで追加 ========== */}
-
-      {/* メインコンテンツ - メニューが開いている時は右に移動 */} 
+      {/* メインコンテンツ */} 
       <div style={{
         minHeight: '100vh',
-        background: `
+        backgroundImage: `
           linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
           url('/backgrounds/background.jpg')
         `,
@@ -545,9 +527,9 @@ export default function Home() {
         backgroundAttachment: 'fixed',
         backgroundRepeat: 'no-repeat',
         position: 'relative',
-        marginLeft: menuOpen ? '300px' : '0',  // メニューが開いている時は右に移動
-        transition: 'margin-left 0.3s ease-in-out',  // スムーズなアニメーション
-        width: menuOpen ? 'calc(100% - 300px)' : '100%',  // 幅を調整
+        marginLeft: menuOpen ? '300px' : '0',
+        transition: 'margin-left 0.3s ease-in-out',
+        width: menuOpen ? 'calc(100% - 300px)' : '100%',
       }}>
         <div style={{
           position: 'absolute',
@@ -787,6 +769,33 @@ export default function Home() {
             }}>
               Loading...
             </div>
+          ) : error ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '100px 20px'
+            }}>
+              <p style={{
+                fontSize: '24px',
+                color: '#ef4444',
+                marginBottom: '20px'
+              }}>
+                {error}
+              </p>
+              <button
+                onClick={fetchCharacters}
+                style={{
+                  padding: '10px 20px',
+                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '16px'
+                }}
+              >
+                再読み込み
+              </button>
+            </div>
           ) : characters.length > 0 ? (
             <div style={{
               display: 'grid',
@@ -821,11 +830,32 @@ export default function Home() {
               }}>
                 キャラクターデータがありません
               </p>
+              <p style={{
+                fontSize: '16px',
+                color: '#6b7280',
+                marginBottom: '20px'
+              }}>
+                CSVインポート機能を使用してキャラクターデータを追加してください
+              </p>
+              <a
+                href="/import"
+                style={{
+                  display: 'inline-block',
+                  padding: '10px 20px',
+                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  fontSize: '16px'
+                }}
+              >
+                CSVインポートへ
+              </a>
             </div>
           )}
         </div>
       </div>
     </div>
-  </div>
+    </div>
   );
 }

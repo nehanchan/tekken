@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { client } from '@/lib/client';
 
 interface Character {
@@ -21,7 +22,11 @@ const DEFAULT_CATEGORIES = [
   'その他'
 ];
 
-export default function MemoPage() {
+export default function MemoEditPage() {
+  const params = useParams();
+  const router = useRouter();
+  const memoId = params.id as string;
+
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacter, setSelectedCharacter] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -29,6 +34,7 @@ export default function MemoPage() {
   const [content, setContent] = useState('');
   const [importance, setImportance] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   
   // 分類管理
@@ -47,6 +53,7 @@ export default function MemoPage() {
     window.addEventListener('resize', checkScreenSize);
     fetchCharacters();
     loadCategories();
+    loadMemoData();
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
@@ -178,7 +185,31 @@ export default function MemoPage() {
   const handleResetCategories = () => {
     if (!confirm('分類をデフォルトに戻しますか？')) return;
     saveCategories(DEFAULT_CATEGORIES);
-    setSelectedCategories([]);
+  };
+
+  const loadMemoData = async () => {
+    setInitialLoading(true);
+    try {
+      const { data } = await client.models.Memo.get({ id: memoId }, { authMode: 'userPool' });
+      
+      if (!data) {
+        alert('メモが見つかりませんでした');
+        router.push('/memo/list');
+        return;
+      }
+
+      setSelectedCharacter(data.character_id);
+      setTitle(data.title || '');
+      setContent(data.content || '');
+      setImportance(data.importance || 0);
+      setSelectedCategories(data.categories?.filter((c): c is string => c !== null) || []);
+    } catch (error) {
+      console.error('❌ メモデータ取得エラー:', error);
+      alert('メモデータの取得に失敗しました');
+      router.push('/memo/list');
+    } finally {
+      setInitialLoading(false);
+    }
   };
 
   const fetchCharacters = async () => {
@@ -223,6 +254,7 @@ export default function MemoPage() {
         : selectedCharacter;
 
       const memoData = {
+        id: memoId,
         character_id: selectedCharacter,
         character_name: characterName || selectedCharacter,
         categories: selectedCategories.length > 0 ? selectedCategories : undefined,
@@ -231,33 +263,28 @@ export default function MemoPage() {
         importance: importance > 0 ? importance : undefined
       };
 
-      console.log('メモ保存データ:', memoData);
+      console.log('メモ更新データ:', memoData);
 
-      const result = await client.models.Memo.create(memoData, {
+      const result = await client.models.Memo.update(memoData, {
         authMode: 'userPool'
       });
 
-      console.log('保存結果:', result);
+      console.log('更新結果:', result);
 
       if (result.data) {
-        alert('メモを保存しました！');
-        
-        setSelectedCharacter('');
-        setSelectedCategories([]);
-        setTitle('');
-        setContent('');
-        setImportance(0);
+        alert('メモを更新しました！');
+        router.push('/memo/list');
       } else {
-        throw new Error('データの保存に失敗しました');
+        throw new Error('データの更新に失敗しました');
       }
       
     } catch (error) {
-      console.error('保存エラー詳細:', error);
+      console.error('更新エラー詳細:', error);
       
       if (error instanceof Error) {
-        alert(`保存に失敗しました: ${error.message}`);
+        alert(`更新に失敗しました: ${error.message}`);
       } else {
-        alert('保存に失敗しました。もう一度お試しください。');
+        alert('更新に失敗しました。もう一度お試しください。');
       }
     } finally {
       setLoading(false);
@@ -268,6 +295,27 @@ export default function MemoPage() {
     if (character.display_name) return character.display_name;
     return character.character_name_jp || character.character_name_en;
   };
+
+  if (initialLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: `
+          linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
+          url('/backgrounds/background.jpg')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ color: '#fca5a5', fontSize: '18px', fontWeight: 'bold' }}>読み込み中...</div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -338,7 +386,7 @@ export default function MemoPage() {
               textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
               padding: '10px 40px'
             }}>
-              メモ作成
+              メモ編集
             </h1>
           </div>
         </div>
@@ -619,7 +667,7 @@ export default function MemoPage() {
               flexWrap: 'wrap'
             }}>
               <a
-                href="/"
+                href="/memo/list"
                 style={{
                   padding: '14px 40px',
                   fontSize: '16px',
@@ -658,7 +706,7 @@ export default function MemoPage() {
                   minWidth: '140px'
                 }}
               >
-                {loading ? '保存中...' : '保存'}
+                {loading ? '更新中...' : '更新'}
               </button>
 
               <a
@@ -687,7 +735,7 @@ export default function MemoPage() {
         </div>
       </div>
 
-      {/* 分類管理モーダル */}
+      {/* 分類管理モーダル（メモ作成ページと同じ） */}
       {showCategoryModal && (
         <div
           style={{

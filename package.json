@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build", 
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "create-effect-master": "node scripts/create-effect-master.js",
@@ -22,10 +22,11 @@
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.16.1",
-    "@aws-amplify/ui-react": "^6.12.0",
+    "@aws-amplify/ui-react": "^6.13.2",
     "aws-amplify": "^6.15.5",
     "csv-parse": "^5.5.2",
     "next": "15.5.0",
+    "papaparse": "^5.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
@@ -34,11 +35,12 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
     "tailwindcss": "^4",
     "typescript": "^5"
-  } 
+  }
 }

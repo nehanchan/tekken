@@ -1,26 +1,188 @@
-@import "tailwindcss";
+/* Authenticator カスタムスタイル */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 全体のコンテナ */
+[data-amplify-authenticator] {
+  --amplify-colors-background-primary: transparent !important;
+  --amplify-colors-background-secondary: rgba(0, 0, 0, 0.85) !important;
+  --amplify-colors-border-primary: rgba(185, 28, 28, 0.5) !important;
+  --amplify-colors-brand-primary-10: #dc2626 !important;
+  --amplify-colors-brand-primary-80: #dc2626 !important;
+  --amplify-colors-brand-primary-90: #991b1b !important;
+  --amplify-colors-brand-primary-100: #7f1d1d !important;
+  --amplify-colors-font-primary: #ffffff !important;
+  --amplify-colors-font-secondary: #9ca3af !important;
+  --amplify-colors-font-interactive: #fca5a5 !important;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* メインコンテナ */
+[data-amplify-authenticator] [data-amplify-container] {
+  background: transparent !important;
+  padding: 0 !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* フォームコンテナ */
+[data-amplify-authenticator] [data-amplify-router] {
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+  padding: 3px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+  max-width: 480px !important;
+  margin: 60px auto !important;
+}
+
+/* 内側のコンテナ */
+[data-amplify-authenticator] [data-amplify-form] {
+  background: rgba(0, 0, 0, 0.95) !important;
+  border-radius: 10px !important;
+  padding: 0 !important;
+}
+
+/* タブ */
+[data-amplify-authenticator] [data-amplify-tabs] {
+  background: transparent !important;
+  border-bottom: 2px solid rgba(185, 28, 28, 0.5) !important;
+}
+
+[data-amplify-authenticator] [data-amplify-tabs-item] {
+  color: #9ca3af !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  padding: 15px 30px !important;
+  border-bottom: 3px solid transparent !important;
+  transition: all 0.2s !important;
+}
+
+[data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"] {
+  color: #fef2f2 !important;
+  border-bottom-color: #dc2626 !important;
+  background: rgba(185, 28, 28, 0.1) !important;
+}
+
+[data-amplify-authenticator] [data-amplify-tabs-item]:hover {
+  color: #fca5a5 !important;
+  background: rgba(185, 28, 28, 0.05) !important;
+}
+
+/* フォームフィールド */
+[data-amplify-authenticator] [data-amplify-fieldset] {
+  padding: 30px !important;
+}
+
+[data-amplify-authenticator] label {
+  color: #fca5a5 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  margin-bottom: 8px !important;
+}
+
+[data-amplify-authenticator] input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(185, 28, 28, 0.5) !important;
+  border-radius: 6px !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  padding: 12px !important;
+  transition: all 0.2s !important;
+}
+
+[data-amplify-authenticator] input:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
+  outline: none !important;
+}
+
+[data-amplify-authenticator] input::placeholder {
+  color: #6b7280 !important;
+}
+
+/* ボタン */
+[data-amplify-authenticator] button[type="submit"] {
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  font-size: 16px !important;
+  padding: 12px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-amplify-authenticator] button[type="submit"]:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-amplify-authenticator] button[type="submit"]:active {
+  transform: translateY(0) !important;
+}
+
+/* リンク */
+[data-amplify-authenticator] button[data-amplify-router-content] {
+  color: #60a5fa !important;
+  font-size: 13px !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 8px 0 !important;
+  cursor: pointer !important;
+  transition: color 0.2s !important;
+}
+
+[data-amplify-authenticator] button[data-amplify-router-content]:hover {
+  color: #93c5fd !important;
+  text-decoration: underline !important;
+}
+
+/* エラーメッセージ */
+[data-amplify-authenticator] [role="alert"] {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border: 1px solid rgba(239, 68, 68, 0.5) !important;
+  border-radius: 6px !important;
+  color: #fca5a5 !important;
+  padding: 12px !important;
+  font-size: 13px !important;
+  margin-bottom: 16px !important;
+}
+
+/* コードを再送信ボタン */
+[data-amplify-authenticator] button[data-amplify-router-content="Resend Code"],
+[data-amplify-authenticator] button[data-amplify-router-content="コードを再送信"] {
+  color: #fca5a5 !important;
+  font-size: 13px !important;
+}
+
+/* 戻るボタン */
+[data-amplify-authenticator] button[data-amplify-router-back] {
+  color: #9ca3af !important;
+  font-size: 13px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 8px !important;
+  cursor: pointer !important;
+}
+
+[data-amplify-authenticator] button[data-amplify-router-back]:hover {
+  color: #d1d5db !important;
+}
+
+/* フッター */
+[data-amplify-authenticator] [data-amplify-footer] {
+  background: transparent !important;
+  padding: 20px !important;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  [data-amplify-authenticator] [data-amplify-router] {
+    margin: 20px !important;
+    max-width: calc(100% - 40px) !important;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  [data-amplify-authenticator] [data-amplify-fieldset] {
+    padding: 20px !important;
+  }
 }

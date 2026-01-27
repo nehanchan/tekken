@@ -4,7 +4,6 @@ import { Authenticator, translations } from '@aws-amplify/ui-react';
 import { I18n } from 'aws-amplify/utils';
 import '@aws-amplify/ui-react/styles.css';
 
-// 日本語翻訳を設定
 I18n.putVocabularies({
   ja: {
     ...translations.ja,
@@ -41,23 +40,17 @@ I18n.setLanguage('ja');
 export default function MemoLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.reactNode;
 }) {
   return (
     <>
       <style jsx global>{`
-        /* ========================================
-           全体の背景
-           ======================================== */
         body {
           margin: 0;
           padding: 0;
           overflow-x: hidden;
         }
 
-        /* ========================================
-           Authenticator全体の背景
-           ======================================== */
         [data-amplify-authenticator] {
           min-height: 100vh !important;
           background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
@@ -69,7 +62,6 @@ export default function MemoLayout({
           position: relative !important;
         }
 
-        /* パターンオーバーレイ */
         [data-amplify-authenticator]::before {
           content: '' !important;
           position: absolute !important;
@@ -82,7 +74,6 @@ export default function MemoLayout({
           z-index: 0 !important;
         }
 
-        /* コンテナ */
         [data-amplify-authenticator] [data-amplify-container] {
           background: transparent !important;
           padding: 0 !important;
@@ -90,9 +81,6 @@ export default function MemoLayout({
           z-index: 1 !important;
         }
 
-        /* ========================================
-           フォームコンテナ
-           ======================================== */
         [data-amplify-authenticator] [data-amplify-router] {
           background: linear-gradient(135deg, #dc2626, #991b1b) !important;
           padding: 3px !important;
@@ -110,9 +98,6 @@ export default function MemoLayout({
           padding: 0 !important;
         }
 
-        /* ========================================
-           タブ
-           ======================================== */
         [data-amplify-authenticator] [data-amplify-tabs] {
           background: transparent !important;
           border-bottom: 2px solid rgba(185, 28, 28, 0.5) !important;
@@ -129,21 +114,53 @@ export default function MemoLayout({
           text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
         }
 
-        [data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"] {
+        [data-amplify-authenticator] [data-amplify-tabs-item],
+        [data-amplify-authenticator] [data-amplify-tabs-item] button,
+        [data-amplify-authenticator] [data-amplify-tabs-item] span,
+        [data-amplify-authenticator] [data-amplify-tabs-item] div,
+        [data-amplify-authenticator] [data-amplify-tabs-item] *,
+        [data-amplify-authenticator] [role="tablist"] button,
+        [data-amplify-authenticator] [role="tablist"] button span,
+        [data-amplify-authenticator] [role="tablist"] button *,
+        [data-amplify-authenticator] [role="tab"],
+        [data-amplify-authenticator] [role="tab"] *,
+        [data-amplify-authenticator] button[role="tab"],
+        [data-amplify-authenticator] button[role="tab"] span,
+        [data-amplify-authenticator] button[role="tab"] * {
+          color: #ffffff !important;
+          font-weight: 600 !important;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+        }
+
+        [data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"],
+        [data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"] button,
+        [data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"] span,
+        [data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"] *,
+        [data-amplify-authenticator] [role="tab"][aria-selected="true"],
+        [data-amplify-authenticator] [role="tab"][aria-selected="true"] *,
+        [data-amplify-authenticator] button[role="tab"][aria-selected="true"],
+        [data-amplify-authenticator] button[role="tab"][aria-selected="true"] span,
+        [data-amplify-authenticator] button[role="tab"][aria-selected="true"] * {
           color: #ffffff !important;
           border-bottom-color: #ffffff !important;
           background: rgba(255, 255, 255, 0.1) !important;
           text-shadow: 2px 2px 4px rgba(0,0,0,0.8) !important;
+          font-weight: 600 !important;
         }
 
-        [data-amplify-authenticator] [data-amplify-tabs-item]:hover {
+        [data-amplify-authenticator] [data-amplify-tabs-item]:hover,
+        [data-amplify-authenticator] [data-amplify-tabs-item]:hover button,
+        [data-amplify-authenticator] [data-amplify-tabs-item]:hover span,
+        [data-amplify-authenticator] [data-amplify-tabs-item]:hover *,
+        [data-amplify-authenticator] [role="tab"]:hover,
+        [data-amplify-authenticator] [role="tab"]:hover *,
+        [data-amplify-authenticator] button[role="tab"]:hover,
+        [data-amplify-authenticator] button[role="tab"]:hover span,
+        [data-amplify-authenticator] button[role="tab"]:hover * {
           color: #ffffff !important;
           background: rgba(255, 255, 255, 0.05) !important;
         }
 
-        /* ========================================
-           フォームフィールド
-           ======================================== */
         [data-amplify-authenticator] [data-amplify-fieldset] {
           padding: 30px !important;
           background: transparent !important;
@@ -178,10 +195,35 @@ export default function MemoLayout({
           color: #6b7280 !important;
         }
 
-        /* ========================================
-           ボタン
-           ======================================== */
-        /* 送信ボタン */
+        [data-amplify-authenticator] [data-amplify-field] button,
+        [data-amplify-authenticator] [data-amplify-field-group] button,
+        [data-amplify-authenticator] [data-amplify-field-group__control] button,
+        [data-amplify-authenticator] [data-amplify-password-field] button,
+        [data-amplify-authenticator] input[type="password"] ~ button,
+        [data-amplify-authenticator] input[type="text"][name*="password"] ~ button,
+        [data-amplify-authenticator] label:has(+ input[type="password"]) ~ button,
+        [data-amplify-authenticator] div:has(> input[type="password"]) button,
+        [data-amplify-authenticator] div:has(> input[name*="password"]) button,
+        [data-amplify-authenticator] button[aria-label*="password"],
+        [data-amplify-authenticator] button[aria-label*="Show"],
+        [data-amplify-authenticator] button[aria-label*="Hide"] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          width: 0 !important;
+          height: 0 !important;
+          position: absolute !important;
+          pointer-events: none !important;
+        }
+
+        [data-amplify-authenticator] [data-amplify-field] input,
+        [data-amplify-authenticator] [data-amplify-field-group] input,
+        [data-amplify-authenticator] [data-amplify-field-group__control] input,
+        [data-amplify-authenticator] [data-amplify-password-field] input {
+          width: 100% !important;
+          padding-right: 12px !important;
+        }
+
         [data-amplify-authenticator] button[type="submit"] {
           background: linear-gradient(135deg, #dc2626, #991b1b) !important;
           border: none !important;
@@ -206,10 +248,9 @@ export default function MemoLayout({
           transform: translateY(0) !important;
         }
 
-        /* リンクボタン */
         [data-amplify-authenticator] button[data-amplify-router-content] {
           color: #93c5fd !important;
-          font-size: 13px !important;
+          font-size: 14px !important;
           text-decoration: none !important;
           background: transparent !important;
           border: none !important;
@@ -224,26 +265,73 @@ export default function MemoLayout({
           text-decoration: underline !important;
         }
 
-        /* 確認画面のリンクボタンは常に白色 */
-        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button[data-amplify-router-content],
-        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button[data-amplify-router-content],
+        /* ★★★ ここから「コードを再送信」ボタンのスタイル ★★★ */
+        /* 行番号: 約235-280行目 */
+        
+        button[data-amplify-footer-content],
+        [data-amplify-footer] button:not([type="submit"]),
         [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button:not([type="submit"]),
         [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button:not([type="submit"]) {
-          color: #ffffff !important;
-          text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
+          background: none !important;
+          background-color: transparent !important;
+          background-image: none !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          padding: 8px 0 !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+          text-decoration: none !important;
+          width: auto !important;
+          display: inline !important;
+          color: #93c5fd !important;
           font-size: 14px !important;
           font-weight: 600 !important;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+          transition: color 0.2s !important;
+          cursor: pointer !important;
         }
 
-        /* 確認画面のリンクボタンホバー時も白色のまま */
+        button[data-amplify-footer-content] span,
+        button[data-amplify-footer-content] *,
+        [data-amplify-footer] button:not([type="submit"]) span,
+        [data-amplify-footer] button:not([type="submit"]) *,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button:not([type="submit"]) span,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button:not([type="submit"]) span,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button:not([type="submit"]) *,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button:not([type="submit"]) * {
+          color: #93c5fd !important;
+          font-size: 14px !important;
+          font-weight: 600 !important;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+          background: none !important;
+          border: none !important;
+        }
+
+        button[data-amplify-footer-content]:hover,
+        [data-amplify-footer] button:not([type="submit"]):hover,
         [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button:not([type="submit"]):hover,
         [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button:not([type="submit"]):hover {
-          color: #ffffff !important;
+          color: #dbeafe !important;
           text-decoration: underline !important;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.9) !important;
+          background: none !important;
+          border: none !important;
+          transform: none !important;
+          box-shadow: none !important;
         }
 
-        /* 戻るボタン */
+        button[data-amplify-footer-content]:hover span,
+        button[data-amplify-footer-content]:hover *,
+        [data-amplify-footer] button:not([type="submit"]):hover span,
+        [data-amplify-footer] button:not([type="submit"]):hover *,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button:not([type="submit"]):hover span,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button:not([type="submit"]):hover span,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] button:not([type="submit"]):hover *,
+        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] button:not([type="submit"]):hover * {
+          color: #dbeafe !important;
+        }
+
+        /* ★★★ ここまでが「コードを再送信」ボタンのスタイル ★★★ */
+
         [data-amplify-authenticator] button[data-amplify-router-back] {
           color: #d1d5db !important;
           font-size: 13px !important;
@@ -258,9 +346,6 @@ export default function MemoLayout({
           color: #ffffff !important;
         }
 
-        /* ========================================
-           エラーメッセージ
-           ======================================== */
         [data-amplify-authenticator] [role="alert"] {
           background: rgba(239, 68, 68, 0.3) !important;
           border: 1px solid rgba(239, 68, 68, 0.6) !important;
@@ -272,18 +357,11 @@ export default function MemoLayout({
           text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
         }
 
-        /* ========================================
-           フッター
-           ======================================== */
         [data-amplify-authenticator] [data-amplify-footer] {
           background: transparent !important;
           padding: 20px !important;
         }
 
-        /* ========================================
-           確認コード画面（重要）
-           ======================================== */
-        /* すべてのヘッダーを白に */
         [data-amplify-authenticator] h1,
         [data-amplify-authenticator] h2,
         [data-amplify-authenticator] h3 {
@@ -291,22 +369,18 @@ export default function MemoLayout({
           text-shadow: 2px 2px 4px rgba(0,0,0,0.9) !important;
         }
 
-        /* すべてのテキストを白に */
         [data-amplify-authenticator] p,
-        [data-amplify-authenticator] span,
         [data-amplify-authenticator] div {
           color: #ffffff !important;
           text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
         }
 
-        /* 確認画面専用のスタイル（最優先・より強力に） */
-        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] *:not(input):not(button[type="submit"]),
-        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] *:not(input):not(button[type="submit"]) {
+        [data-amplify-authenticator] [data-amplify-router="confirmSignUp"] *:not(input):not(button[type="submit"]):not([role="tab"]):not([role="tab"] *):not(button):not(button *),
+        [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] *:not(input):not(button[type="submit"]):not([role="tab"]):not([role="tab"] *):not(button):not(button *) {
           color: #ffffff !important;
           text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
         }
 
-        /* 確認画面のすべての要素を白に（さらに強力） */
         [data-amplify-authenticator] [data-amplify-router="confirmSignUp"],
         [data-amplify-authenticator] [data-amplify-router="confirmSignIn"] {
           color: #ffffff !important;
@@ -317,9 +391,6 @@ export default function MemoLayout({
           color: #ffffff !important;
         }
 
-        /* ========================================
-           レスポンシブ
-           ======================================== */
         @media (max-width: 768px) {
           [data-amplify-authenticator] [data-amplify-router] {
             margin: 20px !important;

@@ -1,7 +1,4 @@
-import { Amplify } from 'aws-amplify';
-import config from '../../amplify_outputs.json';
-
-Amplify.configure(config);
+import AmplifyProvider from '@/components/AmplifyProvider';
 
 export default function RootLayout({
   children,
@@ -47,7 +44,9 @@ export default function RootLayout({
         `}</style>
       </head>
       <body>
-        {children}
+        <AmplifyProvider>
+          {children}
+        </AmplifyProvider>
       </body>
     </html>
   );

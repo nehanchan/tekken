@@ -1,9 +1,9 @@
 /* Authenticator カスタムスタイル */
 
-/* 全体のコンテナ */
+/* 全体のコンテナ - 背景を完全透明化 */
 [data-amplify-authenticator] {
   --amplify-colors-background-primary: transparent !important;
-  --amplify-colors-background-secondary: rgba(0, 0, 0, 0.85) !important;
+  --amplify-colors-background-secondary: transparent !important;
   --amplify-colors-border-primary: rgba(185, 28, 28, 0.5) !important;
   --amplify-colors-brand-primary-10: #dc2626 !important;
   --amplify-colors-brand-primary-80: #dc2626 !important;
@@ -11,7 +11,8 @@
   --amplify-colors-brand-primary-100: #7f1d1d !important;
   --amplify-colors-font-primary: #ffffff !important;
   --amplify-colors-font-secondary: #ffffff !important;
-  --amplify-colors-font-interactive: #fca5a5 !important;
+  --amplify-colors-font-interactive: #ffffff !important;
+  background: transparent !important;
 }
 
 /* メインコンテナ */
@@ -37,30 +38,49 @@
   padding: 0 !important;
 }
 
-/* タブ */
+/* タブコンテナ - 下部の枠線を削除 */
 [data-amplify-authenticator] [data-amplify-tabs] {
   background: transparent !important;
-  border-bottom: 2px solid rgba(185, 28, 28, 0.5) !important;
+  border-bottom: none !important;
+  border: none !important;
 }
 
-[data-amplify-authenticator] [data-amplify-tabs-item] {
-  color: #9ca3af !important;
+/* タブボタン（未選択） - 薄い白色の文字 + 薄い赤色の上部枠線 */
+[data-amplify-authenticator] [data-amplify-tabs-item],
+[data-amplify-authenticator] button[data-amplify-tabs-item],
+[data-amplify-authenticator] [role="tab"] {
+  color: rgba(255, 255, 255, 0.5) !important;
   font-weight: 600 !important;
   font-size: 16px !important;
   padding: 15px 30px !important;
-  border-bottom: 3px solid transparent !important;
+  border: none !important;
+  border-top: 3px solid rgba(220, 38, 38, 0.5) !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
   transition: all 0.2s !important;
+  background: transparent !important;
 }
 
-[data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"] {
-  color: #fef2f2 !important;
-  border-bottom-color: #dc2626 !important;
-  background: rgba(185, 28, 28, 0.1) !important;
+/* タブボタン（選択中） - 真っ白の文字 + 真っ白の上部枠線 + 薄い赤色の背景 */
+[data-amplify-authenticator] [data-amplify-tabs-item][aria-selected="true"],
+[data-amplify-authenticator] button[data-amplify-tabs-item][aria-selected="true"],
+[data-amplify-authenticator] [role="tab"][aria-selected="true"] {
+  color: #ffffff !important;
+  border: none !important;
+  border-top: 3px solid #ffffff !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  background: rgba(220, 38, 38, 0.4) !important;
 }
 
-[data-amplify-authenticator] [data-amplify-tabs-item]:hover {
-  color: #fca5a5 !important;
-  background: rgba(185, 28, 28, 0.05) !important;
+/* タブボタン（ホバー） - 白色の文字 + 薄い赤色 */
+[data-amplify-authenticator] [data-amplify-tabs-item]:hover,
+[data-amplify-authenticator] button[data-amplify-tabs-item]:hover,
+[data-amplify-authenticator] [role="tab"]:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(220, 38, 38, 0.2) !important;
 }
 
 /* フォームフィールド */
@@ -321,4 +341,32 @@ button[class*="amplify-button"][type="button"]:not([class*="primary"]) {
   [data-amplify-authenticator] [data-amplify-fieldset] {
     padding: 20px !important;
   }
+}
+
+/* パスワードをお忘れの方リンクのスタイル */
+[data-amplify-authenticator] [data-amplify-router="signIn"] [data-amplify-footer] {
+  display: block !important;
+  visibility: visible !important;
+  background: transparent !important;
+  padding: 20px !important;
+  border-top: 1px solid rgba(185, 28, 28, 0.2) !important;
+  text-align: center !important;
+}
+
+[data-amplify-authenticator] [data-amplify-router="signIn"] [data-amplify-footer] button {
+  display: inline-block !important;
+  visibility: visible !important;
+  background: transparent !important;
+  border: none !important;
+  color: #60a5fa !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  padding: 8px !important;
+  transition: color 0.2s !important;
+}
+
+[data-amplify-authenticator] [data-amplify-router="signIn"] [data-amplify-footer] button:hover {
+  color: #93c5fd !important;
+  text-decoration: underline !important;
 }
